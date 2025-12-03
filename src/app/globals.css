@@ -1,0 +1,166 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 0%;
+    --foreground: 45 100% 84%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 45 100% 84%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 45 100% 84%;
+    --primary: 45 100% 84%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 45 100% 84%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 45 100% 84%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 45 93% 47%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-noble-black text-noble-gold font-sans antialiased;
+    background-image: 
+      radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 40% 80%, rgba(212, 175, 55, 0.08) 0%, transparent 50%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    /* Prevent text size adjustments on mobile */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+}
+
+@layer components {
+  .noble-card {
+    @apply bg-noble-gray border border-noble-gold/20 rounded-lg p-6;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+  }
+  
+  .noble-button {
+    @apply bg-noble-gold-gradient text-noble-black font-semibold px-6 py-3 rounded-lg 
+           hover:shadow-lg hover:shadow-noble-gold/20 transition-all duration-300 
+           transform hover:scale-105;
+  }
+  
+  .noble-button-outline {
+    @apply border border-noble-gold text-noble-gold bg-transparent px-6 py-3 rounded-lg 
+           hover:bg-noble-gold hover:text-noble-black transition-all duration-300;
+  }
+  
+  .noble-input {
+    @apply bg-noble-gray border border-noble-gold/30 text-noble-gold placeholder-noble-gold/50 
+           rounded-lg px-4 py-3 focus:border-noble-gold focus:ring-2 focus:ring-noble-gold/20 
+           transition-all duration-200;
+  }
+  
+  .noble-text-gradient {
+    @apply bg-clip-text text-transparent bg-noble-gold-gradient;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-noble-black;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-noble-gold rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-noble-gold-light;
+}
+
+/* Solana Wallet Adapter Styling */
+.wallet-adapter-button {
+  @apply bg-noble-gold-gradient text-noble-black font-semibold px-6 py-3 rounded-lg 
+         hover:shadow-lg hover:shadow-noble-gold/20 transition-all duration-300 
+         transform hover:scale-105 !important;
+  border: none !important;
+}
+
+.wallet-adapter-button-trigger {
+  @apply bg-noble-gold-gradient text-noble-black font-semibold px-6 py-3 rounded-lg 
+         hover:shadow-lg hover:shadow-noble-gold/20 transition-all duration-300 
+         transform hover:scale-105 !important;
+}
+
+.wallet-adapter-dropdown {
+  @apply bg-noble-gray border border-noble-gold/20 rounded-lg shadow-xl shadow-noble-gold/10 !important;
+}
+
+.wallet-adapter-dropdown-list {
+  @apply bg-noble-gray !important;
+}
+
+.wallet-adapter-dropdown-list-item {
+  @apply text-noble-gold hover:bg-noble-gold/10 transition-colors duration-200 !important;
+}
+
+.wallet-adapter-modal-wrapper {
+  @apply bg-noble-black/80 backdrop-blur-sm !important;
+}
+
+.wallet-adapter-modal {
+  @apply bg-noble-gray border border-noble-gold/20 rounded-lg !important;
+}
+
+.wallet-adapter-modal-title {
+  @apply text-noble-gold !important;
+}
+
+.wallet-adapter-modal-list {
+  @apply bg-noble-gray !important;
+}
+
+.wallet-adapter-modal-list-item {
+  @apply bg-noble-gray border border-noble-gold/20 hover:bg-noble-gold/10 
+         transition-colors duration-200 rounded-lg !important;
+}
+
+.wallet-adapter-modal-list-item:not([disabled]):hover {
+  @apply bg-noble-gold/10 !important;
+}

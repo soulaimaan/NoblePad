@@ -1,0 +1,82 @@
+# Supabase Configuration for NoblePad
+# Three-Tier Architecture Configuration
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["https://noblepad.app"]
+jwt_expiry = 3600
+enable_signup = true
+enable_email_confirmations = false
+enable_sms_confirmations = false
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = false
+
+# Auth providers (wallet-based auth)
+[auth.external.github]
+enabled = false
+
+[auth.external.google]
+enabled = false
+
+# Custom auth for Web3 wallets will be implemented
+
+[db]
+port = 54322
+
+[studio]
+enabled = true
+port = 54323
+
+[functions]
+verify_jwt = true
+
+[edge_functions]
+verify_jwt = true
+
+# Edge Functions for Three-Tier Architecture
+[[functions]]
+name = "get-presales"
+verify_jwt = false
+
+[[functions]]
+name = "get-presale-details" 
+verify_jwt = false
+
+[[functions]]
+name = "create-presale"
+verify_jwt = true
+
+[[functions]]
+name = "commit-to-presale"
+verify_jwt = true
+
+[[functions]]
+name = "user-tier"
+verify_jwt = true
+
+[[functions]]
+name = "admin-actions"
+verify_jwt = true
+
+[storage]
+enabled = true
+file_size_limit = "50MB"
+image_transformation_enabled = true
+
+# Storage bucket for KYC documents
+[[storage.buckets]]
+name = "kyc-documents"
+public = false
+file_size_limit = "10MB"
+allowed_mime_types = ["application/pdf", "image/jpeg", "image/png"]
