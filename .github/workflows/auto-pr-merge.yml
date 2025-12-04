@@ -3,44 +3,32 @@ name: Auto PR and Merge
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   create_and_merge:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Ensure branch exists
+      - name: Create and merge PR
         uses: actions/github-script@v7
         with:
           script: |
-            const branch = 'clean-agents-setup';
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const head = 'clean-agents-setup';
+            const base = 'main';
+            let pr;
             try {
-              await github.repos.getBranch({ owner: context.repo.owner, repo: context.repo.repo, branch });
+              pr = await github.pulls.create({ owner, repo, head, base, title: 'Bootstrap CI and Autonomous Agents; ignore build artifacts' });
             } catch (e) {
-              core.setFailed(`Branch ${branch} not found`);
+              if (e.status === 422) {
+                const { data: prs } = await github.pulls.list({ owner, repo, state: 'open', head: `${owner}:${head}`, base });
+                if (!prs.length) throw e;
+                pr = { data: prs[0] };
+              } else {
+                throw e;
+              }
             }
-
-      - name: Create Pull Request
-        id: cpr
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: main
-          branch: clean-agents-setup
-          title: "Bootstrap CI and Autonomous Agents; ignore build artifacts"
-          body: |
-            This PR sets up:
-            - CI pipeline for frontend, backend, and contracts
-            - Autonomous agents for contracts/backend/monitoring and Sepolia auto-deploy (gated by secrets)
-            - Vercel deploy workflow
-            - Next.js ESM config fix
-            It also ignores build artifacts and node_modules to avoid large-file pushes.
-
-      - name: Merge Pull Request
-        if: ${{ steps.cpr.outputs.pull-request-number }}
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const pr = Number(core.getInput('pr', { required: false })) || Number('${{ steps.cpr.outputs.pull-request-number }}');
-            await github.pulls.merge({ owner: context.repo.owner, repo: context.repo.repo, pull_number: pr, merge_method: 'squash' });
+            await github.pulls.merge({ owner, repo, pull_number: pr.data.number, merge_method: 'squash' });
