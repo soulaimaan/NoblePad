@@ -1,21 +1,30 @@
 'use client'
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/Button'
 import { useVanillaWeb3 } from '@/components/providers/VanillaWeb3Provider'
-import { 
-  AlertTriangle, 
-  CheckCircle, 
-  RefreshCw,
-  Zap,
-  Settings,
-  ExternalLink
+import { Button } from '@/components/ui/Button'
+import {
+    AlertTriangle,
+    CheckCircle,
+    ExternalLink,
+    RefreshCw,
+    Settings,
+    Zap
 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 export function MetaMaskConnectionFixer() {
   const { wallet, connectMetaMask, isLoading, error } = useVanillaWeb3()
+
   const [debugResults, setDebugResults] = useState<any[]>([])
   const [isTesting, setIsTesting] = useState(false)
+  const [installStatus, setInstallStatus] = useState({ installed: false, isMetaMask: false })
+
+  useEffect(() => {
+    setInstallStatus({
+      installed: !!window.ethereum,
+      isMetaMask: !!window.ethereum?.isMetaMask
+    })
+  }, [])
 
   const addDebugResult = (test: string, status: 'success' | 'error' | 'warning', message: string) => {
     setDebugResults(prev => [...prev, { test, status, message, timestamp: Date.now() }])
@@ -157,8 +166,8 @@ export function MetaMaskConnectionFixer() {
       <div className="mb-6 p-4 bg-noble-gray/20 rounded-lg">
         <h4 className="font-medium text-noble-gold mb-2">Current Status</h4>
         <div className="space-y-2 text-sm">
-          <div>MetaMask Installed: {window.ethereum ? '✅ Yes' : '❌ No'}</div>
-          <div>Provider Active: {window.ethereum?.isMetaMask ? '✅ MetaMask' : '⚠️ Unknown'}</div>
+          <div>MetaMask Installed: {installStatus.installed ? '✅ Yes' : '❌ No'}</div>
+          <div>Provider Active: {installStatus.isMetaMask ? '✅ MetaMask' : '⚠️ Unknown'}</div>
           <div>Connection: {wallet.isConnected ? `✅ ${wallet.address}` : '❌ Not connected'}</div>
           <div>Loading State: {isLoading ? '🔄 Connecting...' : '✅ Ready'}</div>
           {error && <div className="text-red-400">Error: {error}</div>}
