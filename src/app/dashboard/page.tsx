@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useAccount } from '@/hooks/useCompatibleAccount'
-import { Coins, TrendingUp, Clock, Award, Shield, Eye } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { useAccount } from '@/hooks/useCompatibleAccount'
 import { calculateUserTier } from '@/lib/utils'
+import { Award, Clock, Coins, Eye, Shield, TrendingUp } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 interface UserCommitment {
   id: string
@@ -33,7 +33,7 @@ export default function DashboardPage() {
       amount: 2.5,
       tokenAllocation: 2500,
       status: 'confirmed',
-      commitDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      commitDate: new Date('2024-03-10'),
       chain: 'BSC'
     },
     {
@@ -44,7 +44,7 @@ export default function DashboardPage() {
       amount: 1.0,
       tokenAllocation: 800,
       status: 'confirmed',
-      commitDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+      commitDate: new Date('2024-03-05'),
       chain: 'ETH'
     },
     {
@@ -55,7 +55,7 @@ export default function DashboardPage() {
       amount: 0.5,
       tokenAllocation: 600,
       status: 'pending',
-      commitDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+      commitDate: new Date('2024-03-12'),
       chain: 'POLYGON'
     }
   ]

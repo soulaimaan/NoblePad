@@ -1,16 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { PresaleCard } from '@/components/presale/PresaleCard'
 import { PresaleFilters } from '@/components/presale/PresaleFilters'
 import { Search } from 'lucide-react'
-import { presalesAPI } from '@/lib/api'
+import { useEffect, useState } from 'react'
 
 export default function PresalesPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedChain, setSelectedChain] = useState('all')
   const [selectedStatus, setSelectedStatus] = useState('all')
-  const [presales, setPresales] = useState([])
+  const [presales, setPresales] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [totalCount, setTotalCount] = useState(0)
 
@@ -24,7 +23,7 @@ export default function PresalesPage() {
       softCap: '250 BNB',
       raised: '387 BNB',
       progress: 77,
-      endTime: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+      endTime: new Date('2024-12-31'),
       status: 'live' as const,
       chain: 'BSC',
       liquidityLock: '12 months'
@@ -37,7 +36,7 @@ export default function PresalesPage() {
       softCap: '150 BNB',
       raised: '142 BNB',
       progress: 47,
-      endTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+      endTime: new Date('2024-12-25'),
       status: 'live' as const,
       chain: 'BSC',
       liquidityLock: '6 months'
@@ -50,7 +49,7 @@ export default function PresalesPage() {
       softCap: '400 ETH',
       raised: '0 ETH',
       progress: 0,
-      endTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      endTime: new Date('2025-01-15'),
       status: 'upcoming' as const,
       chain: 'ETH',
       liquidityLock: '18 months'
@@ -63,7 +62,7 @@ export default function PresalesPage() {
       softCap: '100 MATIC',
       raised: '200 MATIC',
       progress: 100,
-      endTime: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+      endTime: new Date('2023-11-20'),
       status: 'ended' as const,
       chain: 'POLYGON',
       liquidityLock: '24 months'
@@ -76,7 +75,7 @@ export default function PresalesPage() {
       softCap: '500 BNB',
       raised: '650 BNB',
       progress: 65,
-      endTime: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+      endTime: new Date('2024-12-30'),
       status: 'live' as const,
       chain: 'BSC',
       liquidityLock: '12 months'
@@ -89,7 +88,7 @@ export default function PresalesPage() {
       softCap: '200 ETH',
       raised: '0 ETH',
       progress: 0,
-      endTime: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+      endTime: new Date('2025-02-01'),
       status: 'upcoming' as const,
       chain: 'ETH',
       liquidityLock: '12 months'
@@ -102,7 +101,7 @@ export default function PresalesPage() {
       softCap: '400 ETH',
       raised: '120 ETH',
       progress: 15,
-      endTime: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+      endTime: new Date('2025-02-15'),
       status: 'upcoming' as const,
       chain: 'BASE',
       liquidityLock: '18 months'
@@ -115,7 +114,7 @@ export default function PresalesPage() {
       softCap: '25,000 SOL',
       raised: '8,750 SOL',
       progress: 17,
-      endTime: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000),
+      endTime: new Date('2025-03-01'),
       status: 'live' as const,
       chain: 'SOL',
       liquidityLock: '12 months'
