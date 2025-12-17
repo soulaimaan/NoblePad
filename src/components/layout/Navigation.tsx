@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
-import { VanillaWalletButton } from '@/components/ui/VanillaWalletButton'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { Menu, X } from 'lucide-react'
 
 export function Navigation() {
@@ -14,6 +14,7 @@ export function Navigation() {
     { name: 'Presales', href: '/presales' },
     { name: 'Liquidity Locks', href: '/locks' },
     { name: 'Token Locks', href: '/token-locks' },
+    { name: 'Staking Hub', href: '/staking' },
     { name: 'Create', href: '/create' },
     { name: 'Dashboard', href: '/dashboard' },
   ]
@@ -24,9 +25,11 @@ export function Navigation() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3">
-            <img 
-              src="/logo.jpg" 
-              alt="NoblePad Logo" 
+            <Image
+              src="/logo.jpg"
+              alt="NoblePad Logo"
+              width={40}
+              height={40}
               className="w-10 h-10 object-contain"
             />
             <span className="text-xl font-bold noble-text-gradient">NoblePad</span>
@@ -47,8 +50,8 @@ export function Navigation() {
 
           {/* Wallet Connection */}
           <div className="flex items-center space-x-4">
-            <VanillaWalletButton />
-            
+            <ConnectButton />
+
             {/* Mobile menu button */}
             <button
               className="md:hidden text-noble-gold"
@@ -66,8 +69,8 @@ export function Navigation() {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="md:hidden" id="mobile-navigation">
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-noble-gray/50 rounded-lg mt-2" 
-                 style={{backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)'}}>
+            <div className="px-2 pt-2 pb-3 space-y-1 bg-noble-gray/50 rounded-lg mt-2"
+              style={{ backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
               {navigationItems.map((item) => (
                 <Link
                   key={item.name}

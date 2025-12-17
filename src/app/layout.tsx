@@ -1,10 +1,11 @@
+import { Navigation } from '@/components/layout/Navigation'
+import { RainbowProvider } from '@/components/providers/RainbowProvider'
+import { SolanaProvider } from '@/components/providers/SolanaProvider'
+import { SupabaseProvider } from '@/components/providers/SupabaseProvider'
+import { VanillaWeb3Provider } from '@/components/providers/VanillaWeb3Provider'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { VanillaWeb3Provider } from '@/components/providers/VanillaWeb3Provider'
-import { SolanaProvider } from '@/components/providers/SolanaProvider'
-import { SupabaseProvider } from '@/components/providers/SupabaseProvider'
-import { Navigation } from '@/components/layout/Navigation'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -23,7 +24,8 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={inter.className}>
         <SupabaseProvider>
-          <VanillaWeb3Provider>
+          <RainbowProvider>
+            <VanillaWeb3Provider>
             <SolanaProvider>
               <div className="min-h-screen bg-noble-black">
                 <Navigation />
@@ -32,7 +34,8 @@ export default function RootLayout({
                 </main>
               </div>
             </SolanaProvider>
-          </VanillaWeb3Provider>
+            </VanillaWeb3Provider>
+          </RainbowProvider>
         </SupabaseProvider>
       </body>
     </html>
