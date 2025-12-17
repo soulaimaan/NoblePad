@@ -1,13 +1,13 @@
-// Compatibility hook to bridge vanilla provider with existing wagmi hook usage
 import { useVanillaWeb3 } from '@/components/providers/VanillaWeb3Provider'
 import { getChainById } from '@/lib/chains'
 import { Connection, PublicKey } from '@solana/web3.js'
 import { ethers } from 'ethers'
-
 import { useEffect, useState } from 'react'
+import { useAccount as useWagmiAccount } from 'wagmi'
 
 export function useAccount() {
-  const { wallet } = useVanillaWeb3()
+  const { wallet } = useVanillaWeb3() // This might throw if not wrapped? But we wrapped it.
+  const wagmiAccount = useWagmiAccount()
 
   // EVM provider and signer (async)
   const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null)
@@ -27,35 +27,31 @@ export function useAccount() {
             if (isMounted) setSigner(null)
           }
         } catch (e) {
-          if (isMounted) {
-            setProvider(null)
-            setSigner(null)
-          }
-        }
-      } else {
-        if (isMounted) {
-          setProvider(null)
-          setSigner(null)
+             // ignore
         }
       }
     }
     setupProvider()
     return () => { isMounted = false }
-  }, [wallet.address, wallet.chainId])
+  }, [wallet.address, wallet.chainId, wagmiAccount.status]) 
 
   // Solana connection
   let solanaConnection: Connection | null = null
   if (wallet.chainId === 'solana') {
-    try {
-      solanaConnection = new Connection('https://api.mainnet-beta.solana.com')
-    } catch (e) {
-      solanaConnection = null
-    }
+     // ... existing logic
+      try {
+        solanaConnection = new Connection('https://api.mainnet-beta.solana.com')
+      } catch (e) {
+        solanaConnection = null
+      }
   }
 
+  const activeAddress = wagmiAccount.address || (wallet.address as `0x${string}` | string | undefined)
+  const isActive = wagmiAccount.isConnected || wallet.isConnected
+
   return {
-    address: wallet.address as `0x${string}` | string | undefined,
-    isConnected: wallet.isConnected,
+    address: activeAddress,
+    isConnected: isActive,
     provider,
     signer,
     solana: {
@@ -63,10 +59,10 @@ export function useAccount() {
       publicKey: wallet.address ? new PublicKey(wallet.address) : undefined,
       adapter: typeof window !== 'undefined' ? ((window as any).solana || (window as any).phantom?.solana || null) : null
     },
-    isConnecting: false,
-    isDisconnected: !wallet.isConnected,
-    status: wallet.isConnected ? 'connected' : 'disconnected',
-    chain: wallet.chainId ? parseChain(wallet.chainId) : undefined
+    isConnecting: wagmiAccount.isConnecting,
+    isDisconnected: !isActive,
+    status: isActive ? 'connected' : 'disconnected',
+    chain: wagmiAccount.chain || (wallet.chainId ? parseChain(wallet.chainId) : undefined)
   }
 }
 
