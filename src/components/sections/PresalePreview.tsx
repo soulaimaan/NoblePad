@@ -1,8 +1,8 @@
 'use client'
 
-import Link from 'next/link'
-import { Button } from '@/components/ui/Button'
 import { PresaleCard } from '@/components/presale/PresaleCard'
+import { Button } from '@/components/ui/Button'
+import Link from 'next/link'
 
 export function PresalePreview() {
   // Mock presale data - will be replaced with real data from Supabase
@@ -15,7 +15,7 @@ export function PresalePreview() {
       softCap: '250 BNB',
       raised: '387 BNB',
       progress: 77,
-      endTime: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
+      endTime: new Date('2024-12-31'), // 5 days from now
       status: 'live' as const,
       chain: 'BSC',
       liquidityLock: '12 months'
@@ -28,7 +28,7 @@ export function PresalePreview() {
       softCap: '150 BNB',
       raised: '142 BNB',
       progress: 47,
-      endTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
+      endTime: new Date('2024-12-25'), // 3 days from now
       status: 'live' as const,
       chain: 'BSC',
       liquidityLock: '6 months'
@@ -41,7 +41,7 @@ export function PresalePreview() {
       softCap: '400 BNB',
       raised: '0 BNB',
       progress: 0,
-      endTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+      endTime: new Date('2025-01-15'), // 7 days from now
       status: 'upcoming' as const,
       chain: 'ETH',
       liquidityLock: '18 months'

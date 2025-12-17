@@ -1,28 +1,29 @@
 'use client';
 
+import {
+    getDefaultConfig,
+    RainbowKitProvider,
+} from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import {
-  getDefaultConfig,
-  RainbowKitProvider,
-} from '@rainbow-me/rainbowkit';
+    QueryClient,
+    QueryClientProvider,
+} from "@tanstack/react-query";
 import { WagmiProvider } from 'wagmi';
 import {
-  mainnet,
-  polygon,
-  optimism,
-  arbitrum,
-  base,
-  bsc,
+    arbitrum,
+    base,
+    bsc,
+    mainnet,
+    optimism,
+    polygon,
+    sepolia,
 } from 'wagmi/chains';
-import {
-  QueryClientProvider,
-  QueryClient,
-} from "@tanstack/react-query";
 
 const config = getDefaultConfig({
   appName: 'NoblePad - Anti-Rug Launchpad',
   projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'default-project-id',
-  chains: [mainnet, polygon, optimism, arbitrum, base, bsc],
+  chains: [mainnet, polygon, optimism, arbitrum, base, bsc, sepolia],
   ssr: true, // If your dApp uses server side rendering (SSR)
 });
 
