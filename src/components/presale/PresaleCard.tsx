@@ -1,8 +1,8 @@
 'use client'
 
-import Link from 'next/link'
-import { Clock, Shield, TrendingUp } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { Clock, Shield, TrendingUp } from 'lucide-react'
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 type PresaleStatus = 'live' | 'upcoming' | 'ended'
@@ -26,6 +26,30 @@ interface PresaleCardProps {
 }
 
 export function PresaleCard({ presale }: PresaleCardProps) {
+  const [timeLeft, setTimeLeft] = useState<string>('')
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date()
+      const timeDiff = presale.endTime.getTime() - now.getTime()
+      
+      if (timeDiff <= 0) {
+        setTimeLeft('Ended')
+        return
+      }
+      
+      const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24))
+      const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+      
+      setTimeLeft(`${days}d ${hours}h`)
+    }
+    
+    updateTime() // Initial call
+    const interval = setInterval(updateTime, 60000) // Update every minute
+    
+    return () => clearInterval(interval)
+  }, [presale.endTime])
+
   const getStatusColor = (status: PresaleStatus) => {
     switch (status) {
       case 'live': return 'text-green-400'
@@ -42,34 +66,6 @@ export function PresaleCard({ presale }: PresaleCardProps) {
       case 'ended': return 'bg-red-400/20 text-red-400'
       default: return 'bg-noble-gold/20 text-noble-gold'
     }
-  }
-
-  const formatTimeLeft = (endTime: Date) => {
-    const [timeLeft, setTimeLeft] = useState<string>('')
-    
-    useEffect(() => {
-      const updateTime = () => {
-        const now = new Date()
-        const timeDiff = endTime.getTime() - now.getTime()
-        
-        if (timeDiff <= 0) {
-          setTimeLeft('Ended')
-          return
-        }
-        
-        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24))
-        const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-        
-        setTimeLeft(`${days}d ${hours}h`)
-      }
-      
-      updateTime() // Initial call
-      const interval = setInterval(updateTime, 60000) // Update every minute
-      
-      return () => clearInterval(interval)
-    }, [endTime])
-    
-    return timeLeft
   }
 
   return (
@@ -134,7 +130,7 @@ export function PresaleCard({ presale }: PresaleCardProps) {
             <span className="text-sm text-noble-gold/70">Time Left</span>
           </div>
           <span className={`text-sm font-medium ${getStatusColor(presale.status)}`}>
-            {formatTimeLeft(presale.endTime)}
+            {timeLeft}
           </span>
         </div>
       </div>
