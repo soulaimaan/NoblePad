@@ -4,6 +4,13 @@ All notable changes to the NoblePad project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **Critical**: Fixed "Application error: a client-side exception has occurred" when connecting wallet on Netlify deployment
+  - Resolved React hydration error in `RainbowProvider.tsx`
+  - QueryClient now instantiated inside component using useState hook
+  - Ensures each render gets its own QueryClient instance in SSR environments
+  - Prevents state sharing across server requests
+
 ### Added
 - Created `AgentsDashboard` component for monitoring and managing automation agents
 - Added `AgentsDashboard.module.css` for styling the new dashboard
