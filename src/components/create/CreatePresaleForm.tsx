@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
-import { ProjectInfoStep } from './steps/ProjectInfoStep'
-import { TokenDetailsStep } from './steps/TokenDetailsStep'
-import { PresaleSetupStep } from './steps/PresaleSetupStep'
-import { SecurityReviewStep } from './steps/SecurityReviewStep'
 import { presaleService } from '@/lib/presaleService'
+import { useEffect, useState } from 'react'
+import { PresaleSetupStep } from './steps/PresaleSetupStep'
+import { ProjectInfoStep } from './steps/ProjectInfoStep'
+import { SecurityReviewStep } from './steps/SecurityReviewStep'
+import { TokenDetailsStep } from './steps/TokenDetailsStep'
 
 interface CreatePresaleFormProps {
   currentStep: number
@@ -81,12 +81,12 @@ export function CreatePresaleForm({ currentStep, onStepChange }: CreatePresaleFo
       { 
         percentage: 50, 
         timeDescription: 'TGE (Token Generation Event)',
-        unlockTime: Math.floor(Date.now() / 1000) 
+        unlockTime: 0
       },
       { 
         percentage: 50, 
         timeDescription: '1 month after TGE',
-        unlockTime: Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60) 
+        unlockTime: 0
       }
     ],
     kycDocuments: [],
@@ -96,6 +96,24 @@ export function CreatePresaleForm({ currentStep, onStepChange }: CreatePresaleFo
   })
   
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    // Initialize dates on client side to avoid hydration mismatch
+    const now = Math.floor(Date.now() / 1000)
+    setFormData(prev => {
+      // Only update if they are 0 (prevent overwriting if state was restored/persisted?)
+      // Actually this runs once on mount. formData is fresh.
+      if (prev.vestingSchedule[0].unlockTime !== 0) return prev
+      
+      return {
+        ...prev,
+        vestingSchedule: [
+            { ...prev.vestingSchedule[0], unlockTime: now },
+            { ...prev.vestingSchedule[1], unlockTime: now + (30 * 24 * 60 * 60) }
+        ]
+      }
+    })
+  }, [])
 
   const updateFormData = (updates: Partial<FormData>) => {
     setFormData(prev => ({ ...prev, ...updates }))
