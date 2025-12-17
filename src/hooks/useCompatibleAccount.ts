@@ -1,8 +1,8 @@
 // Compatibility hook to bridge vanilla provider with existing wagmi hook usage
 import { useVanillaWeb3 } from '@/components/providers/VanillaWeb3Provider'
+import { getChainById } from '@/lib/chains'
 import { Connection, PublicKey } from '@solana/web3.js'
 import { ethers } from 'ethers'
-import { getRpcUrl, getChainById } from '@/lib/chains'
 
 import { useEffect, useState } from 'react'
 
@@ -61,7 +61,7 @@ export function useAccount() {
     solana: {
       connection: solanaConnection,
       publicKey: wallet.address ? new PublicKey(wallet.address) : undefined,
-      adapter: (window as any).solana || (window as any).phantom?.solana || null
+      adapter: typeof window !== 'undefined' ? ((window as any).solana || (window as any).phantom?.solana || null) : null
     },
     isConnecting: false,
     isDisconnected: !wallet.isConnected,
