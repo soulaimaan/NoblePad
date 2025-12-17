@@ -1,23 +1,24 @@
 'use client';
 
 import {
-    getDefaultConfig,
-    RainbowKitProvider,
+  getDefaultConfig,
+  RainbowKitProvider,
 } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import {
-    QueryClient,
-    QueryClientProvider,
+  QueryClient,
+  QueryClientProvider,
 } from "@tanstack/react-query";
+import { useState } from 'react';
 import { WagmiProvider } from 'wagmi';
 import {
-    arbitrum,
-    base,
-    bsc,
-    mainnet,
-    optimism,
-    polygon,
-    sepolia,
+  arbitrum,
+  base,
+  bsc,
+  mainnet,
+  optimism,
+  polygon,
+  sepolia,
 } from 'wagmi/chains';
 
 const config = getDefaultConfig({
@@ -27,9 +28,18 @@ const config = getDefaultConfig({
   ssr: true, // If your dApp uses server side rendering (SSR)
 });
 
-const queryClient = new QueryClient();
-
 export const RainbowProvider = ({ children }: { children: React.ReactNode }) => {
+  // Create a new QueryClient instance for each component mount
+  // This prevents hydration errors in SSR environments like Netlify
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        // Prevent automatic refetching on the client
+        staleTime: 60 * 1000,
+      },
+    },
+  }));
+
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
