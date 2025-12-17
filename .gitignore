@@ -1,0 +1,89 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Dependencies
+/node_modules
+/contracts/node_modules
+
+# Build outputs
+/.next/
+/out/
+/build
+
+# Local Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+contracts/.env
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+agent-coordinator.err.log
+agent-coordinator.log
+contracts-agent-test.err.log
+contracts-agent-test.log
+debug_build.log
+dev.log
+
+# Temporary files and caches
+.npm
+.eslintcache
+.stylelintcache
+.node_repl_history
+.DS_Store
+.cache
+.tmp
+*.tsbuildinfo
+
+# Editor directories and files
+.vscode
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Zip files
+*.zip
+
+# Other
+ai-support-service/
+bradlc.vscode-tailwindcss-0.14.29/
+dbaeumer.vscode-eslint-3.0.16/
+eamodio.gitlens-17.7.1/
+esbenp.prettier-vscode-11.0.2-universal/
+github.copilot-1.388.0/
+github.vscode-github-actions-0.28.0-universal/
+juanblanco.solidity-0.0.187/
+ms-python.python-2025.18.0-win32-x64/
+ms-vscode-remote.remote-containers-0.431.1/
+ms-vscode-remote.remote-ssh-0.120.0/
+ms-vscode-remote.remote-ssh-edit-0.87.0/
+ms-vscode-remote.remote-wsl-0.104.3/
+ms-vscode.remote-explorer-0.5.0/
+ms-vscode.remote-server-1.5.3/
+noblepad1/
+node-v25.2.1-win-x64/
+nomicfoundation.hardhat-solidity-0.8.26/
+redhat.java-1.50.0-win32-x64/
+redhat.vscode-yaml-1.19.1/
+ritwickdey.liveserver-5.7.9/
+shopify.ruby-lsp-0.9.32-universal/
+vscjava.vscode-gradle-3.17.1-universal/
+vscjava.vscode-java-debug-0.58.3-universal/
+vscjava.vscode-java-debug-0.58.3/
+vscjava.vscode-java-dependency-0.26.3-universal/
+vscjava.vscode-java-pack-0.30.4-universal/
+vscjava.vscode-java-test-0.43.2-universal/
+vscjava.vscode-maven-0.44.0-universal/
+LM Studio/
+
+LM Studio/
+node-v25.2.1-win-x64/
+backup_noblepad.zip
+nobleGIT.zip
+noblepad-deploy-*.zip

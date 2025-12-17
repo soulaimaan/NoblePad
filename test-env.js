@@ -1,0 +1,1 @@
+﻿console.log('Infura Key:', process.env.INFURA_API_KEY ? 'Set' : 'Missing'); console.log('Private Key:', process.env.DEPLOYER_PRIVATE_KEY ? 'Set' : 'Missing'); console.log('Etherscan Key:', process.env.ETHERSCAN_API_KEY ? 'Set' : 'Missing');
