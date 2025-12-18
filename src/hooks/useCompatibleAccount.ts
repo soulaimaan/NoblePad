@@ -56,7 +56,7 @@ export function useAccount() {
     signer,
     solana: {
       connection: solanaConnection,
-      publicKey: wallet.address ? new PublicKey(wallet.address) : undefined,
+      publicKey: (wallet.address && wallet.chainId === 'solana') ? new PublicKey(wallet.address) : undefined,
       adapter: typeof window !== 'undefined' ? ((window as any).solana || (window as any).phantom?.solana || null) : null
     },
     isConnecting: wagmiAccount.isConnecting,
