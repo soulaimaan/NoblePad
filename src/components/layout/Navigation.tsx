@@ -1,10 +1,10 @@
 'use client'
 
-import Link from 'next/link'
-import Image from 'next/image'
-import { useState } from 'react'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { Menu, X } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useState } from 'react'
 
 export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -16,7 +16,6 @@ export function Navigation() {
     { name: 'Token Locks', href: '/token-locks' },
     { name: 'Staking Hub', href: '/staking' },
     { name: 'Create', href: '/create' },
-    { name: 'Dashboard', href: '/dashboard' },
   ]
 
   return (
