@@ -1,10 +1,11 @@
 import { ethers } from 'ethers';
-import { STAKING_ABI, ERC20_ABI, getContractAddress } from './contracts';
 import { getChainById } from './chains';
+import { ERC20_ABI, getContractAddress, STAKING_ABI } from './contracts';
 
 export interface StakingInfo {
     totalStaked: string;
     userStaked: string;
+    userBalance: string; // Added wallet balance
     stakingTokenAddress: string;
     stakingTokenSymbol: string;
     stakingTokenDecimals: number;
@@ -30,11 +31,6 @@ export class StakingService {
                 stakingContract.stakingToken()
             ]);
 
-            let userStaked = 0n;
-            if (userAddress) {
-                userStaked = await stakingContract.stakedBalance(userAddress);
-            }
-
             // Get Token Info
             const tokenContract = new ethers.Contract(stakingTokenAddr, ERC20_ABI, provider);
             const [symbol, decimals] = await Promise.all([
@@ -42,9 +38,21 @@ export class StakingService {
                 tokenContract.decimals()
             ]);
 
+            let userStaked = BigInt(0);
+            let userBalance = BigInt(0);
+            if (userAddress) {
+                const [staked, balance] = await Promise.all([
+                    stakingContract.stakedBalance(userAddress),
+                    tokenContract.balanceOf(userAddress)
+                ]);
+                userStaked = staked;
+                userBalance = balance;
+            }
+
             return {
                 totalStaked: ethers.formatUnits(totalSupply, decimals),
                 userStaked: ethers.formatUnits(userStaked, decimals),
+                userBalance: ethers.formatUnits(userBalance, decimals),
                 stakingTokenAddress: stakingTokenAddr,
                 stakingTokenSymbol: symbol,
                 stakingTokenDecimals: Number(decimals)
@@ -54,6 +62,7 @@ export class StakingService {
             return {
                 totalStaked: '0',
                 userStaked: '0',
+                userBalance: '0',
                 stakingTokenAddress: '',
                 stakingTokenSymbol: '',
                 stakingTokenDecimals: 18

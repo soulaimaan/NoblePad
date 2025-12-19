@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
-import { AlertTriangle, CheckCircle, Zap, ExternalLink } from 'lucide-react'
+import { AlertTriangle, CheckCircle, ExternalLink, Zap } from 'lucide-react'
+import { useState } from 'react'
 
 export function ManualMetaMaskConnector() {
   const [isConnecting, setIsConnecting] = useState(false)
@@ -37,11 +37,12 @@ export function ManualMetaMaskConnector() {
       }
       
       // Method 3: Search all available providers aggressively
-      else if (window.ethereum?.providers) {
+      else if ((window.ethereum as any)?.providers) {
         console.log('🔍 Searching all providers for pure MetaMask...')
         
-        for (let i = 0; i < window.ethereum.providers.length; i++) {
-          const provider = window.ethereum.providers[i]
+        const providers = (window.ethereum as any).providers
+        for (let i = 0; i < providers.length; i++) {
+          const provider = providers[i]
           console.log(`Testing provider ${i}:`, {
             isMetaMask: provider.isMetaMask,
             isOkxWallet: provider.isOkxWallet
@@ -196,7 +197,7 @@ export function ManualMetaMaskConnector() {
               <div className="font-medium text-noble-gold">Browser Console Method</div>
               <div className="text-sm text-noble-gold/70 mb-2">Press F12, go to Console tab, and run:</div>
               <code className="block bg-noble-gray p-2 rounded text-xs font-mono">
-                ethereum.providers.find(p => p.isMetaMask && !p.isOkxWallet).request({'{method: "eth_requestAccounts"}'})
+                ethereum.providers.find(p =&gt; p.isMetaMask &amp;&amp; !p.isOkxWallet).request(&#123;method: "eth_requestAccounts"&#125;)
               </code>
             </div>
           </div>

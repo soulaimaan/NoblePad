@@ -6,6 +6,8 @@ interface ContractAddresses {
   router?: string
   wrappedNative?: string
   multicall?: string
+  staking?: string
+  npad?: string
 }
 
 interface ChainConfig {
@@ -162,7 +164,7 @@ export const SUPPORTED_CHAINS: Record<string, ChainConfig> = {
     id: 11155111,
     name: 'Sepolia Testnet',
     symbol: 'SepoliaETH',
-    rpcUrls: ['https://sepolia.infura.io/v3/YOUR_INFURA_KEY'],
+    rpcUrls: ['https://ethereum-sepolia-rpc.publicnode.com'],
     blockExplorerUrls: ['https://sepolia.etherscan.io'],
     nativeCurrency: {
       name: 'Sepolia Ethereum',
@@ -174,8 +176,10 @@ export const SUPPORTED_CHAINS: Record<string, ChainConfig> = {
     isMainnet: false,
     contracts: {
       tokenFactory: '0x...', // TODO: Deploy TokenFactory
-      presaleFactory: '0x...',
-      tokenLock: '0x...',
+      presaleFactory: '0x9f2b5f8825A52b3DA237116D917a8abE79002894',
+      tokenLock: '0xF6e99eA68239fb8CcC7740b602c78Ed3dD120771',
+      staking: '0x8592B59b69C30Ae9425f4619e026Aa00E9df1E23',
+      npad: '0x49fF6eb0FCAd92AF753dae8d17d1156BF6e63b92'
     },
     minimumPresaleAmount: '0.001',
     gasMultiplier: 1.2,

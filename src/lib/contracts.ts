@@ -249,38 +249,83 @@ export const ERC20_ABI = [
   }
 ] as const
 
+export const STAKING_ABI = [
+  {
+    "inputs": [],
+    "name": "totalSupply",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stakingToken",
+    "outputs": [{ "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "name": "account", "type": "address" }],
+    "name": "stakedBalance",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "name": "amount", "type": "uint256" }],
+    "name": "stake",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "name": "amount", "type": "uint256" }],
+    "name": "withdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "user", "type": "address" },
+      { "indexed": false, "name": "amount", "type": "uint256" }
+    ],
+    "name": "Staked",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "user", "type": "address" },
+      { "indexed": false, "name": "amount", "type": "uint256" }
+    ],
+    "name": "Withdrawn",
+    "type": "event"
+  }
+] as const
+
 // Contract addresses by chain (to be updated when contracts are deployed)
 export const CONTRACT_ADDRESSES = {
-  1: { // Ethereum
-    presaleFactory: '0x...',
-    tokenLock: '0x...',
+  11155111: { // Sepolia
+    presaleFactory: '0x9f2b5f8825A52b3DA237116D917a8abE79002894',
+    tokenLock: '0xF6e99eA68239fb8CcC7740b602c78Ed3dD120771',
     router: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D', // Uniswap V2 Router
-  },
-  56: { // BSC
-    presaleFactory: '0x...',
-    tokenLock: '0x...',
-    router: '0x10ED43C718714eb63d5aA57B78B54704E256024E', // PancakeSwap Router
-  },
-  137: { // Polygon
-    presaleFactory: '0x...',
-    tokenLock: '0x...',
-    router: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff', // QuickSwap Router
-  },
-  42161: { // Arbitrum
-    presaleFactory: '0x...',
-    tokenLock: '0x...',
-    router: '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506', // SushiSwap Router
+    staking: '0x8592B59b69C30Ae9425f4619e026Aa00E9df1E23',
+    npad: '0x49fF6eb0FCAd92AF753dae8d17d1156BF6e63b92'
   },
   8453: { // Base
     presaleFactory: '0x...',
     tokenLock: '0x...',
     router: '0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24', // BaseSwap Router
+    staking: '0x...',
+    npad: '0x...'
   }
 } as const
 
-export const getContractAddress = (chainId: number, contract: 'presaleFactory' | 'tokenLock' | 'router') => {
-  const addresses = CONTRACT_ADDRESSES[chainId as keyof typeof CONTRACT_ADDRESSES]
-  return addresses?.[contract] || null
+export const getContractAddress = (chainId: number, contract: 'presaleFactory' | 'tokenLock' | 'router' | 'staking' | 'npad') => {
+  const chainAddresses = CONTRACT_ADDRESSES[chainId as keyof typeof CONTRACT_ADDRESSES] as Record<string, string>;
+  return chainAddresses?.[contract] || null
 }
 
 // Gas estimation helpers

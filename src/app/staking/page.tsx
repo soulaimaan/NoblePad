@@ -2,13 +2,13 @@
 // NoblePad Staking Redesign
 
 
-import { useState, useEffect, useCallback } from 'react'
-import { useAccount, useWalletClient } from 'wagmi'
-import { ethers } from 'ethers'
-import stakingService, { StakingInfo } from '@/lib/stakingService'
 import { StakingStats } from '@/components/staking/StakingStats'
 import { Button } from '@/components/ui/Button'
-import { Lock, Unlock, Shield, ArrowRight, CheckCircle, ChevronRight, Activity } from 'lucide-react'
+import stakingService, { StakingInfo } from '@/lib/stakingService'
+import { ethers } from 'ethers'
+import { Activity, ArrowRight, CheckCircle, Shield } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
+import { useAccount, useWalletClient } from 'wagmi'
 
 // Tier definitions could be moved to a shared config
 const TIERS = [
@@ -28,6 +28,7 @@ export default function StakingPage() {
     const [stakingInfo, setStakingInfo] = useState<StakingInfo>({
         totalStaked: '0',
         userStaked: '0',
+        userBalance: '0',
         stakingTokenAddress: '',
         stakingTokenSymbol: 'NPAD',
         stakingTokenDecimals: 18
@@ -157,7 +158,7 @@ export default function StakingPage() {
                                             Amount to {activeTab === 'stake' ? 'Stake' : 'Withdraw'}
                                         </label>
                                         <span className="text-sm text-noble-gold/50">
-                                            Staked Balance: {stakingInfo.userStaked} {stakingInfo.stakingTokenSymbol}
+                                            Balance: {stakingInfo.userBalance} {stakingInfo.stakingTokenSymbol}
                                         </span>
                                     </div>
                                     <div className="flex items-center space-x-4">
@@ -173,7 +174,7 @@ export default function StakingPage() {
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            onClick={() => setAmount(activeTab === 'stake' ? '1000' : stakingInfo.userStaked)} // Placeholder for Max
+                                            onClick={() => setAmount(activeTab === 'stake' ? stakingInfo.userBalance : stakingInfo.userStaked)}
                                         >
                                             MAX
                                         </Button>
