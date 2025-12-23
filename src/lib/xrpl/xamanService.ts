@@ -88,11 +88,15 @@ export class XamanService {
 
           const data = await response.json()
 
-          if (data.meta?.resolved) {
+          const data = await response.json()
+          console.log('Xumm Status Check:', { resolved: data.meta?.resolved, signed: data.meta?.signed })
+
+          if (data.meta?.resolved || data.meta?.signed) {
             clearInterval(pollInterval)
             
             if (data.meta.signed) {
               const account = data.response?.account
+              console.log('Xumm Signed! Account:', account)
               if (account) {
                 this._connectedAccount = account
                 localStorage.setItem('xaman_account', account)
