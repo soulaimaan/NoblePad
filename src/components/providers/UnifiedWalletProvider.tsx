@@ -38,6 +38,7 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
   // Xaman QR Modal State
   const [showXamanModal, setShowXamanModal] = useState(false)
   const [xamanQr, setXamanQr] = useState<string | null>(null)
+  const [xamanDeepLink, setXamanDeepLink] = useState<string | null>(null)
   const [xamanStatus, setXamanStatus] = useState('Initializing...')
 
   // Unified State
@@ -118,7 +119,8 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
             
             if (payload?.qrUrl) {
                 setXamanQr(payload.qrUrl)
-                setXamanStatus('Please scan the QR code with Xaman')
+                setXamanDeepLink(payload.deepLink)
+                setXamanStatus('Scan the QR code or tap "Open in Xaman"')
                 
                 // Subscribe to payload events
                 xamanService.subscribeToPayload(
@@ -195,6 +197,7 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
         isOpen={showXamanModal} 
         onClose={() => setShowXamanModal(false)}
         qrUrl={xamanQr}
+        deepLink={xamanDeepLink}
         status={xamanStatus}
       />
     </UnifiedWalletContext.Provider>

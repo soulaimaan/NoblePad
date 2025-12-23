@@ -26,7 +26,7 @@ export class XamanService {
     return null
   }
 
-  async createSignInPayload(): Promise<{ uuid: string; qrUrl: string } | null> {
+  async createSignInPayload(): Promise<{ uuid: string; qrUrl: string; deepLink: string } | null> {
     try {
       // Call our server-side proxy instead of Xumm directly
       const response = await fetch('/api/xumm/payload', {
@@ -58,7 +58,8 @@ export class XamanService {
 
       return {
         uuid: data.uuid,
-        qrUrl: data.refs.qr_png
+        qrUrl: data.refs.qr_png,
+        deepLink: data.next?.always || `https://xumm.app/sign/${data.uuid}`
       }
     } catch (e: any) {
       console.error('Failed to create Xaman sign-in payload:', e)
