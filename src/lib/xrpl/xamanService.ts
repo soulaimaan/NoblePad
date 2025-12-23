@@ -73,6 +73,8 @@ export class XamanService {
       }, 3000)
       return
     }
+    
+    console.log('Starting Xumm Subscription for UUID:', uuid)
 
     try {
       // Poll for payload status via our server-side proxy
