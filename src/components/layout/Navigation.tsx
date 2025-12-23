@@ -71,15 +71,22 @@ export function Navigation() {
         </div>
 
         {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden" id="mobile-navigation">
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-noble-gray/50 rounded-lg mt-2"
-              style={{ backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
+        <div 
+          id="mobile-navigation"
+          className={`md:hidden fixed left-0 right-0 top-16 z-40 transition-all duration-300 ease-in-out ${
+            isMenuOpen 
+              ? 'opacity-100 translate-y-0 pointer-events-auto' 
+              : 'opacity-0 -translate-y-2 pointer-events-none'
+          }`}
+        >
+          <div className="mx-4 mt-2 bg-noble-gray/95 border border-noble-gold/20 rounded-xl shadow-2xl overflow-hidden"
+            style={{ backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
+            <div className="py-2">
               {navigationItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="block px-3 py-2 text-noble-gold/80 hover:text-noble-gold transition-colors duration-200 text-sm font-medium"
+                  className="block px-6 py-3 text-noble-gold/90 hover:text-noble-gold hover:bg-noble-gold/10 transition-colors duration-200 text-base font-medium border-b border-noble-gold/10 last:border-b-0"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
@@ -87,7 +94,7 @@ export function Navigation() {
               ))}
             </div>
           </div>
-        )}
+        </div>
       </div>
     </nav>
   )
