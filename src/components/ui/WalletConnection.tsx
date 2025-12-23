@@ -99,36 +99,38 @@ export function WalletInfo() {
   if (!isClient || !address) return null
 
   return (
-    <div className="flex items-center gap-3 bg-noble-gray/40 border border-noble-gold/20 rounded-lg px-3 py-1.5 hover:bg-noble-gray/60 transition-colors">
+    <div className="flex items-center gap-1 sm:gap-3 bg-noble-gray/40 border border-noble-gold/20 rounded-lg px-2 sm:px-3 py-1.5 hover:bg-noble-gray/60 transition-colors">
       
-      {/* Network Badge */}
+      {/* Network Badge - always visible but smaller on mobile */}
       <div className={`
-        flex items-center justify-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider
+        flex items-center justify-center px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-bold uppercase tracking-wider
         ${chainType === 'xrpl' ? 'bg-black text-white border border-white/10' : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'}
       `}>
-          {chainType === 'xrpl' ? 'XRPL' : 'EVM'}
+          {chainType === 'xrpl' ? 'XRP' : 'EVM'}
       </div>
 
-      <div className="flex flex-col items-end">
-        <span className="text-sm font-bold text-noble-gold">
+      {/* Balance + Address - hidden on very small screens */}
+      <div className="hidden xs:flex flex-col items-end">
+        <span className="text-xs sm:text-sm font-bold text-noble-gold">
             {parseFloat(balance.formatted).toFixed(2)} {balance.symbol}
         </span>
-        <span className="text-[10px] text-gray-400 font-mono">
+        <span className="text-[9px] sm:text-[10px] text-gray-400 font-mono">
           {address && typeof address === 'string' && !address.includes('[object') 
             ? `${address.slice(0, 4)}...${address.slice(-4)}` 
             : ''}
         </span>
       </div>
 
-      <div className="h-6 w-px bg-white/10 mx-1" />
+      <div className="hidden xs:block h-6 w-px bg-white/10 mx-1" />
 
       <Button 
         variant="ghost" 
         size="sm"
-        className="h-6 px-2 text-xs hover:bg-red-500/20 hover:text-red-400"
+        className="h-6 px-1.5 sm:px-2 text-[10px] sm:text-xs hover:bg-red-500/20 hover:text-red-400"
         onClick={() => disconnect()}
       >
-        Disconnect
+        <span className="hidden sm:inline">Disconnect</span>
+        <span className="sm:hidden">✕</span>
       </Button>
     </div>
   )

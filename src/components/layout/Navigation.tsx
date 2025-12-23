@@ -52,13 +52,11 @@ export function Navigation() {
             ))}
           </div>
 
-          {/* Wallet Connection */}
-          <div className="flex items-center space-x-4">
-            <WalletButton />
-
-            {/* Mobile menu button */}
+          {/* Right side - Menu button first (mobile only), then wallet */}
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            {/* Mobile menu button - comes BEFORE wallet so it's always visible */}
             <button
-              className="md:hidden text-noble-gold"
+              className="md:hidden text-noble-gold p-2 -mr-1"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               title={isMenuOpen ? "Close mobile menu" : "Open mobile menu"}
               aria-label={isMenuOpen ? "Close mobile menu" : "Open mobile menu"}
@@ -67,6 +65,9 @@ export function Navigation() {
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
+
+            {/* Wallet Connection */}
+            <WalletButton />
           </div>
         </div>
 
