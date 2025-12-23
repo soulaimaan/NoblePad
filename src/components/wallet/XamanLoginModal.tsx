@@ -72,6 +72,11 @@ export function XamanLoginModal({ isOpen, onClose, qrUrl, status }: XamanLoginMo
             <p className="text-xs text-noble-gold/50 px-4">
               Status: <span className={isError ? 'text-red-400' : 'text-noble-gold/80'}>{status}</span>
             </p>
+            {qrUrl && (
+                <p className="text-[10px] text-noble-gold/30 font-mono mt-1">
+                    Debug Session ID: {qrUrl.split('/').pop()?.split('?')[0]?.slice(0, 8) || '...'}
+                </p>
+            )}
           </div>
 
           <div className="pt-4 w-full">
