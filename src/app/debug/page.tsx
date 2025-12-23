@@ -1,9 +1,7 @@
 'use client'
 
-import { MetaMaskDebugger } from '@/components/debug/MetaMaskDebugger'
-import { MetaMaskConnectionFixer } from '@/components/debug/MetaMaskConnectionFixer'
-import { WalletDetector } from '@/components/debug/WalletDetector'
 import { ManualMetaMaskConnector } from '@/components/debug/ManualMetaMaskConnector'
+import { WalletDetector } from '@/components/debug/WalletDetector'
 
 export default function DebugPage() {
   return (
@@ -21,8 +19,6 @@ export default function DebugPage() {
         <div className="space-y-8">
           <ManualMetaMaskConnector />
           <WalletDetector />
-          <MetaMaskConnectionFixer />
-          <MetaMaskDebugger />
         </div>
       </div>
     </div>
