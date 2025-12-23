@@ -21,7 +21,8 @@ export async function GET(
       headers: {
         'X-API-Key': XUMM_API_KEY,
         'X-API-Secret': XUMM_API_SECRET
-      }
+      },
+      cache: 'no-store'
     })
 
     if (!response.ok) {
