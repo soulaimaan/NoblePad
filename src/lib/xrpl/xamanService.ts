@@ -5,6 +5,10 @@ import { XRPL_NETWORKS, XRPL_TOKENS } from './constants'
 
 const xummApiKey = process.env.NEXT_PUBLIC_XUMM_API_KEY || ''
 
+if (typeof window !== 'undefined' && !xummApiKey) {
+    console.warn('⚠️ NEXT_PUBLIC_XUMM_API_KEY is missing. Xaman connection will run in simulation mode.')
+}
+
 export interface XamanUser {
   account: string
   name?: string
@@ -189,6 +193,28 @@ The Xaman API rejected the connection. This usually means:
 
     const created = await sdk.payload?.create(payload as any)
     return created
+  }
+
+  async createSignInPayload() {
+    const sdk = this.getSdk()
+    if (!sdk) {
+        return { 
+            created: { 
+                refs: { qr_png: 'https://placehold.co/200x200?text=Simulation+QR' } 
+            },
+            payload: { uuid: 'simulation' }
+        }
+    }
+
+    return await sdk.payload?.create({
+        TransactionType: 'SignIn'
+    } as any)
+  }
+
+  async subscribeToPayload(uuid: string, onEvent: (event: any) => void) {
+    const sdk = this.getSdk()
+    if (!sdk) return null
+    return await sdk.payload?.subscribe(uuid, onEvent)
   }
 }
 

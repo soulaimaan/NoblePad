@@ -1,5 +1,6 @@
 'use client'
 
+import { XamanLoginModal } from '@/components/wallet/XamanLoginModal'
 import { xamanService } from '@/lib/xrpl/xamanService'
 import { useAppKit } from '@reown/appkit/react'
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
@@ -33,6 +34,11 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
   const [xrplAddress, setXrplAddress] = useState<string | null>(null)
   const [isXrplConnecting, setIsXrplConnecting] = useState(false)
   const [xrplBalance, setXrplBalance] = useState<string>('0')
+  
+  // Xaman QR Modal State
+  const [showXamanModal, setShowXamanModal] = useState(false)
+  const [xamanQr, setXamanQr] = useState<string | null>(null)
+  const [xamanStatus, setXamanStatus] = useState('Initializing...')
 
   // Unified State
   const [activeWallet, setActiveWallet] = useState<WalletType>(null)
@@ -92,16 +98,46 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
         openAppKit() 
     } else if (type === 'xrpl') {
         setIsXrplConnecting(true)
+        setXamanStatus('Creating sign-in request...')
+        setShowXamanModal(true)
+        
         try {
-            await xamanService.connect()
-            const user = await xamanService.getUser()
-            if (user?.account) {
-                setXrplAddress(user.account)
-                setActiveWallet('xrpl')
-                if (isEvmConnected) disconnectEvm()
+            const payload: any = await xamanService.createSignInPayload()
+            
+            if (payload?.created?.refs?.qr_png) {
+                setXamanQr(payload.created.refs.qr_png)
+                setXamanStatus('Please scan the QR code')
+                
+                // Subscribe to events
+                const subscription = await xamanService.subscribeToPayload(payload.payload.uuid, async (event: any) => {
+                    if (event.data.signed === true) {
+                        setXamanStatus('Verified! Getting account...')
+                        const user = await xamanService.getUser()
+                        if (user?.account) {
+                            setXrplAddress(user.account)
+                            setActiveWallet('xrpl')
+                            setShowXamanModal(false)
+                            if (isEvmConnected) disconnectEvm()
+                        }
+                    } else if (event.data.signed === false || event.data.expired === true) {
+                        setXamanStatus('Request expired or rejected.')
+                        setTimeout(() => setShowXamanModal(false), 2000)
+                    }
+                })
+            } else {
+                // Fallback to legacy authorize
+                await xamanService.connect()
+                const user = await xamanService.getUser()
+                if (user?.account) {
+                    setXrplAddress(user.account)
+                    setActiveWallet('xrpl')
+                    setShowXamanModal(false)
+                }
             }
         } catch (e) {
             console.error("XRPL Connect Error", e)
+            setXamanStatus('Connection failed.')
+            setTimeout(() => setShowXamanModal(false), 2000)
         } finally {
             setIsXrplConnecting(false)
         }
@@ -146,6 +182,12 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
         balance
     }}>
       {children}
+      <XamanLoginModal 
+        isOpen={showXamanModal} 
+        onClose={() => setShowXamanModal(false)}
+        qrUrl={xamanQr}
+        status={xamanStatus}
+      />
     </UnifiedWalletContext.Provider>
   )
 }
