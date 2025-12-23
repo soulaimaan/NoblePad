@@ -89,8 +89,6 @@ export class XamanService {
           }
 
           const data = await response.json()
-
-          const data = await response.json()
           console.log('Xumm Status Check:', { resolved: data.meta?.resolved, signed: data.meta?.signed })
 
           if (data.meta?.resolved || data.meta?.signed) {
