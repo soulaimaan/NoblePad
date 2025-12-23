@@ -2,29 +2,10 @@
 
 import { XRPL_NETWORKS, XRPL_TOKENS } from './constants'
 
-const xummApiKey = process.env.NEXT_PUBLIC_XUMM_API_KEY || ''
-const xummApiSecret = process.env.NEXT_PUBLIC_XUMM_API_SECRET || ''
-
-if (typeof window !== 'undefined' && !xummApiKey) {
-    console.warn('⚠️ NEXT_PUBLIC_XUMM_API_KEY is missing. Xaman connection will run in simulation mode.')
-}
-
 export interface XamanUser {
   account: string
   name?: string
   token?: string
-}
-
-export interface XummPayloadResponse {
-  uuid: string
-  next: {
-    always: string
-  }
-  refs: {
-    qr_png: string
-    qr_matrix: string
-    websocket_status: string
-  }
 }
 
 export class XamanService {
@@ -40,29 +21,18 @@ export class XamanService {
     }
   }
 
-  getInitError() {
-    if (!xummApiKey) return 'API Key not configured'
+  getInitError(): string | null {
+    // No client-side API key check needed anymore since we use server-side proxy
     return null
   }
 
-  async createSignInPayload(): Promise<{ uuid: string; qrUrl: string; wsUrl: string } | null> {
-    if (!xummApiKey) {
-      console.warn('Xaman: No API key, using simulation mode')
-      return {
-        uuid: 'simulation',
-        qrUrl: 'https://placehold.co/256x256/1a1a2e/d4af37?text=Scan+QR',
-        wsUrl: ''
-      }
-    }
-
+  async createSignInPayload(): Promise<{ uuid: string; qrUrl: string } | null> {
     try {
-      // Use Xumm REST API directly
-      const response = await fetch('https://xumm.app/api/v1/platform/payload', {
+      // Call our server-side proxy instead of Xumm directly
+      const response = await fetch('/api/xumm/payload', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': xummApiKey,
-          'X-API-Secret': xummApiSecret
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           txjson: {
@@ -71,7 +41,7 @@ export class XamanService {
           options: {
             submit: false,
             return_url: {
-              web: window.location.origin
+              web: typeof window !== 'undefined' ? window.location.origin : ''
             }
           }
         })
@@ -79,8 +49,8 @@ export class XamanService {
 
       if (!response.ok) {
         const errorData = await response.json()
-        console.error('Xumm API Error:', errorData)
-        throw new Error(errorData.error?.message || 'Failed to create payload')
+        console.error('Xumm Proxy Error:', errorData)
+        throw new Error(errorData.error || 'Failed to create payload')
       }
 
       const data = await response.json()
@@ -88,8 +58,7 @@ export class XamanService {
 
       return {
         uuid: data.uuid,
-        qrUrl: data.refs.qr_png,
-        wsUrl: data.refs.websocket_status
+        qrUrl: data.refs.qr_png
       }
     } catch (e: any) {
       console.error('Failed to create Xaman sign-in payload:', e)
@@ -99,7 +68,6 @@ export class XamanService {
 
   async subscribeToPayload(uuid: string, onSigned: (account: string) => void, onError: (msg: string) => void) {
     if (uuid === 'simulation') {
-      // Simulate successful sign-in after 3 seconds
       setTimeout(() => {
         onSigned('rSimulatedXRPLAddress12345')
       }, 3000)
@@ -107,15 +75,10 @@ export class XamanService {
     }
 
     try {
-      // Poll for payload status instead of WebSocket (more reliable)
+      // Poll for payload status via our server-side proxy
       const pollInterval = setInterval(async () => {
         try {
-          const response = await fetch(`https://xumm.app/api/v1/platform/payload/${uuid}`, {
-            headers: {
-              'X-API-Key': xummApiKey,
-              'X-API-Secret': xummApiSecret
-            }
-          })
+          const response = await fetch(`/api/xumm/payload/${uuid}`)
 
           if (!response.ok) {
             clearInterval(pollInterval)
@@ -125,14 +88,18 @@ export class XamanService {
 
           const data = await response.json()
 
-          if (data.meta.resolved) {
+          if (data.meta?.resolved) {
             clearInterval(pollInterval)
             
             if (data.meta.signed) {
-              const account = data.response.account
-              this._connectedAccount = account
-              localStorage.setItem('xaman_account', account)
-              onSigned(account)
+              const account = data.response?.account
+              if (account) {
+                this._connectedAccount = account
+                localStorage.setItem('xaman_account', account)
+                onSigned(account)
+              } else {
+                onError('No account in response')
+              }
             } else {
               onError('Sign-in was rejected or expired')
             }
@@ -199,7 +166,7 @@ export class XamanService {
   }
 
   async getBelgraveBalance(address: string): Promise<string> {
-     try {
+    try {
       const response = await fetch(XRPL_NETWORKS.MAINNET, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -210,11 +177,11 @@ export class XamanService {
       })
       const data = await response.json()
       if (data.result && data.result.lines) {
-          const belgraveLine = data.result.lines.find((line: any) => 
-            line.currency === XRPL_TOKENS.BELGRAVE.currency && 
-            line.account === XRPL_TOKENS.BELGRAVE.issuer
-          )
-          return belgraveLine ? belgraveLine.balance : '0'
+        const belgraveLine = data.result.lines.find((line: any) => 
+          line.currency === XRPL_TOKENS.BELGRAVE.currency && 
+          line.account === XRPL_TOKENS.BELGRAVE.issuer
+        )
+        return belgraveLine ? belgraveLine.balance : '0'
       }
       return '0'
     } catch (e) {
