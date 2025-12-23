@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Clock, Plus, Trash2, DollarSign, Calendar, Lock, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
-import { SUPPORTED_CHAINS, getChainById, PRESALE_REQUIREMENTS } from '@/lib/chains'
+import { getChainById } from '@/lib/chains'
+import { Plus, Timer, Trash2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 interface PresaleSetupStepProps {
   formData: any
@@ -21,6 +21,28 @@ export function PresaleSetupStep({ formData, updateFormData }: PresaleSetupStepP
     presaleProgress: 0,
     estimatedLiquidity: '0'
   })
+
+  // Get native currency symbol based on selected chain
+  const getNativeCurrency = () => {
+    const chainValue = formData.chainId?.toString() || 'BSC'
+    const currencyMap: Record<string, string> = {
+      'BSC': 'BNB',
+      'ETH': 'ETH',
+      'POLYGON': 'MATIC',
+      'ARB': 'ETH',
+      'BASE': 'ETH',
+      'SOL': 'SOL',
+      'XRPL': 'XRP',
+      '1': 'ETH',      // Ethereum mainnet
+      '56': 'BNB',     // BSC
+      '137': 'MATIC',  // Polygon
+      '42161': 'ETH',  // Arbitrum
+      '8453': 'ETH',   // Base
+    }
+    return currencyMap[chainValue] || 'BNB'
+  }
+
+  const currency = getNativeCurrency()
 
   // Update chain when formData changes
   useEffect(() => {
@@ -81,7 +103,7 @@ export function PresaleSetupStep({ formData, updateFormData }: PresaleSetupStepP
     <div>
       <div className="flex items-center space-x-3 mb-6">
         <div className="w-8 h-8 bg-noble-gold rounded-full flex items-center justify-center">
-          <Clock className="text-noble-black" size={16} />
+          <Timer className="text-noble-black" size={16} />
         </div>
         <div>
           <h2 className="text-xl font-semibold text-noble-gold">Presale Setup</h2>
@@ -93,38 +115,40 @@ export function PresaleSetupStep({ formData, updateFormData }: PresaleSetupStepP
         {/* Basic Presale Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-noble-gold/70 mb-2">
-              Soft Cap (BNB) *
+            <label htmlFor="softCap" className="block text-sm font-medium text-noble-gold/70 mb-2">
+              Soft Cap ({currency}) *
             </label>
             <input
-              type="number"
+              id="softCap"
+              type="text"
+              title="Soft Cap"
+              placeholder="e.g. 50"
+              className="w-full bg-slate-700 border-slate-600 rounded-lg py-2 px-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={formData.softCap}
               onChange={(e) => updateFormData({ softCap: e.target.value })}
-              className="noble-input w-full"
-              placeholder="e.g., 250"
-              step="0.1"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-noble-gold/70 mb-2">
-              Hard Cap (BNB) *
+            <label htmlFor="hardCap" className="block text-sm font-medium text-noble-gold/70 mb-2">
+              Hard Cap ({currency}) *
             </label>
-            <input
-              type="number"
-              value={formData.hardCap}
-              onChange={(e) => updateFormData({ hardCap: e.target.value })}
-              className="noble-input w-full"
-              placeholder="e.g., 500"
-              step="0.1"
-              required
-            />
+                <input
+                  id="hardCap"
+                  type="text"
+                  title="Hard Cap"
+                  placeholder="e.g. 100"
+                  className="w-full bg-slate-700 border-slate-600 rounded-lg py-2 px-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={formData.hardCap}
+                  onChange={(e) => updateFormData({ hardCap: e.target.value })}
+                  required
+                />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-noble-gold/70 mb-2">
-              Token Price (per BNB) *
+              Token Price (per {currency}) *
             </label>
             <input
               type="number"
@@ -135,15 +159,22 @@ export function PresaleSetupStep({ formData, updateFormData }: PresaleSetupStepP
               required
             />
             <p className="text-xs text-noble-gold/50 mt-1">
-              How many tokens per 1 BNB
+              How many tokens per 1 {currency}
             </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-noble-gold/70 mb-2">
+            <label htmlFor="network" className="block text-sm font-medium text-noble-gold/70 mb-2">
               Blockchain *
             </label>
-            <select className="noble-input w-full">
+                <select
+                  id="network"
+                  title="Network"
+                  className="w-full bg-slate-700 border-slate-600 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={formData.chainId}
+                  onChange={(e) => updateFormData({ chainId: Number(e.target.value) })}
+                  required
+                >
               <option value="BSC">Binance Smart Chain (BSC)</option>
               <option value="ETH">Ethereum</option>
               <option value="POLYGON">Polygon</option>
@@ -158,7 +189,7 @@ export function PresaleSetupStep({ formData, updateFormData }: PresaleSetupStepP
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-noble-gold/70 mb-2">
-              Min Contribution (BNB) *
+              Min Contribution ({currency}) *
             </label>
             <input
               type="number"
@@ -173,10 +204,12 @@ export function PresaleSetupStep({ formData, updateFormData }: PresaleSetupStepP
 
           <div>
             <label className="block text-sm font-medium text-noble-gold/70 mb-2">
-              Max Contribution (BNB) *
+              Max Contribution ({currency}) *
             </label>
             <input
+              id="maxContribution"
               type="number"
+              title="Max Contribution"
               value={formData.maxContribution}
               onChange={(e) => updateFormData({ maxContribution: e.target.value })}
               className="noble-input w-full"
@@ -194,7 +227,9 @@ export function PresaleSetupStep({ formData, updateFormData }: PresaleSetupStepP
               Start Date & Time *
             </label>
             <input
+              id="startDate"
               type="datetime-local"
+              title="Start Date & Time"
               value={formData.startDate}
               onChange={(e) => updateFormData({ startDate: e.target.value })}
               className="noble-input w-full"
@@ -207,7 +242,9 @@ export function PresaleSetupStep({ formData, updateFormData }: PresaleSetupStepP
               End Date & Time *
             </label>
             <input
+              id="endDate"
               type="datetime-local"
+              title="End Date & Time"
               value={formData.endDate}
               onChange={(e) => updateFormData({ endDate: e.target.value })}
               className="noble-input w-full"
@@ -225,6 +262,8 @@ export function PresaleSetupStep({ formData, updateFormData }: PresaleSetupStepP
                 Liquidity Percentage *
               </label>
               <select 
+                id="liquidityPercentage"
+                title="Liquidity Percentage"
                 value={formData.liquidityPercentage}
                 onChange={(e) => updateFormData({ liquidityPercentage: e.target.value })}
                 className="noble-input w-full"
@@ -242,6 +281,8 @@ export function PresaleSetupStep({ formData, updateFormData }: PresaleSetupStepP
                 Liquidity Lock Period *
               </label>
               <select 
+                id="liquidityLockMonths"
+                title="Liquidity Lock Period"
                 value={formData.liquidityLockMonths}
                 onChange={(e) => updateFormData({ liquidityLockMonths: e.target.value })}
                 className="noble-input w-full"

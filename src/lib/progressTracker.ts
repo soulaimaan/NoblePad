@@ -76,9 +76,9 @@ export class RealProgressTracker {
       
       // Frontend Components
       await this.checkComponent('Wallet Integration', 'frontend', [
-        'src/components/wallet/MultiChainWalletProvider.tsx',
-        'src/lib/web3/wagmi-config.ts',
-        'src/components/ui/VanillaWalletButton.tsx'
+        'src/components/providers/UnifiedWalletProvider.tsx',
+        'src/lib/xrpl/xamanService.ts',
+        'src/components/ui/WalletConnection.tsx'
       ], 'Multi-chain wallet connection'),
       
       await this.checkComponent('Token Creation UI', 'frontend', [

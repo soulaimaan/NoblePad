@@ -1,8 +1,13 @@
-import { Navigation } from '@/components/layout/Navigation'
-import { RainbowProvider } from '@/components/providers/RainbowProvider'
-import { SolanaProvider } from '@/components/providers/SolanaProvider'
-import { SupabaseProvider } from '@/components/providers/SupabaseProvider'
-import { VanillaWeb3Provider } from '@/components/providers/VanillaWeb3Provider'
+import dynamic from 'next/dynamic'
+
+const Navigation = dynamic(() => import('@/components/layout/Navigation').then(mod => mod.Navigation), { ssr: false })
+const Web3Provider = dynamic(() => import('@/components/providers/Web3Provider').then(mod => mod.Web3Provider), { ssr: false })
+const UnifiedWalletProvider = dynamic(() => import('@/components/providers/UnifiedWalletProvider').then(mod => mod.UnifiedWalletProvider), { ssr: false })
+const TierProvider = dynamic(() => import('@/components/providers/TierProvider').then(mod => mod.TierProvider), { ssr: false })
+const SolanaProvider = dynamic(() => import('@/components/providers/SolanaProvider').then(mod => mod.SolanaProvider), { ssr: false })
+const SupabaseProvider = dynamic(() => import('@/components/providers/SupabaseProvider').then(mod => mod.SupabaseProvider), { ssr: false })
+
+
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
@@ -24,18 +29,20 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={inter.className}>
         <SupabaseProvider>
-          <RainbowProvider>
-            <VanillaWeb3Provider>
-            <SolanaProvider>
-              <div className="min-h-screen bg-noble-black">
-                <Navigation />
-                <main className="pt-20">
-                  {children}
-                </main>
-              </div>
-            </SolanaProvider>
-            </VanillaWeb3Provider>
-          </RainbowProvider>
+          <Web3Provider>
+            <UnifiedWalletProvider>
+              <TierProvider>
+                <SolanaProvider>
+                  <div className="min-h-screen bg-noble-black">
+                    <Navigation />
+                    <main className="pt-20">
+                      {children}
+                    </main>
+                  </div>
+                </SolanaProvider>
+              </TierProvider>
+            </UnifiedWalletProvider>
+          </Web3Provider>
         </SupabaseProvider>
       </body>
     </html>

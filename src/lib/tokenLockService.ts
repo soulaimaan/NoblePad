@@ -1,15 +1,14 @@
 // Token Lock Service - handles all token locking operations
-import { TOKEN_LOCK_ABI, ERC20_ABI, getContractAddress, GAS_LIMITS } from './contracts'
 import { getChainById } from './chains'
-import { 
-  supabase, 
-  db, 
-  handleSupabaseResponse, 
-  safeSupabaseOperation,
-  type TokenLockInsert,
-  type TokenLockRow,
-  type TokenVestingInsert,
-  type TokenVestingRow
+import { ERC20_ABI, GAS_LIMITS, getContractAddress, TOKEN_LOCK_ABI } from './contracts'
+import {
+    handleSupabaseResponse,
+    safeSupabaseOperation,
+    supabase,
+    type TokenLockInsert,
+    type TokenLockRow,
+    type TokenVestingInsert,
+    type TokenVestingRow
 } from './supabaseClient'
 
 export interface TokenLockData {
@@ -55,8 +54,8 @@ export interface VestingInfo {
 
 class TokenLockService {
   private getProvider() {
-    if (typeof window !== 'undefined' && window.ethereum) {
-      return window.ethereum
+    if (typeof window !== 'undefined' && (window as any).ethereum) {
+      return (window as any).ethereum
     }
     throw new Error('No Ethereum provider found')
   }
@@ -139,7 +138,7 @@ class TokenLockService {
 
       // Save vesting schedule if provided
       if (lockData.vestingSchedule && lockData.vestingSchedule.length > 0) {
-        await this.saveVestingSchedule(lockId, lockData.vestingSchedule)
+        await this.saveVestingSchedule(lockId.toString(), lockData.vestingSchedule)
       }
 
       return {
@@ -166,12 +165,12 @@ class TokenLockService {
       const lockInfo = await this.callContract(lockContract, 'getLockInfo', [lockId])
 
       // Get additional info from database
-      const { data: dbInfo } = await supabase
+      const { data: dbInfo } = await (supabase
         .from('token_locks')
         .select('*')
         .eq('lock_id', lockId)
         .eq('chain_id', chainId)
-        .single()
+        .single() as any)
 
       return {
         id: lockId,
@@ -243,7 +242,8 @@ class TokenLockService {
       await this.waitForTransaction(transaction.hash)
 
       // Update database
-      await supabase
+      const supabaseAny: any = supabase
+      await supabaseAny
         .from('token_locks')
         .update({
           status: 'unlocked',
@@ -269,17 +269,17 @@ class TokenLockService {
   // Get locks by owner
   async getLocksByOwner(ownerAddress: string, chainId: number): Promise<TokenLockInfo[]> {
     try {
-      const { data: locks } = await supabase
+      const { data: locks } = await (supabase
         .from('token_locks')
         .select('*')
         .or(`owner_address.eq.${ownerAddress.toLowerCase()},beneficiary_address.eq.${ownerAddress.toLowerCase()}`)
         .eq('chain_id', chainId)
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: false }) as any)
 
       if (!locks) return []
 
       return Promise.all(
-        locks.map(async (lock) => {
+        locks.map(async (lock: any) => {
           const onChainInfo = await this.getTokenLock(lock.lock_id, chainId)
           return onChainInfo || {
             id: lock.lock_id,
@@ -307,17 +307,17 @@ class TokenLockService {
   // Get vesting schedule for a lock
   async getVestingSchedule(lockId: number): Promise<VestingInfo | null> {
     try {
-      const { data: schedule } = await supabase
+      const { data: schedule } = await (supabase
         .from('token_vesting')
         .select('*')
         .eq('lock_id', lockId)
-        .order('unlock_time', { ascending: true })
+        .order('unlock_time', { ascending: true }) as any)
 
       if (!schedule || schedule.length === 0) return null
 
       return {
         lockId,
-        schedule: schedule.map(v => ({
+        schedule: schedule.map((v: any) => ({
           percentage: v.percentage,
           unlockTime: Math.floor(new Date(v.unlock_time).getTime() / 1000),
           description: v.description,
@@ -369,7 +369,7 @@ class TokenLockService {
     try {
       const tokenContract = await this.createContract(tokenAddress, ERC20_ABI)
       
-      const accounts = await window.ethereum?.request({ method: 'eth_accounts' })
+      const accounts = await (this.getProvider() as any).request({ method: 'eth_accounts' })
       const userAddress = accounts?.[0]
 
       const [name, symbol, decimals, totalSupply, userBalance] = await Promise.all([
@@ -403,7 +403,7 @@ class TokenLockService {
     try {
       const tokenContract = await this.createContract(tokenAddress, ERC20_ABI)
       
-      const accounts = await window.ethereum?.request({ method: 'eth_accounts' })
+      const accounts = await (this.getProvider() as any).request({ method: 'eth_accounts' })
       const userAddress = accounts?.[0]
       
       if (!userAddress) {
@@ -437,17 +437,17 @@ class TokenLockService {
   }
 
   private async saveLockToDatabase(lockData: TokenLockInsert): Promise<TokenLockRow> {
-    const response = await supabase
+    const response = await (supabase
       .from('token_locks')
-      .insert(lockData)
+      .insert(lockData as any)
       .select()
-      .single()
+      .single() as any)
 
-    const savedLock = handleSupabaseResponse(response, 'Save token lock to database')
+    const savedLock = handleSupabaseResponse(response as any, 'Save token lock to database')
 
     // Log the creation event
     await this.logTokenLockEvent(
-      savedLock.id,
+      (savedLock as any).lock_id || (savedLock as any).id,
       'lock_created',
       {
         token_address: lockData.token_address,
@@ -459,7 +459,7 @@ class TokenLockService {
       lockData.owner_address
     )
 
-    return savedLock
+    return savedLock as any
   }
 
   private async saveVestingSchedule(lockId: string, schedule: any[]): Promise<TokenVestingRow[]> {
@@ -473,12 +473,12 @@ class TokenLockService {
       claimed: false,
     }))
 
-    const response = await supabase
+    const response = await (supabase
       .from('token_vesting')
-      .insert(vestingData)
-      .select()
+      .insert(vestingData as any)
+      .select() as any)
 
-    return handleSupabaseResponse(response, 'Save vesting schedule to database')
+    return handleSupabaseResponse(response as any, 'Save vesting schedule to database')
   }
 
   private async logTokenLockEvent(
@@ -488,8 +488,8 @@ class TokenLockService {
     transactionHash?: string,
     userAddress?: string
   ): Promise<void> {
-    await safeSupabaseOperation(
-      () => supabase
+    await (safeSupabaseOperation(
+      () => (supabase
         .from('token_lock_events')
         .insert({
           lock_id: lockId,
@@ -497,9 +497,9 @@ class TokenLockService {
           event_data: eventData,
           transaction_hash: transactionHash,
           user_address: userAddress,
-        }),
+        } as any) as any),
       'Log token lock event'
-    )
+    ) as any) as Promise<void>
   }
 
   // Simplified contract interaction methods (same as presaleService)
@@ -509,7 +509,7 @@ class TokenLockService {
 
   private async callContract(contract: any, method: string, params: any[] = []) {
     const provider = this.getProvider()
-    return provider.request({
+    return (provider as any).request({
       method: 'eth_call',
       params: [{ to: contract.address, data: '0x' }, 'latest']
     })
@@ -517,7 +517,7 @@ class TokenLockService {
 
   private async executeTransaction(contract: any, method: string, params: any[], options: any = {}) {
     const provider = this.getProvider()
-    return provider.request({
+    return (provider as any).request({
       method: 'eth_sendTransaction',
       params: [{ to: contract.address, data: '0x', ...options }]
     })
@@ -530,13 +530,13 @@ class TokenLockService {
     if (!chain) throw new Error('Unsupported chain')
 
     try {
-      await provider.request({
+      await (provider as any).request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: `0x${chainId.toString(16)}` }]
       })
     } catch (error: any) {
       if (error.code === 4902) {
-        await provider.request({
+        await (provider as any).request({
           method: 'wallet_addEthereumChain',
           params: [{
             chainId: `0x${chainId.toString(16)}`,

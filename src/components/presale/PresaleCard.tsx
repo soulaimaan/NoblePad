@@ -19,6 +19,7 @@ interface PresaleData {
   status: PresaleStatus
   chain: string
   liquidityLock: string
+  aiScore?: number
 }
 
 interface PresaleCardProps {
@@ -27,11 +28,20 @@ interface PresaleCardProps {
 
 export function PresaleCard({ presale }: PresaleCardProps) {
   const [timeLeft, setTimeLeft] = useState<string>('')
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!presale?.endTime) return
+
     const updateTime = () => {
       const now = new Date()
-      const timeDiff = presale.endTime.getTime() - now.getTime()
+      // Safely handle potential date string vs Date object mismatch
+      const endTime = presale.endTime instanceof Date ? presale.endTime : new Date(presale.endTime)
+      const timeDiff = endTime.getTime() - now.getTime()
       
       if (timeDiff <= 0) {
         setTimeLeft('Ended')
@@ -48,7 +58,7 @@ export function PresaleCard({ presale }: PresaleCardProps) {
     const interval = setInterval(updateTime, 60000) // Update every minute
     
     return () => clearInterval(interval)
-  }, [presale.endTime])
+  }, [presale?.endTime])
 
   const getStatusColor = (status: PresaleStatus) => {
     switch (status) {
@@ -68,6 +78,9 @@ export function PresaleCard({ presale }: PresaleCardProps) {
     }
   }
 
+  // Defensive render: check if presale exists
+  if (!presale) return null
+
   return (
     <div className="noble-card hover:shadow-xl hover:shadow-noble-gold/10 transition-all duration-300 group">
       {/* Header */}
@@ -75,7 +88,7 @@ export function PresaleCard({ presale }: PresaleCardProps) {
         <div className="flex items-center space-x-3">
           <div className="w-12 h-12 bg-noble-gold/10 rounded-lg flex items-center justify-center">
             <span className="text-noble-gold font-bold text-lg">
-              {presale.name.charAt(0)}
+              {presale.name ? presale.name.charAt(0) : '?'}
             </span>
           </div>
           <div>
@@ -83,26 +96,28 @@ export function PresaleCard({ presale }: PresaleCardProps) {
             <span className="text-sm text-noble-gold/60">{presale.chain}</span>
           </div>
         </div>
-        <span className={`px-2 py-1 rounded-md text-xs font-medium ${getStatusBadge(presale.status)}`}>
-          {presale.status.toUpperCase()}
-        </span>
+        {presale.status && (
+          <span className={`px-2 py-1 rounded-md text-xs font-medium ${getStatusBadge(presale.status)}`}>
+            {presale.status.toUpperCase()}
+          </span>
+        )}
       </div>
 
       {/* Progress */}
       <div className="mb-4">
         <div className="flex justify-between text-sm text-noble-gold/70 mb-2">
           <span>Progress</span>
-          <span>{presale.progress}%</span>
+          <span>{presale.progress || 0}%</span>
         </div>
         <div className="w-full bg-noble-gray rounded-full h-2">
           <div 
             className="bg-noble-gold-gradient h-2 rounded-full transition-all duration-500"
-            style={{ width: `${presale.progress}%` }}
+            style={{ width: `${presale.progress || 0}%` }}
           />
         </div>
         <div className="flex justify-between text-sm text-noble-gold/70 mt-2">
-          <span>{presale.raised} raised</span>
-          <span>{presale.hardCap} goal</span>
+          <span>{presale.raised || '0'} raised</span>
+          <span>{presale.hardCap || '0'} goal</span>
         </div>
       </div>
 
@@ -113,7 +128,7 @@ export function PresaleCard({ presale }: PresaleCardProps) {
             <TrendingUp size={16} className="text-noble-gold/60" />
             <span className="text-sm text-noble-gold/70">Soft Cap</span>
           </div>
-          <span className="text-sm text-noble-gold">{presale.softCap}</span>
+          <span className="text-sm text-noble-gold">{presale.softCap || '-'}</span>
         </div>
         
         <div className="flex items-center justify-between">
@@ -121,7 +136,7 @@ export function PresaleCard({ presale }: PresaleCardProps) {
             <Shield size={16} className="text-noble-gold/60" />
             <span className="text-sm text-noble-gold/70">Liquidity Lock</span>
           </div>
-          <span className="text-sm text-noble-gold">{presale.liquidityLock}</span>
+          <span className="text-sm text-noble-gold">{presale.liquidityLock || '-'}</span>
         </div>
         
         <div className="flex items-center justify-between">
@@ -130,9 +145,23 @@ export function PresaleCard({ presale }: PresaleCardProps) {
             <span className="text-sm text-noble-gold/70">Time Left</span>
           </div>
           <span className={`text-sm font-medium ${getStatusColor(presale.status)}`}>
-            {timeLeft}
+            {isMounted ? timeLeft : 'Loading...'}
           </span>
         </div>
+
+        {/* AI Score Badge */}
+        {presale.aiScore && (
+          <div className="flex items-center justify-between pt-2 mt-2 border-t border-noble-gold/10">
+            <div className="flex items-center space-x-2">
+              <span className="text-xs font-bold uppercase tracking-tight text-noble-gold/40">Noble AI Security</span>
+            </div>
+            <div className={`px-2 py-0.5 rounded text-xs font-black ${
+              presale.aiScore >= 8.5 ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
+            }`}>
+              {presale.aiScore}/10
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Action Button */}

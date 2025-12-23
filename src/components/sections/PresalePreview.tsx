@@ -18,7 +18,8 @@ export function PresalePreview() {
       endTime: new Date('2024-12-31'), // 5 days from now
       status: 'live' as const,
       chain: 'BSC',
-      liquidityLock: '12 months'
+      liquidityLock: '12 months',
+      aiScore: 8.8
     },
     {
       id: '2',
@@ -31,7 +32,8 @@ export function PresalePreview() {
       endTime: new Date('2024-12-25'), // 3 days from now
       status: 'live' as const,
       chain: 'BSC',
-      liquidityLock: '6 months'
+      liquidityLock: '6 months',
+      aiScore: 7.2
     },
     {
       id: '3',
@@ -44,7 +46,8 @@ export function PresalePreview() {
       endTime: new Date('2025-01-15'), // 7 days from now
       status: 'upcoming' as const,
       chain: 'ETH',
-      liquidityLock: '18 months'
+      liquidityLock: '18 months',
+      aiScore: 9.1
     }
   ]
 

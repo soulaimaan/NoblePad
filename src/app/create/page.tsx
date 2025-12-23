@@ -1,18 +1,29 @@
 'use client'
 
-import { useState } from 'react'
-import { useAccount } from '@/hooks/useCompatibleAccount'
 import { CreatePresaleForm } from '@/components/create/CreatePresaleForm'
 import { CreatePresaleSteps } from '@/components/create/CreatePresaleSteps'
 import { PresaleCreationTest } from '@/components/test/PresaleCreationTest'
-import { Shield, AlertTriangle, TestTube } from 'lucide-react'
+import { useAccount } from '@/hooks/useCompatibleAccount'
+import { AlertTriangle, Shield, TestTube } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 export default function CreatePresalePage() {
   const { isConnected } = useAccount()
   const [currentStep, setCurrentStep] = useState(1)
   const [showTest, setShowTest] = useState(false)
 
-  if (!isConnected) {
+  // Hydration fix
+  const [isMounted, setIsMounted] = useState(false)
+  
+  // Use useEffect to ensure we are on the client
+  // avoiding hydration mismatch between server (which assumes not connected)
+  // and client (which might be connected via local storage)
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  // Only show connect wallet screen AFTER mount to prevent hydration mismatch
+  if (isMounted && !isConnected) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center max-w-md">
@@ -24,6 +35,19 @@ export default function CreatePresalePage() {
             You need to connect your wallet to create a presale project on NoblePad.
           </p>
         </div>
+      </div>
+    )
+  }
+
+  // Show loading placeholder during SSR/Hydration if not connected yet
+  // This matches what the server renders (or at least avoids the mismatch of "Connect Wallet" vs "Content")
+  if (!isMounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-noble-black">
+         <div className="text-center">
+           <div className="w-12 h-12 border-2 border-noble-gold border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+           <p className="text-noble-gold/70">Loading...</p>
+         </div>
       </div>
     )
   }

@@ -1,21 +1,20 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
-import { useVanillaWeb3 } from '@/components/providers/VanillaWeb3Provider'
+import { useAccount } from '@/hooks/useCompatibleAccount'
+import { getMainnetChains, type Chain } from '@/lib/chains'
 import { tokenLockService, type TokenLockData } from '@/lib/tokenLockService'
-import { SUPPORTED_CHAINS, getMainnetChains, type Chain } from '@/lib/chains'
-import { 
-  Lock, 
-  Calendar, 
-  Users, 
-  AlertTriangle, 
-  CheckCircle, 
-  Loader,
-  Plus,
-  Trash2,
-  Network 
+import {
+    AlertTriangle,
+    Calendar,
+    CheckCircle,
+    Loader,
+    Lock,
+    Network,
+    Plus,
+    Trash2
 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 interface CreateTokenLockProps {
   onLockCreated?: (lockId: number) => void
@@ -23,7 +22,8 @@ interface CreateTokenLockProps {
 }
 
 export function CreateTokenLock({ onLockCreated, onCancel }: CreateTokenLockProps) {
-  const { wallet } = useVanillaWeb3()
+  const { address, isConnected } = useAccount()
+  const walletAddress = address
   const [isLoading, setIsLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
   
@@ -45,7 +45,7 @@ export function CreateTokenLock({ onLockCreated, onCancel }: CreateTokenLockProp
     unlockDate: '',
     description: '',
     lockType: 'team' as 'team' | 'liquidity' | 'marketing' | 'development' | 'advisors' | 'custom',
-    beneficiary: wallet.address || '',
+    beneficiary: walletAddress || '',
     
     // Vesting (optional)
     enableVesting: false,
@@ -58,12 +58,12 @@ export function CreateTokenLock({ onLockCreated, onCancel }: CreateTokenLockProp
     ]
   })
 
-  // Update beneficiary when wallet changes
+  // Update beneficiary when walletAddress changes
   useEffect(() => {
-    if (wallet.address && !formData.beneficiary) {
-      setFormData(prev => ({ ...prev, beneficiary: wallet.address || '' }))
+    if (walletAddress && !formData.beneficiary) {
+      setFormData(prev => ({ ...prev, beneficiary: walletAddress || '' }))
     }
-  }, [wallet.address])
+  }, [walletAddress])
 
   // Validate token when address and chain are provided
   useEffect(() => {
@@ -140,7 +140,7 @@ export function CreateTokenLock({ onLockCreated, onCancel }: CreateTokenLockProp
   }
 
   const handleSubmit = async () => {
-    if (!wallet.address) {
+    if (!walletAddress) {
       alert('Please connect your wallet first')
       return
     }
@@ -166,7 +166,7 @@ export function CreateTokenLock({ onLockCreated, onCancel }: CreateTokenLockProp
       const result = await tokenLockService.createTokenLock(
         lockData,
         formData.chainId,
-        wallet.address
+        walletAddress
       )
 
       if (result.success) {
@@ -208,7 +208,7 @@ export function CreateTokenLock({ onLockCreated, onCancel }: CreateTokenLockProp
       return false
     }
 
-    if (!formData.beneficiary || formData.beneficiary.length !== 42) {
+    if (!formData.beneficiary) {
       alert('Please enter a valid beneficiary address')
       setCurrentStep(2)
       return false
@@ -405,7 +405,7 @@ export function CreateTokenLock({ onLockCreated, onCancel }: CreateTokenLockProp
                 value={formData.beneficiary}
                 onChange={(e) => setFormData(prev => ({ ...prev, beneficiary: e.target.value }))}
                 className="noble-input w-full font-mono text-sm"
-                placeholder="0x... (who can claim the tokens)"
+                placeholder="Receiver address (who can claim the tokens)"
               />
               <p className="text-xs text-noble-gold/50 mt-1">
                 Address that will be able to claim tokens after unlock
@@ -632,7 +632,7 @@ export function CreateTokenLock({ onLockCreated, onCancel }: CreateTokenLockProp
           ) : (
             <Button 
               onClick={handleSubmit} 
-              disabled={isLoading || !wallet.isConnected}
+              disabled={isLoading || !isConnected}
             >
               {isLoading ? (
                 <div className="flex items-center space-x-2">

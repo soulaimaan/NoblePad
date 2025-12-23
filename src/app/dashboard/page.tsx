@@ -132,12 +132,12 @@ export default function DashboardPage() {
                 {address?.slice(0, 10)}...{address?.slice(-8)}
               </p>
             </div>
-            <div className={`px-4 py-2 rounded-lg ${userTier.color.replace('text-', 'bg-')}/20`}>
-              <div className={`text-lg font-semibold ${userTier.color}`}>
-                {userTier.tier} Tier
+            <div className={`px-4 py-2 rounded-lg ${(userTier as any).color.replace('text-', 'bg-')}/20`}>
+              <div className={`text-lg font-semibold ${(userTier as any).color}`}>
+                {(userTier as any).tier} Tier
               </div>
               <div className="text-sm text-noble-gold/70">
-                ${userTier.allocation.toLocaleString()} allocation
+                ${(userTier as any).allocation.toLocaleString()} allocation
               </div>
             </div>
           </div>
@@ -213,7 +213,7 @@ export default function DashboardPage() {
           <div className="noble-card">
             <h3 className="text-xl font-semibold text-noble-gold mb-4">Tier Benefits</h3>
             <div className="space-y-3">
-              {userTier.benefits?.map((benefit, index) => (
+              {(userTier as any).benefits?.map((benefit: string, index: number) => (
                 <div key={index} className="flex items-start space-x-2">
                   <div className="w-2 h-2 bg-noble-gold rounded-full mt-2 flex-shrink-0"></div>
                   <span className="text-sm text-noble-gold/70">{benefit}</span>
@@ -267,7 +267,7 @@ export default function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-noble-gold/20">
-                  {mockCommitments.map((commitment) => (
+                  {mockCommitments.map((commitment: any) => (
                     <tr key={commitment.id} className="hover:bg-noble-gray/30 transition-colors duration-200">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">

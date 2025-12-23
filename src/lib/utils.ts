@@ -44,8 +44,28 @@ export function formatTimeLeft(endTime: Date) {
 }
 
 export function calculateUserTier(stakedAmount: number) {
-  if (stakedAmount >= 10000) return { tier: 'Gold', allocation: 5000, color: 'text-yellow-400' }
-  if (stakedAmount >= 5000) return { tier: 'Silver', allocation: 2500, color: 'text-gray-300' }
-  if (stakedAmount >= 1000) return { tier: 'Bronze', allocation: 1000, color: 'text-orange-400' }
-  return { tier: 'None', allocation: 0, color: 'text-gray-500' }
+  if (stakedAmount >= 10000) return { 
+    tier: 'Gold', 
+    allocation: 5000, 
+    color: 'text-yellow-400',
+    benefits: ['Guaranteed allocation', 'Priority access', 'Early project voting', 'Reduced fees']
+  }
+  if (stakedAmount >= 5000) return { 
+    tier: 'Silver', 
+    allocation: 2500, 
+    color: 'text-gray-300',
+    benefits: ['Top-tier allocation', 'Priority access', 'Community voting rights']
+  }
+  if (stakedAmount >= 1000) return { 
+    tier: 'Bronze', 
+    allocation: 1000, 
+    color: 'text-orange-400',
+    benefits: ['Allocated based on availability', 'Basic project access']
+  }
+  return { 
+    tier: 'None', 
+    allocation: 0, 
+    color: 'text-gray-500',
+    benefits: ['Public sale access only']
+  }
 }

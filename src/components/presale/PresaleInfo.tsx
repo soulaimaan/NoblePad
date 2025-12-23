@@ -1,7 +1,7 @@
 'use client'
 
-import { ExternalLink, FileText, Shield, Users } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { ExternalLink, FileText, Shield, Users } from 'lucide-react'
 
 interface PresaleInfoProps {
   presale: any // Will be properly typed later
@@ -90,15 +90,26 @@ export function PresaleInfo({ presale }: PresaleInfoProps) {
             <div>
               <h4 className="font-medium text-noble-gold mb-2">Contract</h4>
               <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs text-noble-gold/70 break-all">
+                <div className="flex flex-col space-y-1">
+                  <span className="text-xs text-noble-gold/70">
+                    {presale.chain === 'XRPL' ? 'Escrow Destination:' : 'Contract Address:'}
+                  </span>
+                  <span className="text-xs text-noble-gold break-all">
                     {presale.contractAddress}
                   </span>
+                  {presale.chain === 'XRPL' && presale.tokenIssuer && (
+                    <>
+                      <span className="text-xs text-noble-gold/70 mt-2">Token Issuer:</span>
+                      <span className="text-xs text-noble-gold break-all">
+                        {presale.tokenIssuer}
+                      </span>
+                    </>
+                  )}
                   <button 
                     onClick={() => navigator.clipboard.writeText(presale.contractAddress)}
-                    className="text-noble-gold hover:text-noble-gold-light"
+                    className="text-noble-gold hover:text-noble-gold-light mt-1 w-fit text-xs flex items-center gap-1"
                   >
-                    📋
+                    📋 Copy Address
                   </button>
                 </div>
                 {presale.auditReport && (
@@ -106,7 +117,7 @@ export function PresaleInfo({ presale }: PresaleInfoProps) {
                     href={presale.auditReport} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="inline-flex items-center text-xs text-noble-gold hover:text-noble-gold-light"
+                    className="inline-flex items-center text-xs text-noble-gold hover:text-noble-gold-light mt-2"
                   >
                     View Audit Report <ExternalLink size={12} className="ml-1" />
                   </a>

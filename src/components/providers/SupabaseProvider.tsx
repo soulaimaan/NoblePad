@@ -1,8 +1,8 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@supabase/ssr'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { createContext, useContext, useEffect, useState } from 'react'
 
 type SupabaseContext = {
   supabase: SupabaseClient
@@ -10,23 +10,28 @@ type SupabaseContext = {
 
 const Context = createContext<SupabaseContext | undefined>(undefined)
 
-export default function SupabaseProvider({
+export function SupabaseProvider({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const [supabase] = useState(() => createClientComponentClient())
+  const [supabase] = useState(() => 
+    createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+  )
 
   useEffect(() => {
+    if (!supabase?.auth) return
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        // Handle successful authentication
         console.log('User signed in:', session.user)
       }
       if (event === 'SIGNED_OUT') {
-        // Handle sign out
         console.log('User signed out')
       }
     })
@@ -51,4 +56,4 @@ export const useSupabase = () => {
   return context
 }
 
-export { SupabaseProvider }
+export default SupabaseProvider

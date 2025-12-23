@@ -1,272 +1,127 @@
 'use client'
-// NoblePad Staking Redesign
 
-
-import { StakingStats } from '@/components/staking/StakingStats'
+import { useTier } from '@/components/providers/TierProvider'
+import { useUnifiedWallet } from '@/components/providers/UnifiedWalletProvider'
 import { Button } from '@/components/ui/Button'
-import stakingService, { StakingInfo } from '@/lib/stakingService'
-import { ethers } from 'ethers'
-import { Activity, ArrowRight, CheckCircle, Shield } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
-import { useAccount, useWalletClient } from 'wagmi'
-
-// Tier definitions could be moved to a shared config
-const TIERS = [
-    { name: 'Bronze', required: 0, multiplier: '1x', color: 'text-noble-gray/80', bg: 'bg-noble-gray/20' },
-    { name: 'Silver', required: 1000, multiplier: '1.25x', color: 'text-gray-300', bg: 'bg-gray-400/20' },
-    { name: 'Gold', required: 5000, multiplier: '1.5x', color: 'text-yellow-400', bg: 'bg-yellow-400/20' },
-    { name: 'Platinum', required: 20000, multiplier: '2x', color: 'text-cyan-400', bg: 'bg-cyan-400/20' }
-]
+import { belgraveService } from '@/lib/xrpl/belgraveService'
+import { useState } from 'react'
 
 export default function StakingPage() {
-    const { address, isConnected, chainId } = useAccount()
-    const { data: walletClient } = useWalletClient()
-
-    const [activeTab, setActiveTab] = useState<'stake' | 'withdraw'>('stake')
+    const { isConnected, chainType, address } = useUnifiedWallet()
+    const { currentTier, totalStaked, refresh } = useTier()
     const [amount, setAmount] = useState('')
-    const [isLoading, setIsLoading] = useState(false)
-    const [stakingInfo, setStakingInfo] = useState<StakingInfo>({
-        totalStaked: '0',
-        userStaked: '0',
-        userBalance: '0',
-        stakingTokenAddress: '',
-        stakingTokenSymbol: 'NPAD',
-        stakingTokenDecimals: 18
-    })
+    const [isLocking, setIsLocking] = useState(false)
 
-    const loadStakingInfo = useCallback(async () => {
-        if (chainId) {
-            const info = await stakingService.getStakingInfo(address, chainId)
-            setStakingInfo(info)
-        }
-    }, [address, chainId])
-
-    useEffect(() => {
-        loadStakingInfo()
-        // Poll every 15 seconds for updates
-        const interval = setInterval(loadStakingInfo, 15000)
-        return () => clearInterval(interval)
-    }, [loadStakingInfo])
-
-    const handleAction = async () => {
-        if (!walletClient || !amount || !chainId) return
-
-        setIsLoading(true)
+    const handleLock = async () => {
+        if (!amount || isNaN(Number(amount))) return
+        setIsLocking(true)
         try {
-            const provider = new ethers.BrowserProvider(walletClient)
-            const signer = await provider.getSigner()
-
-            if (activeTab === 'stake') {
-                await stakingService.stake(amount, signer, chainId)
-                alert('Staking successful!')
-            } else {
-                await stakingService.withdraw(amount, signer, chainId)
-                alert('Withdrawal successful!')
-            }
+            // Lock for 1 year (31536000 seconds) or custom duration
+            // For now hardcoded to 3 months (7776000) for demo
+            await belgraveService.lockTokens(Number(amount), 7776000)
+            
+            // Wait a bit for ledger propagation then refresh
+            setTimeout(() => refresh(), 5000)
             setAmount('')
-            await loadStakingInfo()
-        } catch (error: any) {
-            console.error('Staking action failed:', error)
-            alert(`Transaction failed: ${error.message}`)
+        } catch (e) {
+            console.error("Lock validation failed", e)
+            alert("Failed to lock tokens. See console.")
         } finally {
-            setIsLoading(false)
+            setIsLocking(false)
         }
     }
-
-    // Tier Logic
-    const getCurrentTier = (stakedAmount: number) => {
-        let current = TIERS[0]
-        let next = TIERS[1]
-
-        for (let i = 0; i < TIERS.length; i++) {
-            if (stakedAmount >= TIERS[i].required) {
-                current = TIERS[i]
-                next = TIERS[i + 1] || null
-            }
-        }
-        return { current, next }
-    }
-
-    const userStakedNum = parseFloat(stakingInfo.userStaked)
-    const { current: currentTier, next: nextTier } = getCurrentTier(userStakedNum)
-
-    const progressToNext = nextTier
-        ? Math.min(100, Math.max(0, ((userStakedNum - currentTier.required) / (nextTier.required - currentTier.required)) * 100))
-        : 100
-
-    // Hardcoded APY for demo (in real app, calculate from contract rewards)
-    const MOCK_APY = "12.5"
 
     if (!isConnected) {
         return (
-            <div className="min-h-screen py-20 flex items-center justify-center">
-                <div className="text-center">
-                    <Shield size={64} className="mx-auto text-noble-gold mb-6 opacity-50" />
-                    <h1 className="text-4xl font-bold text-noble-gold mb-4">Connect to Stake</h1>
-                    <p className="text-xl text-noble-gold/60 mb-8 max-w-lg mx-auto">
-                        Connect your wallet to access the NoblePad Staking Dashboard and earn rewards.
-                    </p>
-                </div>
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-noble-gold">
+                <h1 className="text-3xl font-bold mb-4">Belgrave Staking Vault</h1>
+                <p className="mb-8 text-noble-gold/60">Connect your wallet to access the Inner Circle.</p>
             </div>
         )
     }
 
     return (
-        <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto">
-                {/* Header */}
-                <div className="mb-10 text-center md:text-left md:flex md:justify-between md:items-end">
-                    <div>
-                        <h1 className="text-5xl font-bold noble-text-gradient mb-3">Staking Dashboard</h1>
-                        <p className="text-xl text-noble-gold/60">
-                            Stake {stakingInfo.stakingTokenSymbol} to earn rewards and unlock higher allocation tiers.
-                        </p>
-                    </div>
+        <div className="max-w-4xl mx-auto px-4 py-12">
+            <div className="flex justify-between items-center mb-12">
+                <div>
+                    <h1 className="text-4xl font-bold text-white mb-2">Staking Hub</h1>
+                    <p className="text-noble-gold/60">Manage your Belgrave Holdings and Tier Status</p>
+                </div>
+                
+                <div className={`
+                    px-6 py-3 rounded-xl border border-white/10
+                    ${currentTier === 'GOLD' ? 'bg-yellow-500/20 text-yellow-500' : 
+                      currentTier === 'SILVER' ? 'bg-gray-400/20 text-gray-300' :
+                      currentTier === 'BRONZE' ? 'bg-amber-700/20 text-amber-600' : 'bg-white/5 text-gray-500'}
+                `}>
+                    <p className="text-xs font-bold uppercase tracking-wider">Current Status</p>
+                    <p className="text-2xl font-bold">{currentTier}</p>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Staking Card */}
+                <div className="bg-noble-gray/30 rounded-2xl p-6 border border-noble-gold/10">
+                    <h2 className="text-xl font-bold text-white mb-6">Lock Belgrave</h2>
+                    
+                    {chainType !== 'xrpl' ? (
+                        <div className="text-center py-8 text-red-400 bg-red-500/10 rounded-lg">
+                            ⚠️ Please switch to **XRPL** to stake Belgrave.
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm text-noble-gold/60 mb-2">Amount to Lock (BELGRAVE)</label>
+                                <input 
+                                    type="number" 
+                                    value={amount}
+                                    onChange={(e) => setAmount(e.target.value)}
+                                    className="w-full bg-black/50 border border-noble-gold/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-noble-gold/50"
+                                    placeholder="0.00"
+                                />
+                            </div>
+                            
+                            <div className="bg-blue-500/10 p-4 rounded-lg text-sm text-blue-300">
+                                ℹ️ Tokens will be locked in a native **XRPL Escrow** for 3 months.
+                            </div>
+
+                            <Button 
+                                className="w-full h-12 text-lg bg-noble-gold text-black hover:bg-noble-gold/90 font-bold"
+                                onClick={handleLock}
+                                disabled={isLocking}
+                            >
+                                {isLocking ? 'Creating Escrow...' : 'Lock Tokens'}
+                            </Button>
+                        </div>
+                    )}
                 </div>
 
-                {/* Stats Row */}
-                <StakingStats
-                    totalStaked={parseFloat(stakingInfo.totalStaked).toLocaleString('en-US', { maximumFractionDigits: 0 })}
-                    userStaked={parseFloat(stakingInfo.userStaked).toLocaleString()}
-                    stakingTokenSymbol={stakingInfo.stakingTokenSymbol}
-                    apy={MOCK_APY}
-                />
-
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    {/* Left: Action Center (7/12) */}
-                    <div className="lg:col-span-7">
-                        <div className="noble-card bg-gradient-to-br from-[#1a1a1a] to-black border-noble-gold/20 h-full">
-                            <div className="flex border-b border-noble-gold/10 mb-6">
-                                <button
-                                    onClick={() => setActiveTab('stake')}
-                                    className={`flex-1 py-4 text-center font-bold text-lg transition-colors border-b-2 ${activeTab === 'stake' ? 'text-noble-gold border-noble-gold' : 'text-noble-gold/40 border-transparent hover:text-noble-gold/70'}`}
-                                >
-                                    Stake
-                                </button>
-                                <button
-                                    onClick={() => setActiveTab('withdraw')}
-                                    className={`flex-1 py-4 text-center font-bold text-lg transition-colors border-b-2 ${activeTab === 'withdraw' ? 'text-noble-gold border-noble-gold' : 'text-noble-gold/40 border-transparent hover:text-noble-gold/70'}`}
-                                >
-                                    Withdraw
-                                </button>
-                            </div>
-
-                            <div className="px-6 pb-6">
-                                <div className="mb-8 p-4 bg-noble-gray/30 rounded-xl border border-noble-gold/10">
-                                    <div className="flex justify-between mb-2">
-                                        <label className="text-sm font-medium text-noble-gold/70">
-                                            Amount to {activeTab === 'stake' ? 'Stake' : 'Withdraw'}
-                                        </label>
-                                        <span className="text-sm text-noble-gold/50">
-                                            Balance: {stakingInfo.userBalance} {stakingInfo.stakingTokenSymbol}
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center space-x-4">
-                                        <div className="flex-1 relative">
-                                            <input
-                                                type="number"
-                                                value={amount}
-                                                onChange={(e) => setAmount(e.target.value)}
-                                                className="w-full bg-transparent text-3xl font-bold text-white placeholder-noble-gray/50 focus:outline-none"
-                                                placeholder="0.00"
-                                            />
-                                        </div>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => setAmount(activeTab === 'stake' ? stakingInfo.userBalance : stakingInfo.userStaked)}
-                                        >
-                                            MAX
-                                        </Button>
-                                    </div>
-                                </div>
-
-                                <Button
-                                    size="lg"
-                                    className="w-full text-lg py-8 font-bold noble-gradient shadow-lg hover:shadow-noble-gold/20 transition-all"
-                                    onClick={handleAction}
-                                    disabled={isLoading || !amount || parseFloat(amount) <= 0}
-                                >
-                                    {isLoading ? (
-                                        <span className="flex items-center"><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3" /> Processing...</span>
-                                    ) : (
-                                        activeTab === 'stake' ? 'Approve & Stake' : 'Withdraw Tokens'
-                                    )}
-                                </Button>
-
-                                <p className="mt-4 text-center text-xs text-noble-gold/40">
-                                    {activeTab === 'stake'
-                                        ? 'Staking will lock your tokens and grant you Tier status.'
-                                        : 'Withdrawing will reduce your Tier status and allocation limits.'}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Right: Tier Progress (5/12) */}
-                    <div className="lg:col-span-5 space-y-6">
-                        {/* Current Tier Card */}
-                        <div className="noble-card relative overflow-hidden bg-gradient-to-br from-noble-gray/90 to-black/90">
-                            <div className={`absolute top-0 right-0 p-32 opacity-10 bg-gradient-to-br from-noble-gold to-transparent rounded-full -mr-16 -mt-16 blur-2xl pointer-events-none`} />
-
-                            <h3 className="text-lg font-semibold text-noble-gold/70 mb-4 flex items-center">
-                                <Activity className="mr-2" size={18} /> Current Status
-                            </h3>
-
-                            <div className="flex items-center justify-between mb-8">
-                                <div>
-                                    <div className={`text-4xl font-bold ${currentTier.color} mb-1`}>{currentTier.name} Tier</div>
-                                    <div className="text-sm text-noble-gold/60">{currentTier.multiplier} Allocation</div>
-                                </div>
-                                <div className={`w-16 h-16 rounded-full ${currentTier.bg} flex items-center justify-center border-2 border-white/10`}>
-                                    <Shield className={currentTier.color} size={32} />
-                                </div>
-                            </div>
-
-                            {nextTier ? (
-                                <div className="bg-black/40 rounded-xl p-4 border border-white/5">
-                                    <div className="flex justify-between text-sm mb-2">
-                                        <span className="text-noble-gold/60">Next: {nextTier.name}</span>
-                                        <span className="text-noble-gold">{userStakedNum.toLocaleString()} / {nextTier.required.toLocaleString()} {stakingInfo.stakingTokenSymbol}</span>
-                                    </div>
-                                    <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
-                                        <div
-                                            className="h-full bg-gradient-to-r from-noble-gold to-yellow-300 transition-all duration-1000"
-                                            style={{ width: `${progressToNext}%` }}
-                                        />
-                                    </div>
-                                    <p className="text-xs text-noble-gold/40 mt-3 flex items-center">
-                                        Stake {(nextTier.required - userStakedNum).toLocaleString()} more to unlock {nextTier.multiplier} allocation! <ArrowRight size={10} className="ml-1" />
-                                    </p>
-                                </div>
-                            ) : (
-                                <div className="bg-noble-gold/10 rounded-xl p-4 border border-noble-gold/20 text-center">
-                                    <CheckCircle className="mx-auto text-noble-gold mb-2" size={24} />
-                                    <h4 className="font-bold text-noble-gold">Max Tier Reached!</h4>
-                                    <p className="text-xs text-noble-gold/60">You have the highest possible allocation multiplier.</p>
-                                </div>
-                            )}
+                {/* Info Card */}
+                <div className="bg-noble-gray/30 rounded-2xl p-6 border border-noble-gold/10">
+                     <h2 className="text-xl font-bold text-white mb-6">Your Vault</h2>
+                     
+                     <div className="space-y-6">
+                        <div className="flex justify-between items-center pb-4 border-b border-white/5">
+                            <span className="text-noble-gold/60">Total Locked</span>
+                            <span className="text-2xl font-bold text-white">{totalStaked.toLocaleString()} <span className="text-sm text-noble-gold">BLGRV</span></span>
                         </div>
 
-                        {/* Benefits List */}
-                        <div className="noble-card bg-transparent border border-noble-gold/10">
-                            <h4 className="text-sm font-semibold text-noble-gold/80 mb-4">Tier Benefits</h4>
-                            <div className="space-y-3">
-                                {TIERS.map((tier) => (
-                                    <div key={tier.name} className={`flex items-center justify-between p-2 rounded-lg ${currentTier.name === tier.name ? 'bg-noble-gold/10 border border-noble-gold/20' : 'opacity-60'}`}>
-                                        <div className="flex items-center">
-                                            <div className={`w-2 h-2 rounded-full mr-3 ${tier.name === 'Bronze' ? 'bg-orange-700' : tier.name === 'Silver' ? 'bg-gray-400' : tier.name === 'Gold' ? 'bg-yellow-400' : 'bg-cyan-400'}`} />
-                                            <span className="text-sm font-medium text-noble-gold">{tier.name}</span>
-                                        </div>
-                                        <div className="text-xs text-noble-gold/60 font-mono">
-                                            {tier.required > 0 ? `${tier.required}+` : '0+'}
-                                        </div>
-                                    </div>
-                                ))}
+                        <div className="space-y-3">
+                            <h3 className="text-sm font-bold text-white">Tier Requirements</h3>
+                            <div className="flex justify-between text-sm">
+                                <span className="text-yellow-500">Gold</span>
+                                <span className="text-gray-400">100,000 BLGRV</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                                <span className="text-gray-300">Silver</span>
+                                <span className="text-gray-400">50,000 BLGRV</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                                <span className="text-amber-600">Bronze</span>
+                                <span className="text-gray-400">10,000 BLGRV</span>
                             </div>
                         </div>
-
-                    </div>
+                     </div>
                 </div>
             </div>
         </div>

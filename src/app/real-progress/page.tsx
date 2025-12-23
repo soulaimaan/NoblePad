@@ -1,21 +1,20 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
-import { 
-  RefreshCw, 
-  CheckCircle, 
-  Clock, 
-  AlertCircle, 
-  FileText,
+import {
+  Activity,
+  AlertCircle,
+  CheckCircle,
+  Clock,
   Code,
   Database,
+  FileText,
   Palette,
+  RefreshCw,
   Server,
-  Shield,
-  Settings,
-  Activity
+  Settings
 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 interface FileStatus {
   path: string
@@ -71,12 +70,12 @@ export default function RealProgressPage() {
       // Get recent activity
       setRecentActivity({
         recentFiles: [
-          'src/components/providers/VanillaWeb3Provider.tsx',
-          'src/components/debug/MetaMaskDebugger.tsx',
-          'packages/contracts/evm/TokenFactory.sol',
-          'src/app/agent-monitor/page.tsx'
+          'src/hooks/useCompatibleAccount.ts',
+          'src/components/providers/UnifiedWalletProvider.tsx',
+          'src/components/ui/WalletConnection.tsx',
+          'src/app/staking/page.tsx'
         ],
-        activeComponents: ['Wallet Integration', 'Smart Contracts', 'Debug Tools']
+        activeComponents: ['Unified Wallet', 'Belgrave Staking', 'Presale Engine']
       })
 
     } catch (error) {
@@ -95,16 +94,16 @@ export default function RealProgressPage() {
     // In a real implementation, this would use the RealProgressTracker
     return [
       {
-        name: 'MetaMask Integration',
+        name: 'Unified Wallet Integration',
         category: 'Frontend',
         status: 'complete',
         progress: 100,
         files: [
-          { path: 'src/components/providers/VanillaWeb3Provider.tsx', exists: true, size: 15420 },
-          { path: 'src/components/ui/VanillaWalletButton.tsx', exists: true, size: 8960 },
-          { path: 'src/components/debug/MetaMaskDebugger.tsx', exists: true, size: 12340 }
+          { path: 'src/components/providers/UnifiedWalletProvider.tsx', exists: true, size: 5506 },
+          { path: 'src/components/ui/WalletConnection.tsx', exists: true, size: 12000 },
+          { path: 'src/lib/xrpl/xamanService.ts', exists: true, size: 5887 }
         ],
-        description: 'Multi-chain wallet connection with MetaMask conflict resolution'
+        description: 'Multi-chain wallet connection for EVM and XRPL'
       },
       {
         name: 'Smart Contract Foundation',
@@ -242,10 +241,10 @@ export default function RealProgressPage() {
               <span className="text-sm text-noble-gold">{progress.overall}%</span>
             </div>
             <div className="w-full bg-noble-gray rounded-full h-4">
-              <div 
-                className="bg-gradient-to-r from-noble-gold to-yellow-400 h-4 rounded-full transition-all duration-500"
-                style={{ width: `${progress.overall}%` }}
-              />
+                <div 
+                  className="bg-gradient-to-r from-noble-gold to-yellow-400 h-4 rounded-full transition-all duration-500"
+                  style={{ width: `${progress.overall}%` }}
+                />
             </div>
             <p className="text-xs text-noble-gold/50 mt-2">
               Based on actual file existence and content analysis

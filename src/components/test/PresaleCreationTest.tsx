@@ -1,14 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useUnifiedWallet } from '@/components/providers/UnifiedWalletProvider'
 import { Button } from '@/components/ui/Button'
-import { useVanillaWeb3 } from '@/components/providers/VanillaWeb3Provider'
-import { presaleService } from '@/lib/presaleService'
-import { SUPPORTED_CHAINS, getMainnetChains } from '@/lib/chains'
-import { CheckCircle, AlertTriangle, Loader } from 'lucide-react'
+import { getMainnetChains } from '@/lib/chains'
+import { AlertTriangle, CheckCircle, Loader } from 'lucide-react'
+import { useState } from 'react'
 
 export function PresaleCreationTest() {
-  const { wallet } = useVanillaWeb3()
+  const { isConnected, address } = useUnifiedWallet()
   const [testResults, setTestResults] = useState<any[]>([])
   const [isTestingPhase, setIsTestingPhase] = useState<string | null>(null)
 
@@ -29,11 +28,11 @@ export function PresaleCreationTest() {
     try {
       // Test 1: Check wallet connection
       setIsTestingPhase('wallet')
-      if (!wallet.isConnected) {
-        addTestResult('Wallet', 'error', 'Wallet not connected. Please connect MetaMask first.')
+      if (!isConnected) {
+        addTestResult('Wallet', 'error', 'Wallet not connected. Please connect Wallet first.')
         return
       }
-      addTestResult('Wallet', 'success', `Wallet connected: ${wallet.address}`)
+      addTestResult('Wallet', 'success', `Wallet connected: ${address}`)
 
       // Test 2: Check supported chains
       setIsTestingPhase('chains')

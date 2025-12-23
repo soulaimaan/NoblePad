@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'marketing-agent',
-      script: './agents/marketing-agent.js',
+      script: './agents/marketing-agent-enhanced.cjs',
       instances: 1,
       autorestart: true,
       watch: false,
@@ -17,7 +17,7 @@ module.exports = {
     },
     {
       name: 'banner-generator',
-      script: './agents/banner-generator.js',
+      script: './agents/banner-generator.cjs',
       instances: 1,
       autorestart: true,
       watch: false,

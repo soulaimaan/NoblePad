@@ -1,12 +1,13 @@
-import { useVanillaWeb3 } from '@/components/providers/VanillaWeb3Provider'
-import { getChainById } from '@/lib/chains'
-import { Connection, PublicKey } from '@solana/web3.js'
+// [v3-unified-fix] Unified Wallet Hook with Multi-Chain Support
+import { useUnifiedWallet } from '@/components/providers/UnifiedWalletProvider'
+import { Connection } from '@solana/web3.js'
 import { ethers } from 'ethers'
 import { useEffect, useState } from 'react'
 import { useAccount as useWagmiAccount } from 'wagmi'
 
+
 export function useAccount() {
-  const { wallet } = useVanillaWeb3() // This might throw if not wrapped? But we wrapped it.
+  const { address, isConnected, chainType } = useUnifiedWallet()
   const wagmiAccount = useWagmiAccount()
 
   // EVM provider and signer (async)
@@ -16,70 +17,95 @@ export function useAccount() {
   useEffect(() => {
     let isMounted = true
     async function setupProvider() {
-      if (typeof window !== 'undefined' && (window as any).ethereum) {
-        try {
-          const p = new ethers.BrowserProvider((window as any).ethereum)
-          if (isMounted) setProvider(p)
-          try {
-            const s = await p.getSigner()
-            if (isMounted) setSigner(s)
-          } catch (e) {
-            if (isMounted) setSigner(null)
+      // ONLY initialize EVM provider/signer if we have a valid EVM address
+      if (!address || !address.startsWith('0x') || chainType !== 'evm') {
+        if (isMounted) {
+          setProvider(null)
+          setSigner(null)
+        }
+        return
+      }
+
+      try {
+        // Use the provider from the active connector to avoid conflicts with multiple wallets (e.g. OKX)
+        // This is the most robust way to ensure we only talk to the wallet the user selected
+        const connector = wagmiAccount.connector
+        if (connector) {
+          const rawProvider = await connector.getProvider()
+          if (!rawProvider) throw new Error("No provider found from connector")
+          
+          const p = new ethers.BrowserProvider(rawProvider as any)
+          if (isMounted) {
+            setProvider(p)
+            
+            // Attempt signer access
+            try {
+              const s = await p.getSigner()
+              if (isMounted) setSigner(s)
+            } catch (signerError) {
+              console.warn("Signer access failed:", signerError)
+              if (isMounted) setSigner(null)
+            }
           }
-        } catch (e) {
-             // ignore
+        } else if (typeof window !== 'undefined' && (window as any).ethereum) {
+           // Fallback if no connector but ethereum exists - though wagmi usually should have it
+           const p = new ethers.BrowserProvider((window as any).ethereum)
+           if (isMounted) setProvider(p)
+        }
+      } catch (e) {
+        console.warn("EVM Provider setup failed (safely handled):", e)
+        if (isMounted) {
+          setProvider(null)
+          setSigner(null)
         }
       }
     }
     setupProvider()
     return () => { isMounted = false }
-  }, [wallet.address, wallet.chainId, wagmiAccount.status]) 
+  }, [address, chainType, wagmiAccount.connector, wagmiAccount.status])
 
   // Solana connection
   let solanaConnection: Connection | null = null
-  if (wallet.chainId === 'solana') {
-     // ... existing logic
-      try {
-        solanaConnection = new Connection('https://api.mainnet-beta.solana.com')
-      } catch (e) {
-        solanaConnection = null
-      }
-  }
+  // TODO: Add Solana support to UnifiedWalletProvider if needed
+  // if (chainType === 'solana') { ... }
 
-  const activeAddress = wagmiAccount.address || (wallet.address as `0x${string}` | string | undefined)
-  const isActive = wagmiAccount.isConnected || wallet.isConnected
+  const isActive = isConnected
+  
+  // Debug log to ensure state changes are seen
+  useEffect(() => {
+    if (isConnected) {
+      console.log('✅ Wallet connected in useAccount:', address)
+    }
+  }, [isConnected, address])
 
   return {
-    address: activeAddress,
+    address: address || undefined,
     isConnected: isActive,
+    isHydrated: true, // UnifiedProvider ensures client-side rendering
     provider,
     signer,
     solana: {
       connection: solanaConnection,
-      publicKey: (wallet.address && wallet.chainId === 'solana') ? new PublicKey(wallet.address) : undefined,
-      adapter: typeof window !== 'undefined' ? ((window as any).solana || (window as any).phantom?.solana || null) : null
+      publicKey: undefined, 
+      adapter: null
     },
-    isConnecting: wagmiAccount.isConnecting,
+    isConnecting: false, 
     isDisconnected: !isActive,
     status: isActive ? 'connected' : 'disconnected',
-    chain: wagmiAccount.chain || (wallet.chainId ? parseChain(wallet.chainId) : undefined)
+    chain: wagmiAccount.chain 
   }
 }
 
 export function useConnect() {
-  const { connectMetaMask, connectPhantom } = useVanillaWeb3()
+  const { connect } = useUnifiedWallet()
 
   return {
     connect: async ({ connector }: any) => {
-      if (connector?.id === 'metaMask' || connector?.name?.includes('MetaMask')) {
-        await connectMetaMask()
-      } else if (connector?.id === 'phantom' || connector?.name?.toLowerCase?.().includes('phantom')) {
-        await connectPhantom()
-      }
+      // Direct unified connect
+      await connect('evm')
     },
     connectors: [
       { id: 'metaMask', name: 'MetaMask', type: 'injected' },
-      { id: 'phantom', name: 'Phantom', type: 'solana' }
     ],
     error: null,
     isLoading: false,
@@ -88,28 +114,11 @@ export function useConnect() {
 }
 
 export function useDisconnect() {
-  const { disconnect } = useVanillaWeb3()
+  const { disconnect } = useUnifiedWallet()
 
   return {
     disconnect,
     isLoading: false,
     error: null
-  }
-}
-
-function parseChain(chainId: string) {
-  // EVM hex chain ids such as '0x1' or decimal strings for solana
-  if (chainId === 'solana') return { id: 'solana', name: 'Solana' }
-  try {
-    if (chainId.startsWith('0x')) {
-      const id = parseInt(chainId, 16)
-      const chain = getChainById(id)
-      return chain ? { id: chain.id, name: chain.name } : { id, name: `Chain ${id}` }
-    }
-    const parsed = parseInt(chainId, 10)
-    const chain = getChainById(parsed)
-    return chain ? { id: chain.id, name: chain.name } : { id: parsed, name: `Chain ${parsed}` }
-  } catch (e) {
-    return { id: chainId, name: 'Unknown' }
   }
 }

@@ -1,0 +1,106 @@
+﻿src/app/api/create-presale/route.ts(50,15): error TS2345: Argument of type 'any' is not assignable to parameter of type 'never'.
+src/app/dashboard/page.tsx(216,25): error TS2339: Property 'benefits' does not exist on type '{ tier: string; allocation: number; color: string; }'.
+src/app/dashboard/page.tsx(216,40): error TS7006: Parameter 'benefit' implicitly has an 'any' type.
+src/app/dashboard/page.tsx(216,49): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/app/debug/page.tsx(3,34): error TS2307: Cannot find module '@/components/debug/MetaMaskDebugger' or its corresponding type declarations.
+src/app/debug/page.tsx(4,41): error TS2307: Cannot find module '@/components/debug/MetaMaskConnectionFixer' or its corresponding type declarations.
+src/components/admin/AdminPresaleReview.tsx(117,26): error TS2339: Property 'riskLevel' does not exist on type '{ id: string; projectName: string; tokenSymbol: string; submittedDate: string; submitterAddress: string; hardCap: string; softCap: string; liquidityLock: string; kycStatus: string; auditStatus: string; riskLevel: string; } | { ...; }'.
+  Property 'riskLevel' does not exist on type '{ id: string; projectName: string; tokenSymbol: string; approvedDate: string; submitterAddress: string; hardCap: string; status: string; }'.
+src/components/admin/AdminPresaleReview.tsx(117,60): error TS2339: Property 'riskLevel' does not exist on type '{ id: string; projectName: string; tokenSymbol: string; submittedDate: string; submitterAddress: string; hardCap: string; softCap: string; liquidityLock: string; kycStatus: string; auditStatus: string; riskLevel: string; } | { ...; }'.
+  Property 'riskLevel' does not exist on type '{ id: string; projectName: string; tokenSymbol: string; approvedDate: string; submitterAddress: string; hardCap: string; status: string; }'.
+src/components/admin/AdminPresaleReview.tsx(123,67): error TS2339: Property 'submittedDate' does not exist on type '{ id: string; projectName: string; tokenSymbol: string; submittedDate: string; submitterAddress: string; hardCap: string; softCap: string; liquidityLock: string; kycStatus: string; auditStatus: string; riskLevel: string; } | { ...; }'.
+  Property 'submittedDate' does not exist on type '{ id: string; projectName: string; tokenSymbol: string; approvedDate: string; submitterAddress: string; hardCap: string; status: string; }'.
+src/components/admin/AdminPresaleReview.tsx(123,92): error TS2339: Property 'approvedDate' does not exist on type '{ id: string; projectName: string; tokenSymbol: string; submittedDate: string; submitterAddress: string; hardCap: string; softCap: string; liquidityLock: string; kycStatus: string; auditStatus: string; riskLevel: string; } | { ...; }'.
+  Property 'approvedDate' does not exist on type '{ id: string; projectName: string; tokenSymbol: string; submittedDate: string; submitterAddress: string; hardCap: string; softCap: string; liquidityLock: string; kycStatus: string; auditStatus: string; riskLevel: string; }'.
+src/components/admin/AdminPresaleReview.tsx(142,45): error TS2339: Property 'kycStatus' does not exist on type '{ id: string; projectName: string; tokenSymbol: string; submittedDate: string; submitterAddress: string; hardCap: string; softCap: string; liquidityLock: string; kycStatus: string; auditStatus: string; riskLevel: string; } | { ...; }'.
+  Property 'kycStatus' does not exist on type '{ id: string; projectName: string; tokenSymbol: string; approvedDate: string; submitterAddress: string; hardCap: string; status: string; }'.
+src/components/admin/AdminPresaleReview.tsx(147,45): error TS2339: Property 'auditStatus' does not exist on type '{ id: string; projectName: string; tokenSymbol: string; submittedDate: string; submitterAddress: string; hardCap: string; softCap: string; liquidityLock: string; kycStatus: string; auditStatus: string; riskLevel: string; } | { ...; }'.
+  Property 'auditStatus' does not exist on type '{ id: string; projectName: string; tokenSymbol: string; approvedDate: string; submitterAddress: string; hardCap: string; status: string; }'.
+src/components/admin/AdminPresaleReview.tsx(152,72): error TS2339: Property 'liquidityLock' does not exist on type '{ id: string; projectName: string; tokenSymbol: string; submittedDate: string; submitterAddress: string; hardCap: string; softCap: string; liquidityLock: string; kycStatus: string; auditStatus: string; riskLevel: string; } | { ...; }'.
+  Property 'liquidityLock' does not exist on type '{ id: string; projectName: string; tokenSymbol: string; approvedDate: string; submitterAddress: string; hardCap: string; status: string; }'.
+src/components/create/CreatePresaleForm.test.tsx(2,18): error TS2305: Module '"@testing-library/react"' has no exported member 'screen'.
+src/components/create/CreatePresaleForm.test.tsx(2,26): error TS2305: Module '"@testing-library/react"' has no exported member 'fireEvent'.
+src/components/create/CreatePresaleForm.test.tsx(2,37): error TS2305: Module '"@testing-library/react"' has no exported member 'waitFor'.
+src/components/create/CreatePresaleForm.test.tsx(7,1): error TS2708: Cannot use namespace 'jest' as a value.
+src/components/create/CreatePresaleForm.test.tsx(14,1): error TS2708: Cannot use namespace 'jest' as a value.
+src/components/create/CreatePresaleForm.test.tsx(15,6): error TS2708: Cannot use namespace 'jest' as a value.
+src/components/create/CreatePresaleForm.test.tsx(17,20): error TS2708: Cannot use namespace 'jest' as a value.
+src/components/create/CreatePresaleForm.test.tsx(26,1): error TS2708: Cannot use namespace 'jest' as a value.
+src/components/create/CreatePresaleForm.test.tsx(28,11): error TS2708: Cannot use namespace 'jest' as a value.
+src/components/create/CreatePresaleForm.test.tsx(33,1): error TS2708: Cannot use namespace 'jest' as a value.
+src/components/create/CreatePresaleForm.test.tsx(45,1): error TS2708: Cannot use namespace 'jest' as a value.
+src/components/create/CreatePresaleForm.test.tsx(57,1): error TS2708: Cannot use namespace 'jest' as a value.
+src/components/create/CreatePresaleForm.test.tsx(69,1): error TS2708: Cannot use namespace 'jest' as a value.
+src/components/create/CreatePresaleForm.test.tsx(82,28): error TS2708: Cannot use namespace 'jest' as a value.
+src/components/create/CreatePresaleForm.test.tsx(91,5): error TS2304: Cannot find name 'expect'.
+src/components/create/CreatePresaleForm.test.tsx(92,5): error TS2304: Cannot find name 'expect'.
+src/components/create/CreatePresaleForm.test.tsx(105,5): error TS2304: Cannot find name 'expect'.
+src/components/create/CreatePresaleForm.test.tsx(109,5): error TS2304: Cannot find name 'expect'.
+src/components/create/CreatePresaleForm.test.tsx(116,5): error TS2304: Cannot find name 'expect'.
+src/components/create/CreatePresaleForm.test.tsx(120,5): error TS2304: Cannot find name 'expect'.
+src/components/create/CreatePresaleForm.test.tsx(127,5): error TS2304: Cannot find name 'expect'.
+src/components/create/CreatePresaleForm.test.tsx(131,5): error TS2304: Cannot find name 'expect'.
+src/components/create/CreatePresaleForm.test.tsx(138,5): error TS2304: Cannot find name 'expect'.
+src/components/create/CreatePresaleForm.test.tsx(142,5): error TS2304: Cannot find name 'expect'.
+src/components/create/CreatePresaleForm.test.tsx(145,5): error TS2304: Cannot find name 'expect'.
+src/components/create/CreatePresaleForm.test.tsx(152,5): error TS2304: Cannot find name 'expect'.
+src/components/create/CreatePresaleForm.test.tsx(180,25): error TS2304: Cannot find name 'expect'.
+src/components/create/CreatePresaleForm.test.tsx(185,25): error TS2304: Cannot find name 'expect'.
+src/components/create/CreatePresaleForm.test.tsx(190,25): error TS2304: Cannot find name 'expect'.
+src/components/create/CreatePresaleForm.test.tsx(196,7): error TS2304: Cannot find name 'expect'.
+src/components/create/CreatePresaleForm.test.tsx(200,5): error TS2304: Cannot find name 'expect'.
+src/components/create/CreatePresaleForm.test.tsx(201,5): error TS2304: Cannot find name 'expect'.
+src/components/create/CreatePresaleForm.test.tsx(202,5): error TS2304: Cannot find name 'expect'.
+src/components/create/CreatePresaleForm.test.tsx(203,5): error TS2304: Cannot find name 'expect'.
+src/components/debug/WalletDetector.tsx(42,40): error TS2339: Property 'isOkxWallet' does not exist on type '{ isMetaMask?: boolean | undefined; isTrust?: boolean | undefined; isCoinbaseWallet?: boolean | undefined; providers?: { isMetaMask?: boolean | undefined; isTrust?: boolean | undefined; isCoinbaseWallet?: boolean | undefined; request: (args: { ...; }) => Promise<...>; }[] | undefined; request: (args: { ...; }) => Pr...'.
+src/components/debug/WalletDetector.tsx(44,44): error TS2339: Property 'selectedAddress' does not exist on type '{ isMetaMask?: boolean | undefined; isTrust?: boolean | undefined; isCoinbaseWallet?: boolean | undefined; providers?: { isMetaMask?: boolean | undefined; isTrust?: boolean | undefined; isCoinbaseWallet?: boolean | undefined; request: (args: { ...; }) => Promise<...>; }[] | undefined; request: (args: { ...; }) => Pr...'.
+src/components/providers/SimpleWeb3Provider.tsx(102,19): error TS2551: Property 'isConnected' does not exist on type '{ isPhantom?: boolean | undefined; connect: () => Promise<{ publicKey: any; }>; disconnect: () => Promise<void>; on: (event: string, callback: (data: any) => void) => void; }'. Did you mean 'disconnect'?
+src/components/providers/SimpleWeb3Provider.tsx(103,48): error TS2554: Expected 0 arguments, but got 1.
+src/components/providers/SimpleWeb3Provider.tsx(221,9): error TS18048: 'window.ethereum' is possibly 'undefined'.
+src/components/providers/SimpleWeb3Provider.tsx(222,9): error TS18048: 'window.ethereum' is possibly 'undefined'.
+src/components/providers/Web3ModalProvider.tsx(42,3): error TS2322: Type 'boolean | ""' is not assignable to type 'boolean | undefined'.
+  Type '""' is not assignable to type 'boolean | undefined'.
+src/components/providers/Web3ModalProvider.tsx(47,19): error TS2304: Cannot find name 'http'.
+src/components/providers/Web3ModalProvider.tsx(48,15): error TS2304: Cannot find name 'http'.
+src/components/providers/Web3ModalProvider.tsx(49,19): error TS2304: Cannot find name 'http'.
+src/components/providers/Web3ModalProvider.tsx(50,20): error TS2304: Cannot find name 'http'.
+src/components/providers/Web3ModalProvider.tsx(51,16): error TS2304: Cannot find name 'http'.
+src/components/ui/SimpleWalletConnection.tsx(4,24): error TS1149: File name 'C:/Users/aboes/noblepad/src/components/ui/button.tsx' differs from already included file name 'C:/Users/aboes/noblepad/src/components/ui/Button.tsx' only in casing.
+  The file is in the program because:
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/ui/WalletConnection.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/sections/HeroSection.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/presale/PresaleCard.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/sections/PresalePreview.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/admin/AdminPresaleReview.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/admin/AdminNavigation.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/app/agent-monitor/page.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/create/CreatePresaleForm.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/create/steps/MilestoneTemplateStep.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/create/steps/PresaleSetupStep.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/create/steps/SecurityReviewStep.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/create/steps/TokenDetailsStep.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/test/PresaleCreationTest.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/app/dashboard/page.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/debug/WalletDetector.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/debug/ManualMetaMaskConnector.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/presale/MilestoneDashboard.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/presale/PresaleCommitment.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/presale/PresaleDetail.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/presale/PresaleInfo.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/app/presale/[id]/page.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/presale/PresaleFilters.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/app/real-progress/page.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/app/staking/page.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/locks/CreateTokenLock.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/locks/TokenLockManager.tsx'
+    Matched by include pattern '**/*.tsx' in 'C:/Users/aboes/noblepad/tsconfig.json'
+    Imported via './button' from file 'C:/Users/aboes/noblepad/src/components/ui/SimpleWalletConnection.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/web3/ConnectWallet.tsx'
+src/components/web3/ConnectWallet.tsx(68,49): error TS2339: Property 'message' does not exist on type '{}'.
+src/lib/api.ts(24,5): error TS7053: Element implicitly has an 'any' type because expression of type '"Authorization"' can't be used to index type '{ 'Content-Type': string; apikey: string; } | { 'Content-Type': string; apikey: string; } | { length: number; toString(): string; toLocaleString(): string; toLocaleString(locales: string | string[], options?: (NumberFormatOptions & DateTimeFormatOptions) | undefined): string; ... 39 more ...; apikey: string; } | { ....'.
+  Property 'Authorization' does not exist on type '{ 'Content-Type': string; apikey: string; } | { 'Content-Type': string; apikey: string; } | { length: number; toString(): string; toLocaleString(): string; toLocaleString(locales: string | string[], options?: (NumberFormatOptions & DateTimeFormatOptions) | undefined): string; ... 39 more ...; apikey: string; } | { ....'.
+src/lib/presaleService.ts(14,5): error TS2305: Module '"./supabaseClient"' has no exported member 'handleSupabaseResponse'.
+src/lib/presaleService.ts(434,13): error TS2739: Type 'PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "presale_timeline", never, "POST">' is missing the following properties from type 'Promise<{ data: unknown; error: PostgrestError | null; }>': catch, finally, [Symbol.toStringTag]
+src/lib/supabaseClient.ts(41,67): error TS2339: Property 'presale_contributions' does not exist on type '{ presales: { Row: { id: string; contract_address: string | null; chain_id: number; creator_address: string; name: string; description: string; website: string | null; twitter: string | null; ... 29 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; }; ... 6 more ...; token_lock_events: { ...; }; }'.
+src/lib/supabaseClient.ts(42,70): error TS2339: Property 'presale_contributions' does not exist on type '{ presales: { Row: { id: string; contract_address: string | null; chain_id: number; creator_address: string; name: string; description: string; website: string | null; twitter: string | null; ... 29 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; }; ... 6 more ...; token_lock_events: { ...; }; }'.
+src/lib/tokenLockService.ts(5,5): error TS2305: Module '"./supabaseClient"' has no exported member 'handleSupabaseResponse'.

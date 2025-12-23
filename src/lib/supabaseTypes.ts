@@ -17,57 +17,58 @@ export interface Database {
       // ======================================================================
       presales: {
         Row: {
-          id: string
-          contract_address: string | null
-          chain_id: number
-          creator_address: string
+          id: string,
+          contract_address: string | null,
+          chain_id: number,
+          creator_address: string,
           
           // Project Information
-          name: string
-          description: string
-          website: string | null
-          twitter: string | null
-          telegram: string | null
-          discord: string | null
-          whitepaper: string | null
+          name: string,
+          description: string,
+          website: string | null,
+          twitter: string | null,
+          telegram: string | null,
+          discord: string | null,
+          whitepaper: string | null,
           
           // Token Information
-          token_address: string
-          token_name: string
-          token_symbol: string
-          total_supply: string
+          token_address: string,
+          token_name: string,
+          token_symbol: string,
+          total_supply: string,
           
           // Presale Parameters
-          soft_cap: string
-          hard_cap: string
-          token_price: string
-          min_contribution: string | null
-          max_contribution: string | null
-          start_time: string
-          end_time: string
-          liquidity_percentage: number
-          liquidity_lock_months: number
+          soft_cap: string,
+          hard_cap: string,
+          token_price: string,
+          min_contribution: string | null,
+          max_contribution: string | null,
+          start_time: string,
+          end_time: string,
+          liquidity_percentage: number,
+          liquidity_lock_months: number,
           
           // Vesting
-          vesting_enabled: boolean
-          vesting_schedule: Json | null
+          vesting_enabled: boolean,
+          vesting_schedule: Json | null,
           
           // Security
-          kyc_documents: string[]
-          audit_report: string | null
-          team_token_lock_months: number
-          team_wallets: string[]
+          kyc_documents: string[],
+          audit_report: string | null,
+          team_token_lock_months: number,
+          team_wallets: string[],
           
           // Status
-          status: string
-          total_raised: string
-          total_participants: number
+          status: string,
+          total_raised: string,
+          total_participants: number,
           
           // Metadata
-          creation_transaction: string | null
-          contract_created_at: string | null
-          created_at: string
-          updated_at: string
+          creation_transaction: string | null,
+          contract_created_at: string | null,
+          milestones: Json | null,
+          created_at: string,
+          updated_at: string,
         }
         Insert: {
           id?: string
@@ -119,6 +120,7 @@ export interface Database {
           // Metadata
           creation_transaction?: string | null
           contract_created_at?: string | null
+          milestones?: Json | null
           created_at?: string
           updated_at?: string
         }
@@ -171,9 +173,10 @@ export interface Database {
           // Metadata
           creation_transaction?: string | null
           contract_created_at?: string | null
+          milestones?: Json | null
           updated_at?: string
         }
-      }
+      },
 
       // ======================================================================
       // TOKEN LOCKS TABLE
@@ -285,7 +288,7 @@ export interface Database {
           updated_at?: string
           unlocked_at?: string | null
         }
-      }
+      },
 
       // ======================================================================
       // TOKEN VESTING TABLE
@@ -344,7 +347,7 @@ export interface Database {
           claim_transaction?: string | null
           claimed_at?: string | null
         }
-      }
+      },
 
       // ======================================================================
       // USER SESSIONS TABLE
@@ -399,7 +402,7 @@ export interface Database {
           // Timestamps
           updated_at?: string
         }
-      }
+      },
 
       // ======================================================================
       // PRESALE PARTICIPANTS TABLE
@@ -460,7 +463,7 @@ export interface Database {
           // Timestamps
           claimed_at?: string | null
         }
-      }
+      },
 
       // ======================================================================
       // PRESALE TIMELINE TABLE
@@ -498,7 +501,7 @@ export interface Database {
           description?: string
           transaction_hash?: string | null
         }
-      }
+      },
 
       // ======================================================================
       // ADMIN ACTIONS TABLE
@@ -529,7 +532,7 @@ export interface Database {
           description?: string
           metadata?: Json | null
         }
-      }
+      },
 
       // ======================================================================
       // TOKEN LOCK EVENTS TABLE
@@ -576,7 +579,7 @@ export interface Database {
           user_address?: string | null
         }
       }
-    }
+    },
 
     // ======================================================================
     // VIEWS
@@ -607,7 +610,7 @@ export interface Database {
           seconds_until_unlock: number | null
           effective_status: string
         }
-      }
+      },
       user_lock_stats: {
         Row: {
           owner_address: string
@@ -619,7 +622,7 @@ export interface Database {
           first_lock_date: string
           latest_lock_date: string
         }
-      }
+      },
       token_lock_stats: {
         Row: {
           token_address: string
@@ -632,7 +635,7 @@ export interface Database {
           latest_unlock: string
         }
       }
-    }
+    },
 
     // ======================================================================
     // FUNCTIONS
@@ -656,17 +659,17 @@ export interface Database {
         }
         Returns: boolean
       }
-    }
+    },
 
     // ======================================================================
     // ENUMS
     // ======================================================================
     Enums: {
-      presale_status: 'draft' | 'pending_review' | 'approved' | 'active' | 'ended' | 'successful' | 'failed' | 'cancelled'
-      lock_status: 'locked' | 'unlocked' | 'cancelled'
-      lock_type: 'team' | 'marketing' | 'development' | 'advisors' | 'liquidity' | 'custom'
+      presale_status: 'draft' | 'pending_review' | 'approved' | 'active' | 'ended' | 'successful' | 'failed' | 'cancelled',
+      lock_status: 'locked' | 'unlocked' | 'cancelled',
+      lock_type: 'team' | 'marketing' | 'development' | 'advisors' | 'liquidity' | 'custom',
       event_type: 'lock_created' | 'lock_unlocked' | 'lock_cancelled' | 'vesting_claimed' | 'beneficiary_changed' | 'lock_extended'
-    }
+    },
 
     // ======================================================================
     // COMPOSITE TYPES

@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
-import { CheckCircle, AlertTriangle, Settings } from 'lucide-react'
+import { AlertTriangle, Settings } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 export function WalletDetector() {
   const [wallets, setWallets] = useState<any[]>([])
@@ -20,7 +20,7 @@ export function WalletDetector() {
     if (window.ethereum) {
       if (window.ethereum.providers?.length) {
         // Multiple providers
-        window.ethereum.providers.forEach((provider: any, index: number) => {
+        (window.ethereum as any).providers.forEach((provider: any, index: number) => {
           detectedWallets.push({
             id: `provider_${index}`,
             name: getWalletName(provider),
@@ -38,10 +38,10 @@ export function WalletDetector() {
           id: 'single_provider',
           name: getWalletName(window.ethereum),
           isActive: true,
-          isMetaMask: window.ethereum.isMetaMask,
-          isOkxWallet: window.ethereum.isOkxWallet,
-          isCoinbaseWallet: window.ethereum.isCoinbaseWallet,
-          selectedAddress: window.ethereum.selectedAddress,
+          isMetaMask: (window.ethereum as any).isMetaMask,
+          isOkxWallet: (window.ethereum as any).isOkxWallet,
+          isCoinbaseWallet: (window.ethereum as any).isCoinbaseWallet,
+          selectedAddress: (window.ethereum as any).selectedAddress,
           provider: window.ethereum
         })
       }

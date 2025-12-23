@@ -71,11 +71,45 @@ const nextConfig = {
   // Performance optimizations
   experimental: {
     optimizeCss: false,
-    optimizePackageImports: ['lucide-react', '@supabase/supabase-js'],
+    optimizePackageImports: [
+      'lucide-react',
+      '@supabase/supabase-js',
+      '@reown/appkit',
+      '@reown/appkit-adapter-wagmi',
+      '@tanstack/react-query',
+      'wagmi',
+      'viem'
+    ],
+  },
+
+  // Modularize imports for better tree-shaking
+  modularizeImports: {
+    'lucide-react': {
+      transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
+      skipDefaultConversion: true,
+    },
   },
 
   // Webpack optimization
   webpack: (config, { dev, isServer }) => {
+    // Development optimizations for faster rebuilds
+    if (dev) {
+      // Faster file watching
+      config.watchOptions = {
+        poll: 1000,
+        aggregateTimeout: 300,
+        ignored: ['**/node_modules', '**/.git', '**/.next']
+      }
+      
+      // Filesystem caching for faster rebuilds
+      config.cache = {
+        type: 'filesystem'
+      }
+      
+      // Reduce module resolution time
+      config.resolve.symlinks = false
+    }
+    
     // Optimize for production
     if (!dev && !isServer) {
       config.optimization.splitChunks = {

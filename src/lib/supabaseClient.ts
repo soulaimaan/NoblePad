@@ -1,116 +1,72 @@
-// Enhanced Supabase Client with TypeScript types and error handling
-import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import { createClient, PostgrestError } from '@supabase/supabase-js'
 import { Database } from './supabaseTypes'
 
-// Type-safe Supabase client
-export type TypedSupabaseClient = SupabaseClient<Database>
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 
-// Create the main client
-export const supabase: TypedSupabaseClient = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  {
-    auth: {
-      persistSession: false, // We handle auth via wallet connection
-      autoRefreshToken: false,
-    },
-    realtime: {
-      params: {
-        eventsPerSecond: 10,
-      },
-    },
-  }
-)
+// Validate environment variables
+if (typeof window !== 'undefined' && (!supabaseUrl || !supabaseAnonKey)) {
+  console.warn(
+    '⚠️ Supabase environment variables are missing. ' +
+    'Please check your .env.local file. ' +
+    'Some features may not work correctly.'
+  )
+}
 
-// Service role client for server-side operations (only for server-side usage)
-export const supabaseServiceRole: TypedSupabaseClient = typeof window === 'undefined' 
-  ? createClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: {
-          persistSession: false,
-          autoRefreshToken: false,
-        },
-      }
-    )
-  : supabase // Use regular client on client-side
+// Create clients with fallback handling
+export const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient<Database>(supabaseUrl, supabaseAnonKey)
+  : null as any
 
-// Error handling utility
-export class SupabaseError extends Error {
-  constructor(
-    message: string,
-    public code?: string,
-    public details?: any
-  ) {
-    super(message)
-    this.name = 'SupabaseError'
+// Service role client for API routes/server-side (bypasses RLS)
+export const supabaseServiceRole = supabaseUrl && supabaseServiceRoleKey
+  ? createClient<Database>(supabaseUrl, supabaseServiceRoleKey)
+  : null as any
+
+// Global type for our typed client
+export type TypedSupabaseClient = typeof supabase
+
+// Shared helper for error handling and logging
+export async function safeSupabaseOperation<T>(
+  operation: () => Promise<{ data: T | null; error: PostgrestError | null }>,
+  context: string,
+  defaultValue: T | null = null
+): Promise<{ data: T | null; error: PostgrestError | null }> {
+  try {
+    const { data, error } = await operation()
+    if (error) {
+      console.error(`[Supabase Error] ${context}:`, error.message, error.details)
+      return { data: defaultValue, error }
+    }
+    return { data, error: null }
+  } catch (err: any) {
+    console.error(`[Supabase Exception] ${context}:`, err.message || 'Unknown error')
+    return { data: defaultValue, error: { message: err.message || 'Unknown error' } as PostgrestError }
   }
 }
 
-// Helper function to handle Supabase responses
+// Added for compatibility with legacy code
 export function handleSupabaseResponse<T>(
-  response: { data: T | null; error: any },
-  context: string = 'Database operation'
+  response: { data: T | null; error: PostgrestError | null },
+  context: string,
+  defaultValue: T | null = null
 ): T {
   if (response.error) {
-    console.error(`${context} failed:`, response.error)
-    throw new SupabaseError(
-      response.error.message || `${context} failed`,
-      response.error.code,
-      response.error.details
-    )
+    console.error(`[Supabase Error] ${context}:`, response.error.message)
+    if (defaultValue !== null) return defaultValue as T
+    throw new Error(response.error.message)
   }
-  
-  if (response.data === null) {
-    throw new SupabaseError(`${context} returned no data`)
-  }
-  
-  return response.data
+  return response.data as T
 }
 
-// Helper function for safe database operations
-export async function safeSupabaseOperation<T>(
-  operation: () => Promise<{ data: T | null; error: any }>,
-  context: string = 'Database operation',
-  defaultValue?: T
-): Promise<T | null> {
-  try {
-    const response = await operation()
-    return handleSupabaseResponse(response, context)
-  } catch (error) {
-    console.error(`${context} failed:`, error)
-    if (defaultValue !== undefined) {
-      return defaultValue
-    }
-    return null
-  }
-}
-
-// Wallet address validation
-export function validateWalletAddress(address: string): boolean {
-  return /^0x[a-fA-F0-9]{40}$/.test(address)
-}
-
-// Set user context for RLS (Row Level Security)
-export async function setUserContext(walletAddress: string, role: string = 'user') {
-  if (!validateWalletAddress(walletAddress)) {
-    throw new SupabaseError('Invalid wallet address format')
-  }
-  
-  // This would be used with a custom auth function that sets JWT claims
-  // For now, we'll use direct queries with wallet address filtering
-  return {
-    wallet_address: walletAddress.toLowerCase(),
-    role,
-    authenticated: true,
-  }
-}
-
-// Database table types for better type safety
+// Re-export common types
 export type PresaleRow = Database['public']['Tables']['presales']['Row']
 export type PresaleInsert = Database['public']['Tables']['presales']['Insert']
 export type PresaleUpdate = Database['public']['Tables']['presales']['Update']
+
+export type PresaleContributionRow = any
+export type PresaleContributionInsert = any
 
 export type TokenLockRow = Database['public']['Tables']['token_locks']['Row']
 export type TokenLockInsert = Database['public']['Tables']['token_locks']['Insert']
@@ -134,180 +90,143 @@ export class DatabaseOperations {
   // User session management
   async upsertUserSession(walletAddress: string, sessionData: Partial<UserSessionInsert>) {
     return await safeSupabaseOperation(
-      () => this.client
+      () => (this.client
         .from('user_sessions')
         .upsert({
           user_address: walletAddress.toLowerCase(),
           last_active: new Date().toISOString(),
           ...sessionData,
-        }),
+        } as any) as any),
       'User session upsert'
     )
   }
 
   // Get user statistics
   async getUserStats(walletAddress: string) {
-    const [presales, locks, sessions] = await Promise.all([
-      this.getUserPresales(walletAddress),
-      this.getUserTokenLocks(walletAddress),
-      this.getUserSession(walletAddress),
-    ])
+    const addr = walletAddress.toLowerCase();
+    
+    // Explicit individual calls to avoid complex Promise.all typing with broken inferences
+    const { data: presales } = await (this.client
+      .from('presales')
+      .select('*')
+      .eq('creator_address', addr) as any)
+      
+    const { data: locks } = await (this.client
+      .from('token_locks')
+      .select('*')
+      .eq('owner_address', addr) as any)
+      
+    const { data: sessions } = await (this.client
+      .from('user_sessions')
+      .select('*')
+      .eq('user_address', addr)
+      .single() as any)
+
+    const totalRaised = (presales as any[])?.reduce((sum, p) => sum + parseFloat(p.hard_cap || '0'), 0) || 0
+    const lastActive = (sessions as any)?.last_active
 
     return {
       presales: presales?.length || 0,
       locks: locks?.length || 0,
-      lastActive: sessions?.last_active,
-      totalRaised: presales?.reduce((sum, p) => sum + parseFloat(p.hard_cap || '0'), 0) || 0,
+      lastActive,
+      totalRaised,
     }
   }
 
   // Get user presales
   async getUserPresales(walletAddress: string) {
     return await safeSupabaseOperation(
-      () => this.client
+      () => (this.client
         .from('presales')
         .select('*')
         .eq('creator_address', walletAddress.toLowerCase())
-        .order('created_at', { ascending: false }),
+        .order('created_at', { ascending: false }) as any),
       'Get user presales',
       []
-    )
+    ) as any
+  }
+
+  // Get presale by ID
+  async getPresaleById(id: string) {
+    return await safeSupabaseOperation(
+      () => (this.client
+        .from('presales')
+        .select('*')
+        .eq('id', id)
+        .single() as any),
+      'Get presale by ID'
+    ) as any
   }
 
   // Get user token locks
   async getUserTokenLocks(walletAddress: string) {
     return await safeSupabaseOperation(
-      () => this.client
+      () => (this.client
         .from('token_locks')
         .select('*')
         .or(`owner_address.eq.${walletAddress.toLowerCase()},beneficiary_address.eq.${walletAddress.toLowerCase()}`)
-        .order('created_at', { ascending: false }),
+        .order('created_at', { ascending: false }) as any),
       'Get user token locks',
       []
-    )
+    ) as any
   }
 
   // Get user session
   async getUserSession(walletAddress: string) {
     return await safeSupabaseOperation(
-      () => this.client
+      () => (this.client
         .from('user_sessions')
         .select('*')
         .eq('user_address', walletAddress.toLowerCase())
-        .single(),
+        .single() as any),
       'Get user session'
-    )
+    ) as any
   }
 
   // Analytics queries
-  async getPresaleAnalytics(limit: number = 100) {
-    return await safeSupabaseOperation(
-      () => this.client
-        .from('presales')
-        .select(`
-          *,
-          presale_participants(count),
-          presale_timeline(count)
-        `)
-        .order('created_at', { ascending: false })
-        .limit(limit),
-      'Get presale analytics',
-      []
-    )
+  async getGlobalStats() {
+    const { data: presales } = await (this.client
+      .from('presales')
+      .select('status, hard_cap') as any)
+
+    if (!presales) return { totalRaised: '0', activePresales: 0 }
+
+    const totalRaised = presales.reduce((sum: number, p: any) => sum + parseFloat(p.hard_cap || '0'), 0)
+    const activePresales = presales.filter((p: any) => p.status === 'active').length
+
+    return {
+      totalRaised: totalRaised.toString(),
+      activePresales
+    }
   }
 
   async getTokenLockAnalytics() {
     return await safeSupabaseOperation(
-      () => this.client
+      () => (this.client
         .from('token_lock_stats')
         .select('*')
-        .order('lock_count', { ascending: false }),
-      'Get token lock analytics',
-      []
-    )
+        .single() as any),
+      'Token lock analytics'
+    ) as any
   }
 
-  // Real-time subscriptions
-  subscribeToUserPresales(walletAddress: string, callback: (payload: any) => void) {
-    return this.client
-      .channel(`user_presales_${walletAddress}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'presales',
-          filter: `creator_address=eq.${walletAddress.toLowerCase()}`,
-        },
-        callback
-      )
-      .subscribe()
-  }
-
-  subscribeToUserTokenLocks(walletAddress: string, callback: (payload: any) => void) {
-    return this.client
-      .channel(`user_token_locks_${walletAddress}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'token_locks',
-          filter: `owner_address=eq.${walletAddress.toLowerCase()}`,
-        },
-        callback
-      )
-      .subscribe()
-  }
-}
-
-// Create default instance
-export const db = new DatabaseOperations()
-
-// Helper for file uploads
-export async function uploadFile(
-  bucket: string,
-  path: string,
-  file: File,
-  options?: { upsert?: boolean; contentType?: string }
-): Promise<string | null> {
-  try {
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .upload(path, file, {
-        upsert: options?.upsert || false,
-        contentType: options?.contentType || file.type,
-      })
+  // Storage operations
+  async uploadTokenIcon(file: File, fileName: string) {
+    const { data, error } = await this.client.storage
+      .from('token-icons')
+      .upload(fileName, file)
 
     if (error) {
-      throw new SupabaseError('File upload failed', error.error, error)
+      console.error('[Supabase Storage Error] Icon upload:', error.message)
+      return { data: null, error: error as any }
     }
 
-    // Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(data.path)
+    const { data: { publicUrl } } = this.client.storage
+      .from('token-icons')
+      .getPublicUrl(fileName)
 
-    return publicUrl
-  } catch (error) {
-    console.error('File upload failed:', error)
-    return null
+    return { data: publicUrl, error: null }
   }
 }
 
-// Helper for file downloads
-export async function getFileUrl(bucket: string, path: string): Promise<string | null> {
-  try {
-    const { data } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(path)
-
-    return data.publicUrl
-  } catch (error) {
-    console.error('Get file URL failed:', error)
-    return null
-  }
-}
-
-// Export commonly used types
-export type { Database } from './supabaseTypes'
+export const db = new DatabaseOperations()

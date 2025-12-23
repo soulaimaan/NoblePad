@@ -17,12 +17,13 @@ export function PresaleFilters({
 }: PresaleFiltersProps) {
   const chains = [
     { value: 'all', label: 'All Chains' },
-    { value: 'BSC', label: 'BSC' },
     { value: 'ETH', label: 'Ethereum' },
+    { value: 'BSC', label: 'BNB Smart Chain' },
     { value: 'POLYGON', label: 'Polygon' },
-    { value: 'ARB', label: 'Arbitrum' },
+    { value: 'ARB', label: 'Arbitrum One' },
     { value: 'BASE', label: 'Base' },
-    { value: 'SOL', label: 'Solana' }
+    { value: 'SOL', label: 'Solana' },
+    { value: 'XRPL', label: 'XRPL (Native)' }
   ]
 
   const statuses = [

@@ -1,10 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { 
-  supabaseServiceRole as supabase, 
-  handleSupabaseResponse,
-  safeSupabaseOperation 
-} from '@/lib/supabaseClient'
 import { PRESALE_REQUIREMENTS } from '@/lib/chains'
+import {
+    supabaseServiceRole as supabase
+} from '@/lib/supabaseClient'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,11 +31,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify the presale exists and update status
-    const { data: presale, error: presaleError } = await supabase
+    const { data: presale, error: presaleError } = await (supabase
       .from('presales')
       .select('*')
       .eq('id', presaleId)
-      .single()
+      .single() as any)
 
     if (presaleError || !presale) {
       return NextResponse.json(
@@ -47,15 +45,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Update presale status to indicate contract creation was successful
-    const { error: updateError } = await supabase
+    const { error: updateError } = await (supabase
       .from('presales')
       .update({
         contract_address: contractAddress,
         creation_transaction: transactionHash,
         status: 'pending_review' as const,
-        contract_created_at: new Date().toISOString()
+        contract_created_at: new Date().toISOString(),
+        milestones: formData.milestones
       } as any)
-      .eq('id', presaleId)
+      .eq('id', presaleId) as any)
 
     if (updateError) {
       console.error('Failed to update presale status:', updateError)
@@ -66,17 +65,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Create presale timeline entry
-    await supabase.from('presale_timeline').insert({
+    await (supabase.from('presale_timeline').insert({
       presale_id: presaleId,
       event_type: 'contract_created',
       description: 'Presale smart contract deployed successfully',
       transaction_hash: transactionHash,
       created_at: new Date().toISOString()
-    })
+    } as any) as any)
 
     // Send notification to admin team (via Supabase Edge Function)
     try {
-      await supabase.functions.invoke('send-notification', {
+      await (supabase.functions.invoke('send-notification', {
         body: {
           type: 'new_presale_submission',
           presaleId,
@@ -84,25 +83,25 @@ export async function POST(request: NextRequest) {
           projectName: formData.projectName,
           creatorAddress: presale.creator_address,
           chainId: formData.chainId
-        }
-      })
+        } as any
+      }) as any)
     } catch (notificationError) {
       console.warn('Failed to send notification:', notificationError)
       // Don't fail the entire request for notification errors
     }
 
     // Create initial user session/dashboard entry
-    await supabase.from('user_sessions').upsert({
+    await (supabase.from('user_sessions').upsert({
       user_address: presale.creator_address.toLowerCase(),
       last_active: new Date().toISOString(),
       presales_created: 1,
       total_raised: '0'
-    }, {
+    } as any, {
       onConflict: 'user_address'
-    })
+    } as any) as any)
 
     // Log the creation event
-    await supabase.from('admin_actions').insert({
+    await (supabase.from('admin_actions').insert({
       action_type: 'presale_submitted',
       performed_by: presale.creator_address,
       target_id: presaleId,
@@ -115,7 +114,7 @@ export async function POST(request: NextRequest) {
         startDate: formData.startDate
       },
       created_at: new Date().toISOString()
-    })
+    } as any) as any)
 
     return NextResponse.json({
       success: true,

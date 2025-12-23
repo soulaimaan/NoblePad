@@ -1,28 +1,19 @@
 'use client'
 
-import { useState } from 'react'
-import { useAccount } from '@/hooks/useCompatibleAccount'
 import { CreateTokenLock } from '@/components/locks/CreateTokenLock'
 import { TokenLockManager } from '@/components/locks/TokenLockManager'
-import { Coins, Clock, Shield, Search, Plus } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
-
-interface TokenLock {
-  id: string
-  projectName: string
-  tokenSymbol: string
-  tokenAddress: string
-  lockedAmount: string
-  unlockDate: Date
-  lockType: 'Team' | 'Marketing' | 'Development' | 'Advisors'
-  beneficiary: string
-  chain: string
-  status: 'locked' | 'unlocked' | 'partially_unlocked'
-}
+import { useAccount } from '@/hooks/useCompatibleAccount'
+import { Clock, Coins, Loader, Shield } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 export default function TokenLocksPage() {
-  const { isConnected } = useAccount()
+  const { isConnected, isHydrated } = useAccount()
   const [currentView, setCurrentView] = useState<'list' | 'create'>('list')
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   const handleCreateClick = () => {
     setCurrentView('create')
@@ -30,17 +21,28 @@ export default function TokenLocksPage() {
 
   const handleLockCreated = (lockId: number) => {
     setCurrentView('list')
-    // Could show a success message or redirect to the specific lock
   }
 
   const handleCancelCreate = () => {
     setCurrentView('list')
   }
 
+  // Show nothing during SSR or while waiting for client hydration
+  if (!isMounted || !isHydrated) {
+    return (
+      <div className="min-h-screen py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center min-h-[50vh]">
+          <Loader className="animate-spin text-noble-gold" size={32} />
+        </div>
+      </div>
+    )
+  }
+
+  // Once hydrated and mounted, check if connected
   if (!isConnected) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center max-w-md">
+        <div className="text-center max-w-md p-8 noble-card">
           <div className="w-16 h-16 bg-noble-gold/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <Shield className="text-noble-gold" size={32} />
           </div>
@@ -93,7 +95,7 @@ export default function TokenLocksPage() {
                   </div>
                   <h3 className="font-semibold text-noble-gold mb-2">Multi-Chain</h3>
                   <p className="text-sm text-noble-gold/70">
-                    Support for Ethereum, BSC, Polygon, Arbitrum, and Base networks
+                    Support for Ethereum Ledger, BSC, Polygon, and XRPL networks
                   </p>
                 </div>
               </div>
@@ -116,22 +118,4 @@ export default function TokenLocksPage() {
       </div>
     </div>
   )
-
 }
-
-/*
-// Legacy interface - keeping for reference
-interface TokenLock {
-  id: string
-  projectName: string
-  tokenSymbol: string
-  tokenAddress: string
-  lockedAmount: string
-  unlockDate: Date
-  lockType: 'Team' | 'Marketing' | 'Development' | 'Advisors'
-  beneficiary: string
-  chain: string
-  status: 'locked' | 'unlocked' | 'partially_unlocked'
-}
-
-*/

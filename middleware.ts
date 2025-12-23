@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 
 export function middleware(request: NextRequest) {
   // Get response
@@ -13,17 +13,17 @@ export function middleware(request: NextRequest) {
   
   // Content Security Policy
   const csp = [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com",
-    "img-src 'self' data: https: blob:",
-    "connect-src 'self' https: wss: ws:",
-    "worker-src 'self' blob:",
-    "frame-src 'self' https:",
+    "default-src * 'unsafe-inline' 'unsafe-eval'",
+    "script-src * 'unsafe-inline' 'unsafe-eval' https: http: blob: chrome-extension:",
+    "style-src * 'unsafe-inline' https: http: blob:",
+    "font-src * https: http: data:",
+    "img-src * data: https: http: blob:",
+    "connect-src * https: http: wss: ws: chrome-extension:",
+    "worker-src * blob: 'unsafe-inline'",
+    "frame-src * https: http: chrome-extension:",
   ].join('; ')
 
-  response.headers.set('Content-Security-Policy', csp)
+  // response.headers.set('Content-Security-Policy', csp)
 
   // Set proper content type for API routes
   if (request.nextUrl.pathname.startsWith('/api/')) {

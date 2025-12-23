@@ -1,10 +1,15 @@
 'use client'
 
-import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { Menu, X } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
+
+const WalletButton = dynamic(
+  () => import('@/components/ui/WalletConnection').then((mod) => mod.WalletButton),
+  { ssr: false }
+)
 
 export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -49,7 +54,7 @@ export function Navigation() {
 
           {/* Wallet Connection */}
           <div className="flex items-center space-x-4">
-            <ConnectButton />
+            <WalletButton />
 
             {/* Mobile menu button */}
             <button

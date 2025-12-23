@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
-import { CheckCircle, XCircle, Eye, ExternalLink, Shield, AlertTriangle } from 'lucide-react'
+import { AlertTriangle, CheckCircle, ExternalLink, Eye, Shield, XCircle } from 'lucide-react'
+import { useState } from 'react'
 
 interface AdminPresaleReviewProps {
   activeTab: string
@@ -107,7 +107,7 @@ export function AdminPresaleReview({ activeTab }: AdminPresaleReviewProps) {
 
   return (
     <div className="space-y-6">
-      {currentPresales.map((presale) => (
+      {currentPresales.map((presale: any) => (
         <div key={presale.id} className="noble-card">
           <div className="flex items-start justify-between">
             <div className="flex-1">
@@ -129,7 +129,7 @@ export function AdminPresaleReview({ activeTab }: AdminPresaleReviewProps) {
                 <div>
                   <span className="text-noble-gold/70 text-sm">Submitter:</span>
                   <span className="text-noble-gold ml-2 font-mono text-xs">
-                    {presale.submitterAddress.slice(0, 10)}...
+                    {(presale as any).submitterAddress?.slice(0, 10)}...
                   </span>
                 </div>
               </div>

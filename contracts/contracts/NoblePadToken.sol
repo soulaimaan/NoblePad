@@ -15,15 +15,9 @@ contract NoblePadToken is ERC20, Ownable, ERC20Permit {
         Ownable(initialOwner)
         ERC20Permit("NoblePad")
     {
-        // Total supply: 1,000,000,000 $NPAD
+        // Total supply: 1,000,000,000 $NPAD (Fixed Supply)
         _mint(initialOwner, 1000000000 * 10**decimals());
     }
 
-    /**
-     * @dev Function to mint tokens if needed (for ecosystem growth)
-     * In production, this would be governed by the DAO or locked
-     */
-    function mint(address to, uint256 amount) public onlyOwner {
-        _mint(to, amount);
-    }
+    // Minting capability removed for maximum security and investor trust.
 }

@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/Button'
 import { presaleService } from '@/lib/presaleService'
 import { useEffect, useState } from 'react'
+import { MilestoneTemplateStep } from './steps/MilestoneTemplateStep'
 import { PresaleSetupStep } from './steps/PresaleSetupStep'
 import { ProjectInfoStep } from './steps/ProjectInfoStep'
 import { SecurityReviewStep } from './steps/SecurityReviewStep'
@@ -50,6 +51,15 @@ interface FormData {
   auditReport: string
   teamTokenLockMonths: string
   teamWallets: string[]
+  
+  // Milestones
+  milestones: Array<{
+    title: string
+    percentage: string
+    deadline: string
+    description: string
+    proofOfWork: string
+  }>
 }
 
 export function CreatePresaleForm({ currentStep, onStepChange }: CreatePresaleFormProps) {
@@ -92,7 +102,12 @@ export function CreatePresaleForm({ currentStep, onStepChange }: CreatePresaleFo
     kycDocuments: [],
     auditReport: '',
     teamTokenLockMonths: '12',
-    teamWallets: ['']
+    teamWallets: [''],
+    milestones: [
+      { title: 'MVP Release', percentage: '40', deadline: '', description: '', proofOfWork: '' },
+      { title: 'Beta Testing', percentage: '30', deadline: '', description: '', proofOfWork: '' },
+      { title: 'Mainnet Launch', percentage: '30', deadline: '', description: '', proofOfWork: '' }
+    ]
   })
   
   const [loading, setLoading] = useState(false)
@@ -120,7 +135,7 @@ export function CreatePresaleForm({ currentStep, onStepChange }: CreatePresaleFo
   }
 
   const handleNext = () => {
-    if (currentStep < 4) {
+    if (currentStep < 5) {
       onStepChange(currentStep + 1)
     }
   }
@@ -223,7 +238,7 @@ export function CreatePresaleForm({ currentStep, onStepChange }: CreatePresaleFo
     ]
     
     for (const field of required) {
-      if (!formData[field]) {
+      if (!formData[field as keyof FormData]) {
         alert(`Please fill in the ${field.replace(/([A-Z])/g, ' $1').toLowerCase()} field`)
         return false
       }
@@ -272,6 +287,8 @@ export function CreatePresaleForm({ currentStep, onStepChange }: CreatePresaleFo
       case 3:
         return <PresaleSetupStep formData={formData} updateFormData={updateFormData} />
       case 4:
+        return <MilestoneTemplateStep formData={formData} updateFormData={updateFormData} />
+      case 5:
         return <SecurityReviewStep formData={formData} updateFormData={updateFormData} />
       default:
         return null
@@ -293,7 +310,7 @@ export function CreatePresaleForm({ currentStep, onStepChange }: CreatePresaleFo
         </Button>
         
         <div className="flex space-x-3">
-          {currentStep < 4 ? (
+          {currentStep < 5 ? (
             <Button onClick={handleNext}>
               Next Step
             </Button>

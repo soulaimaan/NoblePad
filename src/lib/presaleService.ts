@@ -1,22 +1,20 @@
 // Presale service - handles blockchain interactions and database operations
-import { SUPPORTED_CHAINS, getChainById } from './chains'
-import { 
-  PRESALE_FACTORY_ABI, 
-  PRESALE_ABI, 
-  TOKEN_LOCK_ABI, 
-  ERC20_ABI,
-  getContractAddress,
-  GAS_LIMITS 
-} from './contracts'
 import { ethers } from 'ethers'
-import { 
-  supabase, 
-  db, 
-  handleSupabaseResponse, 
-  safeSupabaseOperation,
-  type PresaleInsert,
-  type PresaleRow,
-  uploadFile
+import { getChainById } from './chains'
+import {
+    ERC20_ABI,
+    GAS_LIMITS,
+    PRESALE_ABI,
+    PRESALE_FACTORY_ABI,
+    TOKEN_LOCK_ABI,
+    getContractAddress
+} from './contracts'
+import {
+    db,
+    handleSupabaseResponse,
+    safeSupabaseOperation,
+    supabase,
+    type PresaleInsert
 } from './supabaseClient'
 
 export interface PresaleFormData {
@@ -56,6 +54,12 @@ export interface PresaleFormData {
   auditReport: string
   teamTokenLockMonths: string
   teamWallets: string[]
+  milestones: Array<{
+    title: string
+    percentage: string
+    deadline: string
+    description: string
+  }>
 }
 
 export interface ContributorInfo {
@@ -199,14 +203,14 @@ class PresaleService {
       const factoryContract = new ethers.Contract(factoryAddress!, PRESALE_FACTORY_ABI as any, signer)
 
       // Estimate gas for the createPresale call
-      const gasEstimate = await factoryContract.estimateGas.createPresale(...params.contractParams, {
+      const gasEstimate = await factoryContract.createPresale.estimateGas(...params.contractParams, {
         value: params.creationFee
       })
 
       // Send transaction
       const tx = await factoryContract.createPresale(...params.contractParams, {
         value: params.creationFee,
-        gasLimit: gasEstimate.mul(120).div(100)
+        gasLimit: (gasEstimate * 120n) / 100n
       })
 
       const receipt = await tx.wait()
@@ -360,6 +364,7 @@ class PresaleService {
         audit_report: formData.auditReport || null,
         team_token_lock_months: parseInt(formData.teamTokenLockMonths),
         team_wallets: formData.teamWallets,
+        milestones: formData.milestones as any,
         
         // Metadata
         creation_transaction: transactionHash,
@@ -370,15 +375,15 @@ class PresaleService {
 
       const response = await supabase
         .from('presales')
-        .insert(presaleInsertData)
+        .insert(presaleInsertData as any)
         .select('id')
         .single()
 
-      const savedPresale = handleSupabaseResponse(response, 'Submit presale to database')
+      const savedPresale = handleSupabaseResponse(response as any, 'Submit presale to database')
 
       // Create initial timeline entry
       await this.createTimelineEntry(
-        savedPresale.id,
+        (savedPresale as any).id,
         'presale_submitted',
         'Presale submitted for review',
         transactionHash
@@ -392,7 +397,7 @@ class PresaleService {
 
       return {
         success: true,
-        presaleId: savedPresale.id
+        presaleId: (savedPresale as any).id
       }
     } catch (error: any) {
       console.error('Failed to submit presale to database:', error)
@@ -426,14 +431,14 @@ class PresaleService {
     transactionHash?: string
   ): Promise<void> {
     await safeSupabaseOperation(
-      () => supabase
+      () => (supabase
         .from('presale_timeline')
         .insert({
           presale_id: presaleId,
           event_type: eventType,
           description,
           transaction_hash: transactionHash,
-        }),
+        } as any) as any),
       'Create timeline entry'
     )
   }

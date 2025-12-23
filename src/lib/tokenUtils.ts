@@ -1,6 +1,15 @@
 import { ethers } from 'ethers'
 import { getChainById, getContractAddress } from './chains'
-import { TokenInfo } from '@/types/contracts/TokenFactory'
+// Token information from deployment
+export interface TokenInfo {
+  tokenAddress: string
+  creator: string
+  name: string
+  symbol: string
+  totalSupply: bigint
+  createdAt: bigint
+  isActive: boolean
+}
 
 // Token deployment configuration
 export interface TokenDeploymentConfig {

@@ -1,6 +1,6 @@
 'use client'
 
-import { CheckCircle, Circle, Clock, Shield, FileText, Coins } from 'lucide-react'
+import { CheckCircle, Coins, FileText, Shield, Timer } from 'lucide-react'
 
 interface CreatePresaleStepsProps {
   currentStep: number
@@ -24,10 +24,16 @@ export function CreatePresaleSteps({ currentStep }: CreatePresaleStepsProps) {
       number: 3,
       title: 'Presale Setup',
       description: 'Sale parameters',
-      icon: Clock,
+      icon: Timer,
     },
     {
       number: 4,
+      title: 'Milestones',
+      description: 'Fund release plan',
+      icon: Timer,
+    },
+    {
+      number: 5,
       title: 'Security & Review',
       description: 'KYC and audit info',
       icon: Shield,

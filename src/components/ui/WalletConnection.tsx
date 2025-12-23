@@ -1,171 +1,76 @@
 'use client'
 
-import { useAccount, useDisconnect, useConnect } from 'wagmi'
-import { Button } from './button'
+import { useUnifiedWallet, WalletType } from '@/components/providers/UnifiedWalletProvider'
+import { Button } from '@/components/ui/Button'
 import { useEffect, useState } from 'react'
-import { injected, metaMask } from 'wagmi/connectors'
 
 export function ConnectWallet() {
+  const { connect, isConnecting } = useUnifiedWallet()
+  const [showOptions, setShowOptions] = useState(false)
   const [isClient, setIsClient] = useState(false)
-  const [showWalletOptions, setShowWalletOptions] = useState(false)
-  
-  // Always call hooks (React rule)
-  const { connect, connectors, error, isLoading, pendingConnector } = useConnect()
-  
+
   useEffect(() => {
     setIsClient(true)
   }, [])
 
-  // Check if WalletConnect is properly configured
-  const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || ''
-  const isValidProjectId = projectId && 
-    projectId.length > 0 && 
-    !projectId.includes('project-id') && 
-    !projectId.includes('placeholder')
+  if (!isClient) return <Button variant="outline">Connect Wallet</Button>
 
-  // Don't render anything on server side to avoid hydration mismatch
-  if (!isClient) {
-    return <Button variant="outline">Connect Wallet</Button>
+  const handleConnect = async (type: WalletType) => {
+    if (!type) return
+    await connect(type)
+    setShowOptions(false)
   }
 
-  // If WalletConnect is configured, use Web3Modal
-  if (isValidProjectId) {
-    return <w3m-button />
-  }
-
-  // Use Wagmi connectors for proper wallet detection
-  const connectWallet = async (connectorId: string) => {
-    try {
-      // Handle Phantom (Solana) separately since it's not an Ethereum wallet
-      if (connectorId === 'phantom') {
-        const phantom = window.solana || window.phantom?.solana
-        if (!phantom || !phantom.isPhantom) {
-          window.open('https://phantom.app/', '_blank')
-          return
-        }
-        
-        try {
-          const response = await phantom.connect()
-          console.log('Connected to Phantom:', response.publicKey.toString())
-          setShowWalletOptions(false)
-          return
-        } catch (error) {
-          console.error('Phantom connection failed:', error)
-          alert('Failed to connect to Phantom wallet')
-          return
-        }
-      }
-
-      // Find the connector by ID
-      const connector = connectors.find(c => c.id === connectorId || c.name.toLowerCase().includes(connectorId))
-      
-      if (!connector) {
-        alert(`${connectorId} wallet not found`)
-        return
-      }
-
-      // Connect using Wagmi
-      await connect({ connector })
-      setShowWalletOptions(false)
-      
-    } catch (error: any) {
-      console.error('Failed to connect wallet:', error)
-      if (error.code === 4001 || error.message?.includes('rejected')) {
-        alert('Wallet connection was rejected by user')
-      } else {
-        alert(`Failed to connect to wallet. Please try again.`)
-      }
-    }
-  }
-
-  // Check what connectors are available
-  const getAvailableWallets = () => {
-    const wallets = []
-    
-    // Debug: log available connectors
-    if (isClient) {
-      console.log('Available connectors:', connectors.map(c => ({ id: c.id, name: c.name, type: c.type })))
-      console.log('Window ethereum:', window.ethereum ? {
-        isMetaMask: window.ethereum.isMetaMask,
-        isTrust: window.ethereum.isTrust,
-        isCoinbaseWallet: window.ethereum.isCoinbaseWallet,
-        providers: window.ethereum.providers?.length || 0
-      } : 'Not found')
-    }
-    
-    // Add connectors that are actually available
-    connectors.forEach(connector => {
-      if (connector.id === 'metaMask') {
-        wallets.push({ id: 'metaMask', name: 'MetaMask', color: 'bg-orange-500', icon: 'M' })
-      } else if (connector.id === 'injected') {
-        wallets.push({ id: 'injected', name: 'Injected Wallet', color: 'bg-blue-500', icon: 'W' })
-      } else if (connector.id === 'walletConnect') {
-        wallets.push({ id: 'walletConnect', name: 'WalletConnect', color: 'bg-blue-600', icon: 'W' })
-      }
-    })
-    
-    // Add Phantom for Solana (always available as it's external)
-    wallets.push({ id: 'phantom', name: 'Phantom (Solana)', color: 'bg-purple-500', icon: 'P' })
-    
-    // If no wallets detected but ethereum exists, add a generic option
-    if (wallets.length === 1 && isClient && window.ethereum) { // Only Phantom
-      wallets.unshift({ id: 'injected', name: 'Browser Wallet', color: 'bg-gray-500', icon: 'B' })
-    }
-    
-    return wallets
-  }
-
-  if (showWalletOptions) {
-    const availableWallets = getAvailableWallets()
-    
+  if (showOptions) {
     return (
-      <div className="relative">
+       <div className="relative">
         <div className="absolute right-0 top-full mt-2 w-64 bg-noble-gray border border-noble-gold/20 rounded-lg shadow-lg z-50 p-4">
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium text-noble-gold mb-3">Connect Wallet</h3>
-            
-            {availableWallets.map((wallet) => (
-              <Button 
-                key={wallet.id}
+          <div className="space-y-3">
+             <h3 className="text-sm font-medium text-noble-gold mb-3">Select Chain</h3>
+             
+             {/* EVM */}
+             <Button 
                 variant="outline" 
-                className="w-full justify-start"
-                onClick={() => connectWallet(wallet.id)}
-                disabled={isLoading && pendingConnector?.id === wallet.id}
-              >
+                className="w-full justify-start text-left bg-black/20 hover:bg-black/40 border-noble-gold/30"
+                onClick={() => handleConnect('evm')}
+                disabled={isConnecting}
+             >
                 <div className="flex items-center gap-3">
-                  <div className={`w-6 h-6 ${wallet.color} rounded-full flex items-center justify-center text-white text-xs font-bold`}>
-                    {wallet.icon}
-                  </div>
-                  {wallet.name}
-                  {isLoading && pendingConnector?.id === wallet.id && (
-                    <div className="ml-auto text-xs">Connecting...</div>
-                  )}
+                   <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-[10px] text-white font-bold">E</div>
+                   <div className="flex flex-col">
+                       <span className="text-sm font-bold">EVM / Ethereum</span>
+                       <span className="text-[10px] text-gray-400">Metamask, Rainbow, etc.</span>
+                   </div>
                 </div>
-              </Button>
-            ))}
+             </Button>
 
-            {availableWallets.length === 0 && (
-              <div className="text-center py-4 text-noble-gold/60 text-sm">
-                No wallets detected. Please install a wallet extension.
-              </div>
-            )}
+             {/* XRPL */}
+             <Button 
+                variant="outline" 
+                className="w-full justify-start text-left bg-black/20 hover:bg-black/40 border-noble-gold/30"
+                onClick={() => handleConnect('xrpl')}
+                disabled={isConnecting}
+             >
+                <div className="flex items-center gap-3">
+                   <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center text-[10px] text-white font-bold border border-white/20">X</div>
+                   <div className="flex flex-col">
+                       <span className="text-sm font-bold">XRP Ledger</span>
+                       <span className="text-[10px] text-gray-400">Xaman (Xumm) Wallet</span>
+                   </div>
+                </div>
+             </Button>
 
-            <div className="pt-2 border-t border-noble-gold/10">
+
+             <div className="pt-2 border-t border-noble-gold/10">
               <Button 
                 variant="ghost" 
                 size="sm" 
                 className="w-full text-xs"
-                onClick={() => setShowWalletOptions(false)}
+                onClick={() => setShowOptions(false)}
               >
                 Cancel
               </Button>
             </div>
-
-            {error && (
-              <div className="text-red-400 text-xs mt-2 p-2 bg-red-500/10 rounded">
-                {error.message}
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -175,41 +80,52 @@ export function ConnectWallet() {
   return (
     <Button 
       variant="outline"
-      onClick={() => setShowWalletOptions(true)}
+      onClick={() => setShowOptions(true)}
+      disabled={isConnecting}
     >
-      Connect Wallet
+      {isConnecting ? 'Connecting...' : 'Connect Wallet'}
     </Button>
   )
 }
 
 export function WalletInfo() {
-  const { address, isConnected, chain } = useAccount()
-  const { disconnect } = useDisconnect()
+  const { address, balance, disconnect, walletType, chainType } = useUnifiedWallet()
   const [isClient, setIsClient] = useState(false)
   
   useEffect(() => {
     setIsClient(true)
   }, [])
 
-  if (!isClient || !isConnected || !address) {
-    return null
-  }
+  if (!isClient || !address) return null
 
   return (
-    <div className="flex items-center gap-2">
-      <div className="text-sm">
-        <div className="font-medium">
-          {address.slice(0, 6)}...{address.slice(-4)}
-        </div>
-        {chain && (
-          <div className="text-xs text-muted-foreground">
-            {chain.name}
-          </div>
-        )}
+    <div className="flex items-center gap-3 bg-noble-gray/40 border border-noble-gold/20 rounded-lg px-3 py-1.5 hover:bg-noble-gray/60 transition-colors">
+      
+      {/* Network Badge */}
+      <div className={`
+        flex items-center justify-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider
+        ${chainType === 'xrpl' ? 'bg-black text-white border border-white/10' : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'}
+      `}>
+          {chainType === 'xrpl' ? 'XRPL' : 'EVM'}
       </div>
+
+      <div className="flex flex-col items-end">
+        <span className="text-sm font-bold text-noble-gold">
+            {parseFloat(balance.formatted).toFixed(2)} {balance.symbol}
+        </span>
+        <span className="text-[10px] text-gray-400 font-mono">
+          {address && typeof address === 'string' && !address.includes('[object') 
+            ? `${address.slice(0, 4)}...${address.slice(-4)}` 
+            : ''}
+        </span>
+      </div>
+
+      <div className="h-6 w-px bg-white/10 mx-1" />
+
       <Button 
-        variant="outline" 
+        variant="ghost" 
         size="sm"
+        className="h-6 px-2 text-xs hover:bg-red-500/20 hover:text-red-400"
         onClick={() => disconnect()}
       >
         Disconnect
@@ -219,7 +135,16 @@ export function WalletInfo() {
 }
 
 export function WalletButton() {
-  const { isConnected } = useAccount()
+  const { isConnected } = useUnifiedWallet()
+  const [mounted, setMounted] = useState(false)
+  
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return <Button variant="outline">Connect Wallet</Button>
+  }
   
   if (isConnected) {
     return <WalletInfo />

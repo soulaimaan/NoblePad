@@ -1,23 +1,17 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
-import { useVanillaWeb3 } from '@/components/providers/VanillaWeb3Provider'
-import { tokenLockService, type TokenLockInfo } from '@/lib/tokenLockService'
+import { useAccount } from '@/hooks/useCompatibleAccount'
 import { SUPPORTED_CHAINS, getChainById } from '@/lib/chains'
-import { 
-  Lock, 
-  Unlock, 
-  Calendar, 
-  Users, 
-  ExternalLink,
-  CheckCircle,
-  Clock,
-  AlertTriangle,
-  RefreshCw,
-  Eye,
-  Download
+import { tokenLockService, type TokenLockInfo } from '@/lib/tokenLockService'
+import {
+    ExternalLink,
+    Eye,
+    Lock,
+    RefreshCw,
+    Unlock
 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 interface TokenLockManagerProps {
   showCreateButton?: boolean
@@ -25,26 +19,32 @@ interface TokenLockManagerProps {
 }
 
 export function TokenLockManager({ showCreateButton = true, onCreateClick }: TokenLockManagerProps) {
-  const { wallet } = useVanillaWeb3()
+  const { address, isConnected } = useAccount()
+  const walletAddress = address
   const [locks, setLocks] = useState<TokenLockInfo[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [selectedChainId, setSelectedChainId] = useState(1) // Default to Ethereum
   const [filter, setFilter] = useState<'all' | 'active' | 'claimable' | 'claimed'>('all')
   const [selectedLock, setSelectedLock] = useState<TokenLockInfo | null>(null)
   const [isUnlocking, setIsUnlocking] = useState<number | null>(null)
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
-    if (wallet.isConnected && wallet.address) {
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (isConnected && walletAddress) {
       loadLocks()
     }
-  }, [wallet.isConnected, wallet.address, selectedChainId])
+  }, [isConnected, walletAddress, selectedChainId])
 
   const loadLocks = async () => {
-    if (!wallet.address) return
+    if (!walletAddress) return
     
     setIsLoading(true)
     try {
-      const userLocks = await tokenLockService.getLocksByOwner(wallet.address, selectedChainId)
+      const userLocks = await tokenLockService.getLocksByOwner(walletAddress, selectedChainId)
       setLocks(userLocks)
     } catch (error) {
       console.error('Failed to load locks:', error)
@@ -54,11 +54,11 @@ export function TokenLockManager({ showCreateButton = true, onCreateClick }: Tok
   }
 
   const handleUnlock = async (lock: TokenLockInfo) => {
-    if (!wallet.address) return
+    if (!walletAddress) return
 
     setIsUnlocking(lock.id)
     try {
-      const result = await tokenLockService.unlockTokens(lock.id, lock.chainId, wallet.address)
+      const result = await tokenLockService.unlockTokens(lock.id, lock.chainId, walletAddress)
       
       if (result.success) {
         alert(`🎉 Tokens unlocked successfully!\n\nTransaction: ${result.transactionHash}`)
@@ -132,7 +132,11 @@ export function TokenLockManager({ showCreateButton = true, onCreateClick }: Tok
     return formatted.toLocaleString()
   }
 
-  if (!wallet.isConnected) {
+  if (!isMounted) {
+    return <div className="h-48 flex items-center justify-center animate-pulse bg-noble-gray/20 rounded-xl" />
+  }
+
+  if (!isConnected) {
     return (
       <div className="text-center py-12">
         <Lock className="mx-auto mb-4 text-noble-gold/50" size={48} />
@@ -333,13 +337,13 @@ export function TokenLockManager({ showCreateButton = true, onCreateClick }: Tok
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => window.open(getBlockExplorerUrl(lock.chainId, lock.token), '_blank')}
+                        onClick={() => window.open(getBlockExplorerUrl(lock.chainId, lock.token)!, '_blank')}
                       >
                         <ExternalLink size={16} />
                       </Button>
                     )}
 
-                    {status === 'claimable' && lock.beneficiary.toLowerCase() === wallet.address?.toLowerCase() && (
+                    {status === 'claimable' && lock.beneficiary.toLowerCase() === walletAddress?.toLowerCase() && (
                       <Button
                         onClick={() => handleUnlock(lock)}
                         disabled={isUnlocking === lock.id}
@@ -443,7 +447,7 @@ export function TokenLockManager({ showCreateButton = true, onCreateClick }: Tok
                         variant="outline"
                         size="sm"
                         onClick={() => window.open(
-                          getBlockExplorerUrl(selectedLock.chainId, selectedLock.transactionHash)?.replace('/address/', '/tx/'),
+                          getBlockExplorerUrl(selectedLock.chainId, selectedLock.transactionHash)!.replace('/address/', '/tx/'),
                           '_blank'
                         )}
                       >

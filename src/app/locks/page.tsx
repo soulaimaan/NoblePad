@@ -1,9 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import { useAccount } from '@/hooks/useCompatibleAccount'
-import { Lock, Clock, Shield, Search } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
+import { Clock, Loader, Lock, Search, Shield } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 interface LiquidityLock {
   id: string
@@ -21,65 +20,88 @@ export default function LiquidityLocksPage() {
   const { isConnected } = useAccount()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedChain, setSelectedChain] = useState('all')
+  const [isMounted, setIsMounted] = useState(false)
+  
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
-  // Mock data - will be replaced with API calls
-  const mockLocks: LiquidityLock[] = [
-    {
-      id: '1',
-      projectName: 'NobleSwap',
-      tokenSymbol: 'NST',
-      lpTokenAddress: '0x742d35cc6bf5d532a0b17e0bfe95e5b4e6a8f9e4',
-      amount: '400 BNB',
-      unlockDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
-      percentage: 80,
-      chain: 'BSC',
-      status: 'locked'
-    },
-    {
-      id: '2',
-      projectName: 'CryptoVault',
-      tokenSymbol: 'CVT',
-      lpTokenAddress: '0x456789abcdef123456789abcdef123456789abcde',
-      amount: '225 ETH',
-      unlockDate: new Date(Date.now() + 18 * 30 * 24 * 60 * 60 * 1000), // 18 months from now
-      percentage: 75,
-      chain: 'ETH',
-      status: 'locked'
-    },
-    {
-      id: '3',
-      projectName: 'MetaSwap',
-      tokenSymbol: 'MSP',
-      lpTokenAddress: '0xabcdef123456789abcdef123456789abcdef123456',
-      amount: '637 MATIC',
-      unlockDate: new Date(Date.now() + 12 * 30 * 24 * 60 * 60 * 1000), // 12 months from now
-      percentage: 85,
-      chain: 'POLYGON',
-      status: 'locked'
-    },
-    {
-      id: '4',
-      projectName: 'BaseSwap',
-      tokenSymbol: 'BSWAP',
-      lpTokenAddress: '0x123abc456def789abc123def456abc789def123ab',
-      amount: '500 ETH',
-      unlockDate: new Date(Date.now() + 18 * 30 * 24 * 60 * 60 * 1000), // 18 months from now
-      percentage: 85,
-      chain: 'BASE',
-      status: 'locked'
-    },
-    {
-      id: '5',
-      projectName: 'SolanaFi',
-      tokenSymbol: 'SOLF',
-      lpTokenAddress: 'H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG',
-      amount: '15,000 SOL',
-      unlockDate: new Date(Date.now() + 12 * 30 * 24 * 60 * 60 * 1000), // 12 months from now
-      percentage: 80,
-      chain: 'SOL',
-      status: 'locked'
-    }
-  ]
+  // Mock data defined INSIDE component or useEffect if it had random dates,
+  // but here it uses Date.now() which is dynamic.
+  // We should memoize or state it to be safe for hydration.
+  const [mockLocks, setMockLocks] = useState<LiquidityLock[]>([])
+
+  useEffect(() => {
+    const now = Date.now()
+    setMockLocks([
+      {
+        id: '1',
+        projectName: 'NobleSwap',
+        tokenSymbol: 'NST',
+        lpTokenAddress: '0x742d35cc6bf5d532a0b17e0bfe95e5b4e6a8f9e4',
+        amount: '400 BNB',
+        unlockDate: new Date(now + 365 * 24 * 60 * 60 * 1000), // 1 year from now
+        percentage: 80,
+        chain: 'BSC',
+        status: 'locked'
+      },
+      {
+        id: '2',
+        projectName: 'CryptoVault',
+        tokenSymbol: 'CVT',
+        lpTokenAddress: '0x456789abcdef123456789abcdef123456789abcde',
+        amount: '225 ETH',
+        unlockDate: new Date(now + 18 * 30 * 24 * 60 * 60 * 1000), // 18 months from now
+        percentage: 75,
+        chain: 'ETH',
+        status: 'locked'
+      },
+      {
+        id: '3',
+        projectName: 'MetaSwap',
+        tokenSymbol: 'MSP',
+        lpTokenAddress: '0xabcdef123456789abcdef123456789abcdef123456',
+        amount: '637 MATIC',
+        unlockDate: new Date(now + 12 * 30 * 24 * 60 * 60 * 1000), // 12 months from now
+        percentage: 85,
+        chain: 'POLYGON',
+        status: 'locked'
+      },
+      {
+        id: '4',
+        projectName: 'BaseSwap',
+        tokenSymbol: 'BSWAP',
+        lpTokenAddress: '0x123abc456def789abc123def456abc789def123ab',
+        amount: '500 ETH',
+        unlockDate: new Date(now + 18 * 30 * 24 * 60 * 60 * 1000), // 18 months from now
+        percentage: 85,
+        chain: 'BASE',
+        status: 'locked'
+      },
+      {
+        id: '5',
+        projectName: 'SolanaFi',
+        tokenSymbol: 'SOLF',
+        lpTokenAddress: 'H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG',
+        amount: '15,000 SOL',
+        unlockDate: new Date(now + 12 * 30 * 24 * 60 * 60 * 1000), // 12 months from now
+        percentage: 80,
+        chain: 'SOL',
+        status: 'locked'
+      },
+      {
+        id: '6',
+        projectName: 'XRP-Venture',
+        tokenSymbol: 'XVTR',
+        lpTokenAddress: 'rNoblePadXRPToken...',
+        amount: '50,000 XRP',
+        unlockDate: new Date(now + 6 * 30 * 24 * 60 * 60 * 1000), // 6 months
+        percentage: 100,
+        chain: 'XRPL',
+        status: 'locked'
+      }
+    ])
+  }, [])
 
   const filteredLocks = mockLocks.filter(lock => {
     const matchesSearch = lock.projectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -111,6 +133,16 @@ export default function LiquidityLocksPage() {
       case 'partially_unlocked': return 'text-yellow-400 bg-yellow-400/20'
       default: return 'text-noble-gold bg-noble-gold/20'
     }
+  }
+
+  if (!isMounted) {
+    return (
+      <div className="min-h-screen py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center min-h-[50vh]">
+          <Loader className="animate-spin text-noble-gold" size={32} />
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -153,6 +185,7 @@ export default function LiquidityLocksPage() {
             <option value="ARB">Arbitrum</option>
             <option value="BASE">Base</option>
             <option value="SOL">Solana</option>
+            <option value="XRPL">XRPL</option>
           </select>
         </div>
 
