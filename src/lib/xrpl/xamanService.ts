@@ -1,9 +1,9 @@
 'use client'
 
-import { Xumm } from 'xumm'
 import { XRPL_NETWORKS, XRPL_TOKENS } from './constants'
 
 const xummApiKey = process.env.NEXT_PUBLIC_XUMM_API_KEY || ''
+const xummApiSecret = process.env.NEXT_PUBLIC_XUMM_API_SECRET || ''
 
 if (typeof window !== 'undefined' && !xummApiKey) {
     console.warn('⚠️ NEXT_PUBLIC_XUMM_API_KEY is missing. Xaman connection will run in simulation mode.')
@@ -15,124 +15,154 @@ export interface XamanUser {
   token?: string
 }
 
-export class XamanService {
-  private _sdk: Xumm | null = null
-  private _jwt: string | null = null
-  private _initError: string | null = null
-
-  private getSdk() {
-    if (typeof window === 'undefined') return null
-    
-    if (!this._sdk && xummApiKey && !this._initError) {
-        try {
-            console.log('🏗️ Initializing Xumm SDK for Origin:', window.location.origin)
-            // Xumm constructor can throw if origin is blocked or API key is malformed
-            this._sdk = new Xumm(xummApiKey)
-            
-            this._sdk.on("ready", () => {
-                console.log("Xaman SDK Ready")
-            })
-
-            this._sdk.on("error", (err: any) => {
-                console.error("Xaman SDK Internal Error:", err)
-                if (err?.message?.includes('authorized') || err?.error === 'access_denied') {
-                    this._initError = 'Origin not authorized in Xaman Portal'
-                }
-            })
-        } catch (e: any) {
-            console.error('❌ Xumm SDK Initialization Error:', e)
-            if (e?.message?.includes('authorized') || e?.message?.includes('origin')) {
-                this._initError = 'Origin not authorized in Xaman Portal'
-            } else {
-                this._initError = e.message || 'Unknown initialization error'
-            }
-        }
-    }
-    return this._sdk
+export interface XummPayloadResponse {
+  uuid: string
+  next: {
+    always: string
   }
+  refs: {
+    qr_png: string
+    qr_matrix: string
+    websocket_status: string
+  }
+}
+
+export class XamanService {
+  private _connectedAccount: string | null = null
 
   constructor() {
-    // No-op
+    // Check for stored session
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('xaman_account')
+      if (stored) {
+        this._connectedAccount = stored
+      }
+    }
   }
 
   getInitError() {
-    return this._initError
+    if (!xummApiKey) return 'API Key not configured'
+    return null
   }
 
-  async connect(): Promise<any> {
-    const sdk = this.getSdk()
-    if (!sdk) {
-      console.warn('Xaman SDK not available. Using Simulation Mode.')
-      return { 
-        created: { 
-          next: { always: 'https://xumm.app' },
-          refs: { qr_png: 'https://placehold.co/200x200?text=Scan+QR' } 
-        },
-        payload: { uuid: 'mock-uuid' }
+  async createSignInPayload(): Promise<{ uuid: string; qrUrl: string; wsUrl: string } | null> {
+    if (!xummApiKey) {
+      console.warn('Xaman: No API key, using simulation mode')
+      return {
+        uuid: 'simulation',
+        qrUrl: 'https://placehold.co/256x256/1a1a2e/d4af37?text=Scan+QR',
+        wsUrl: ''
       }
     }
 
     try {
-      // The authorize method initiates the sign-in flow
-      // It handles the popup/redirect automatically in most cases
-      const auth = await sdk.authorize()
-      return auth
-    } catch (e: any) {
-      console.error("Xaman Auth Failed:", e)
-      
-       // specific help for the "Invalid client/redirect URL" error
-       if (e?.error === 'access_denied' || e?.message?.includes('redirect') || e?.message?.includes('client') || e?.message?.includes('authorized')) {
-        const isNonStandardPort = window.location.port !== '3000';
-        
-        console.error(`
-🚨 XAMAN CONFIGURATION ERROR:
-The Xaman API rejected the connection. This usually means:
-1. The API Key in .env is incorrect.
-2. The 'Redirect URI' in Xaman Developer Console is missing this origin.
-   -> Go to https://apps.xumm.dev
-   -> Select your App
-   -> Settings > OAuth / Authorization
-   -> Add '${window.location.origin}' to the Redirect URIs list.
-   ${isNonStandardPort ? `
-⚠️ PORT WARNING: You are running on port ${window.location.port}.
-   Your Developer Console probably only has 'http://localhost:3000/' whitelisted.
-   Stop your server and check for other running terminal instances to free up port 3000.
-   ` : ''}
-        `)
+      // Use Xumm REST API directly
+      const response = await fetch('https://xumm.app/api/v1/platform/payload', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': xummApiKey,
+          'X-API-Secret': xummApiSecret
+        },
+        body: JSON.stringify({
+          txjson: {
+            TransactionType: 'SignIn'
+          },
+          options: {
+            submit: false,
+            return_url: {
+              web: window.location.origin
+            }
+          }
+        })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.error('Xumm API Error:', errorData)
+        throw new Error(errorData.error?.message || 'Failed to create payload')
       }
+
+      const data = await response.json()
+      console.log('Xumm Payload Created:', data.uuid)
+
+      return {
+        uuid: data.uuid,
+        qrUrl: data.refs.qr_png,
+        wsUrl: data.refs.websocket_status
+      }
+    } catch (e: any) {
+      console.error('Failed to create Xaman sign-in payload:', e)
       throw e
     }
   }
 
+  async subscribeToPayload(uuid: string, onSigned: (account: string) => void, onError: (msg: string) => void) {
+    if (uuid === 'simulation') {
+      // Simulate successful sign-in after 3 seconds
+      setTimeout(() => {
+        onSigned('rSimulatedXRPLAddress12345')
+      }, 3000)
+      return
+    }
+
+    try {
+      // Poll for payload status instead of WebSocket (more reliable)
+      const pollInterval = setInterval(async () => {
+        try {
+          const response = await fetch(`https://xumm.app/api/v1/platform/payload/${uuid}`, {
+            headers: {
+              'X-API-Key': xummApiKey,
+              'X-API-Secret': xummApiSecret
+            }
+          })
+
+          if (!response.ok) {
+            clearInterval(pollInterval)
+            onError('Failed to check payload status')
+            return
+          }
+
+          const data = await response.json()
+
+          if (data.meta.resolved) {
+            clearInterval(pollInterval)
+            
+            if (data.meta.signed) {
+              const account = data.response.account
+              this._connectedAccount = account
+              localStorage.setItem('xaman_account', account)
+              onSigned(account)
+            } else {
+              onError('Sign-in was rejected or expired')
+            }
+          }
+        } catch (e) {
+          console.error('Polling error:', e)
+        }
+      }, 2000) // Poll every 2 seconds
+
+      // Stop polling after 5 minutes
+      setTimeout(() => {
+        clearInterval(pollInterval)
+      }, 5 * 60 * 1000)
+
+    } catch (e: any) {
+      console.error('Subscription error:', e)
+      onError(e.message || 'Connection error')
+    }
+  }
+
   async disconnect() {
-    const sdk = this.getSdk()
-    if (sdk) {
-        await sdk.logout()
+    this._connectedAccount = null
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('xaman_account')
     }
   }
 
   async getUser(): Promise<XamanUser | null> {
-    const sdk = this.getSdk()
-    if (!sdk) return null
-    
-    try {
-        const user = (sdk as any).user
-        if (user && user.account) {
-            // SDK properties might be getters returning promises or direct values
-            const account = await Promise.resolve(user.account)
-            const name = await Promise.resolve(user.name)
-            const token = await Promise.resolve(user.token)
-            
-            if (account && typeof account === 'string') {
-                return {
-                    account,
-                    name: typeof name === 'string' ? name : undefined,
-                    token: typeof token === 'string' ? token : undefined
-                }
-            }
-        }
-    } catch (e) {
-        console.warn("Error getting Xaman user details:", e)
+    if (this._connectedAccount) {
+      return { account: this._connectedAccount }
     }
     return null
   }
@@ -169,8 +199,7 @@ The Xaman API rejected the connection. This usually means:
   }
 
   async getBelgraveBalance(address: string): Promise<string> {
-     // Fetch TrustLines to find Belgrave
-      try {
+     try {
       const response = await fetch(XRPL_NETWORKS.MAINNET, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -192,49 +221,6 @@ The Xaman API rejected the connection. This usually means:
       console.error("Failed to fetch Belgrave balance", e)
       return '0'
     }
-  }
-
-  async createTrustLine(userAddress: string) {
-    const sdk = this.getSdk()
-    if (!sdk) {
-        console.log('Simulation: Creating Trust Line for BELGRAVE')
-        return { mock: true, uuid: 'mock-trustline' }
-    }
-
-    const payload = {
-      TransactionType: 'TrustSet',
-      Account: userAddress,
-      LimitAmount: {
-        currency: XRPL_TOKENS.BELGRAVE.currency,
-        issuer: XRPL_TOKENS.BELGRAVE.issuer,
-        value: '1000000000' 
-      }
-    }
-
-    const created = await sdk.payload?.create(payload as any)
-    return created
-  }
-
-  async createSignInPayload() {
-    const sdk = this.getSdk()
-    if (!sdk) {
-        return { 
-            created: { 
-                refs: { qr_png: 'https://placehold.co/200x200?text=Simulation+QR' } 
-            },
-            payload: { uuid: 'simulation' }
-        }
-    }
-
-    return await sdk.payload?.create({
-        TransactionType: 'SignIn'
-    } as any)
-  }
-
-  async subscribeToPayload(uuid: string, onEvent: (event: any) => void) {
-    const sdk = this.getSdk()
-    if (!sdk) return null
-    return await sdk.payload?.subscribe(uuid, onEvent)
   }
 }
 

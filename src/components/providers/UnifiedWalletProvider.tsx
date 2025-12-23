@@ -108,45 +108,39 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
         setIsXrplConnecting(true)
         setXamanStatus('Creating sign-in request...')
         setShowXamanModal(true)
+        setXamanQr(null)
         
         try {
-            const payload: any = await xamanService.createSignInPayload()
+            const payload = await xamanService.createSignInPayload()
             
-            if (payload?.created?.refs?.qr_png) {
-                setXamanQr(payload.created.refs.qr_png)
-                setXamanStatus('Please scan the QR code')
+            if (payload?.qrUrl) {
+                setXamanQr(payload.qrUrl)
+                setXamanStatus('Please scan the QR code with Xaman')
                 
-                // Subscribe to events
-                const subscription = await xamanService.subscribeToPayload(payload.payload.uuid, async (event: any) => {
-                    if (event.data.signed === true) {
-                        setXamanStatus('Verified! Getting account...')
-                        const user = await xamanService.getUser()
-                        if (user?.account) {
-                            setXrplAddress(user.account)
-                            setActiveWallet('xrpl')
-                            setShowXamanModal(false)
-                            if (isEvmConnected) disconnectEvm()
-                        }
-                    } else if (event.data.signed === false || event.data.expired === true) {
-                        setXamanStatus('Request expired or rejected.')
-                        setTimeout(() => setShowXamanModal(false), 2000)
+                // Subscribe to payload events
+                xamanService.subscribeToPayload(
+                    payload.uuid,
+                    async (account: string) => {
+                        setXamanStatus('Verified! Connected.')
+                        setXrplAddress(account)
+                        setActiveWallet('xrpl')
+                        setShowXamanModal(false)
+                        setIsXrplConnecting(false)
+                        if (isEvmConnected) disconnectEvm()
+                    },
+                    (errorMsg: string) => {
+                        setXamanStatus(`Error: ${errorMsg}`)
+                        setTimeout(() => setShowXamanModal(false), 3000)
+                        setIsXrplConnecting(false)
                     }
-                })
+                )
             } else {
-                // Fallback to legacy authorize
-                await xamanService.connect()
-                const user = await xamanService.getUser()
-                if (user?.account) {
-                    setXrplAddress(user.account)
-                    setActiveWallet('xrpl')
-                    setShowXamanModal(false)
-                }
+                setXamanStatus('Failed to create QR code')
+                setIsXrplConnecting(false)
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error("XRPL Connect Error", e)
-            setXamanStatus('Connection failed.')
-            setTimeout(() => setShowXamanModal(false), 2000)
-        } finally {
+            setXamanStatus(`Connection failed: ${e.message || 'Unknown error'}`)
             setIsXrplConnecting(false)
         }
     }
