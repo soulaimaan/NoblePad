@@ -105,6 +105,9 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
             return
         }
 
+        // Prevent double-firing
+        if (isXrplConnecting) return
+
         setIsXrplConnecting(true)
         setXamanStatus('Creating sign-in request...')
         setShowXamanModal(true)
@@ -125,13 +128,17 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
                         setXrplAddress(account)
                         setActiveWallet('xrpl')
                         setShowXamanModal(false)
-                        setIsXrplConnecting(false)
+                        // Don't reset isXrplConnecting immediately to prevent race conditions
+                        setTimeout(() => setIsXrplConnecting(false), 500)
                         if (isEvmConnected) disconnectEvm()
                     },
                     (errorMsg: string) => {
                         setXamanStatus(`Error: ${errorMsg}`)
-                        setTimeout(() => setShowXamanModal(false), 3000)
-                        setIsXrplConnecting(false)
+                        // Allow retrying after delay
+                        setTimeout(() => {
+                           setShowXamanModal(false)
+                           setIsXrplConnecting(false)
+                        }, 3000)
                     }
                 )
             } else {
