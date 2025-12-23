@@ -97,6 +97,14 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
         // AppKit Modal
         openAppKit() 
     } else if (type === 'xrpl') {
+        const initError = xamanService.getInitError()
+        if (initError) {
+            setXamanStatus(`Xaman Error: ${initError}`)
+            setShowXamanModal(true)
+            setIsXrplConnecting(false)
+            return
+        }
+
         setIsXrplConnecting(true)
         setXamanStatus('Creating sign-in request...')
         setShowXamanModal(true)

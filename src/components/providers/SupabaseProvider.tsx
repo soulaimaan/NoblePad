@@ -1,8 +1,8 @@
 'use client'
 
-import { createBrowserClient } from '@supabase/ssr'
+import { supabase } from '@/lib/supabaseClient'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect } from 'react'
 
 type SupabaseContext = {
   supabase: SupabaseClient
@@ -15,19 +15,14 @@ export function SupabaseProvider({
 }: {
   children: React.ReactNode
 }) {
-  const [supabase] = useState(() => 
-    createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
-  )
+  // Use the shared client instead of creating a new one
 
   useEffect(() => {
     if (!supabase?.auth) return
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange((event: string, session: any) => {
       if (event === 'SIGNED_IN' && session) {
         console.log('User signed in:', session.user)
       }

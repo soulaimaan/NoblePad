@@ -18,25 +18,45 @@ export interface XamanUser {
 export class XamanService {
   private _sdk: Xumm | null = null
   private _jwt: string | null = null
-
-  constructor() {
-    if (typeof window !== 'undefined' && xummApiKey) {
-        try {
-            console.log('🏗️ Initializing Xumm SDK for Origin:', window.location.origin)
-            this._sdk = new Xumm(xummApiKey)
-            
-            // Restore session if available
-            this._sdk.on("ready", async () => {
-                console.log("Xaman SDK Ready")
-            })
-        } catch (e) {
-            console.warn('❌ Failed to initialize Xumm SDK:', e)
-        }
-    }
-  }
+  private _initError: string | null = null
 
   private getSdk() {
+    if (typeof window === 'undefined') return null
+    
+    if (!this._sdk && xummApiKey && !this._initError) {
+        try {
+            console.log('🏗️ Initializing Xumm SDK for Origin:', window.location.origin)
+            // Xumm constructor can throw if origin is blocked or API key is malformed
+            this._sdk = new Xumm(xummApiKey)
+            
+            this._sdk.on("ready", () => {
+                console.log("Xaman SDK Ready")
+            })
+
+            this._sdk.on("error", (err: any) => {
+                console.error("Xaman SDK Internal Error:", err)
+                if (err?.message?.includes('authorized') || err?.error === 'access_denied') {
+                    this._initError = 'Origin not authorized in Xaman Portal'
+                }
+            })
+        } catch (e: any) {
+            console.error('❌ Xumm SDK Initialization Error:', e)
+            if (e?.message?.includes('authorized') || e?.message?.includes('origin')) {
+                this._initError = 'Origin not authorized in Xaman Portal'
+            } else {
+                this._initError = e.message || 'Unknown initialization error'
+            }
+        }
+    }
     return this._sdk
+  }
+
+  constructor() {
+    // No-op
+  }
+
+  getInitError() {
+    return this._initError
   }
 
   async connect(): Promise<any> {
