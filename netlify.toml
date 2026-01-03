@@ -1,2 +1,2 @@
 [build]
-  publish = "belgrave-website"
+  publish = ".next"
