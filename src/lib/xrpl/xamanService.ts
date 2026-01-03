@@ -1,6 +1,6 @@
 'use client'
 
-import { XRPL_NETWORKS } from './constants'
+import { XRPL_NETWORKS, XRPL_TOKENS } from './constants'
 
 export interface XamanUser {
   account: string
@@ -66,39 +66,39 @@ export class XamanService {
       throw e
     }
   }
-  
+
   async createPayload(txjson: any): Promise<{ uuid: string; qrUrl: string; deepLink: string } | null> {
     try {
-        const response = await fetch('/api/xumm/payload', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                txjson: txjson,
-                options: {
-                    submit: true, // Auto-submit for transactions
-                    return_url: {
-                        web: typeof window !== 'undefined' ? window.location.href : ''
-                    }
-                }
-            })
+      const response = await fetch('/api/xumm/payload', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          txjson: txjson,
+          options: {
+            submit: true, // Auto-submit for transactions
+            return_url: {
+              web: typeof window !== 'undefined' ? window.location.href : ''
+            }
+          }
         })
+      })
 
-        if (!response.ok) {
-            const errorData = await response.json()
-            throw new Error(errorData.error || 'Failed to create payload')
-        }
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to create payload')
+      }
 
-        const data = await response.json()
-        return {
-            uuid: data.uuid,
-            qrUrl: data.refs.qr_png,
-            deepLink: data.next?.always || `https://xumm.app/sign/${data.uuid}`
-        }
+      const data = await response.json()
+      return {
+        uuid: data.uuid,
+        qrUrl: data.refs.qr_png,
+        deepLink: data.next?.always || `https://xumm.app/sign/${data.uuid}`
+      }
     } catch (e: any) {
-        console.error('Failed to create Xaman payload:', e)
-        throw e
+      console.error('Failed to create Xaman payload:', e)
+      throw e
     }
   }
 
@@ -109,7 +109,7 @@ export class XamanService {
       }, 3000)
       return
     }
-    
+
     console.log('Starting Xumm Subscription for UUID:', uuid)
 
     try {
@@ -129,7 +129,7 @@ export class XamanService {
 
           if (data.meta?.resolved || data.meta?.signed) {
             clearInterval(pollInterval)
-            
+
             if (data.meta.signed) {
               const result = data.response
               console.log('Xumm Signed!', result)
@@ -217,26 +217,26 @@ export class XamanService {
         })
       })
       const data = await response.json()
-      
+
       console.log("XRPL account_lines response:", data)
 
       if (data.result && data.result.lines) {
         // Log all lines for debugging
         console.log("Found lines:", data.result.lines)
 
-        const belgraveLine = data.result.lines.find((line: any) => 
+        const belgraveLine = data.result.lines.find((line: any) =>
           // Check Issuer matches
           line.account === XRPL_TOKENS.BELGRAVE.issuer &&
           // Check Currency matches EITHER the string OR the Hex
-          (line.currency === XRPL_TOKENS.BELGRAVE.currency || 
-           line.currency === XRPL_TOKENS.BELGRAVE.currencyHex)
+          (line.currency === XRPL_TOKENS.BELGRAVE.currency ||
+            line.currency === XRPL_TOKENS.BELGRAVE.currencyHex)
         )
-        
+
         if (belgraveLine) {
-            console.log("Found Belgrave Line:", belgraveLine)
-            return belgraveLine.balance
+          console.log("Found Belgrave Line:", belgraveLine)
+          return belgraveLine.balance
         } else {
-            console.warn("No Belgrave trustline found.")
+          console.warn("No Belgrave trustline found.")
         }
         return '0'
       }
