@@ -34,7 +34,7 @@ console.log('\n🔍 NoblePad Project Verification\n');
 console.log('Checking smart contracts and deployment files...\n');
 
 // Check contract files
-const contractsDir = path.join(__dirname, 'contracts', 'contracts');
+const contractsDir = path.join(__dirname, 'contracts');
 const contracts = [
   'Presale.sol',
   'PresaleFactory.sol',
@@ -52,7 +52,7 @@ contracts.forEach(contract => {
 
 // Check artifacts (compiled)
 console.log('\n📦 Compiled Artifacts:');
-const artifactsDir = path.join(__dirname, 'contracts', 'artifacts', 'contracts');
+const artifactsDir = path.join(__dirname, 'artifacts', 'contracts');
 contracts.forEach(contract => {
   const contractName = contract.replace('.sol', '');
   const artifactPath = path.join(artifactsDir, contract, `${contractName}.json`);
@@ -62,22 +62,24 @@ contracts.forEach(contract => {
 
 // Check deployment scripts
 console.log('\n🚀 Deployment Scripts:');
-check('  deploy.js', fs.existsSync(path.join(__dirname, 'contracts', 'scripts', 'deploy.js')));
-check('  deploy-sepolia.js', fs.existsSync(path.join(__dirname, 'contracts', 'scripts', 'deploy-sepolia.js')));
+check('  deploy.js', fs.existsSync(path.join(__dirname, 'scripts', 'deploy.js')));
+check('  deploy-sepolia.js', fs.existsSync(path.join(__dirname, 'scripts', 'deploy-sepolia.js')));
 
 // Check documentation
 console.log('\n📚 Documentation:');
-check('  DEPLOYMENT_GUIDE.md', fs.existsSync(path.join(__dirname, 'contracts', 'DEPLOYMENT_GUIDE.md')));
-check('  QUICK_DEPLOY.md', fs.existsSync(path.join(__dirname, 'contracts', 'QUICK_DEPLOY.md')));
-check('  ANTI_RUG_SPEC.md', fs.existsSync(path.join(__dirname, 'ANTI_RUG_SPEC.md')));
-check('  DEPLOYMENT_STATUS.md', fs.existsSync(path.join(__dirname, 'DEPLOYMENT_STATUS.md')));
-check('  COMPLETION_SUMMARY.md', fs.existsSync(path.join(__dirname, 'COMPLETION_SUMMARY.md')));
-check('  FRONTEND_INTEGRATION.md', fs.existsSync(path.join(__dirname, 'FRONTEND_INTEGRATION.md')));
-check('  NEXT_ACTIONS.md', fs.existsSync(path.join(__dirname, 'NEXT_ACTIONS.md')));
+check('  DEPLOYMENT_GUIDE.md', fs.existsSync(path.join(__dirname, 'DEPLOYMENT_GUIDE.md')));
+check('  QUICK_DEPLOY.md', fs.existsSync(path.join(__dirname, 'QUICK_DEPLOY.md')));
+// These are likely in root, let's check relative to project root (up one level)
+const projectRoot = path.join(__dirname, '..');
+check('  ANTI_RUG_SPEC.md', fs.existsSync(path.join(projectRoot, 'ANTI_RUG_SPEC.md')));
+check('  DEPLOYMENT_STATUS.md', fs.existsSync(path.join(projectRoot, 'DEPLOYMENT_STATUS.md')));
+check('  COMPLETION_SUMMARY.md', fs.existsSync(path.join(projectRoot, 'COMPLETION_SUMMARY.md')));
+check('  FRONTEND_INTEGRATION.md', fs.existsSync(path.join(projectRoot, 'FRONTEND_INTEGRATION.md')));
+check('  NEXT_ACTIONS.md', fs.existsSync(path.join(projectRoot, 'NEXT_ACTIONS.md')));
 
 // Check Hardhat config
 console.log('\n⚙️ Configuration:');
-const hardhatConfig = path.join(__dirname, 'contracts', 'hardhat.config.js');
+const hardhatConfig = path.join(__dirname, 'hardhat.config.js');
 check('  hardhat.config.js', fs.existsSync(hardhatConfig));
 
 if (fs.existsSync(hardhatConfig)) {
@@ -89,7 +91,7 @@ if (fs.existsSync(hardhatConfig)) {
 
 // Check package.json
 console.log('\n📦 Package Configuration:');
-const packageJson = path.join(__dirname, 'contracts', 'package.json');
+const packageJson = path.join(__dirname, 'package.json');
 if (fs.existsSync(packageJson)) {
   const pkg = JSON.parse(fs.readFileSync(packageJson, 'utf8'));
   check('  Hardhat installed', pkg.devDependencies?.hardhat ? `v${pkg.devDependencies.hardhat}` : false);
@@ -100,7 +102,7 @@ if (fs.existsSync(packageJson)) {
 
 // Check for test files
 console.log('\n🧪 Test Infrastructure:');
-check('  test/NoblePad.test.js', fs.existsSync(path.join(__dirname, 'contracts', 'test', 'NoblePad.test.js')));
+check('  test/NoblePad.test.js', fs.existsSync(path.join(__dirname, 'test', 'NoblePad.test.js')));
 
 // Print results
 console.log('\n[RESULTS]\n');

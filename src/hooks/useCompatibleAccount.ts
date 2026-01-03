@@ -12,6 +12,7 @@ export function useAccount() {
 
   // EVM provider and signer (async)
   const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null)
+  const [rawProvider, setRawProvider] = useState<any>(null)
   const [signer, setSigner] = useState<ethers.JsonRpcSigner | null>(null)
 
   useEffect(() => {
@@ -21,6 +22,7 @@ export function useAccount() {
       if (!address || !address.startsWith('0x') || chainType !== 'evm') {
         if (isMounted) {
           setProvider(null)
+          setRawProvider(null)
           setSigner(null)
         }
         return
@@ -31,11 +33,12 @@ export function useAccount() {
         // This is the most robust way to ensure we only talk to the wallet the user selected
         const connector = wagmiAccount.connector
         if (connector) {
-          const rawProvider = await connector.getProvider()
-          if (!rawProvider) throw new Error("No provider found from connector")
+          const raw = await connector.getProvider()
+          if (!raw) throw new Error("No provider found from connector")
           
-          const p = new ethers.BrowserProvider(rawProvider as any)
           if (isMounted) {
+            setRawProvider(raw)
+            const p = new ethers.BrowserProvider(raw as any)
             setProvider(p)
             
             // Attempt signer access
@@ -49,8 +52,12 @@ export function useAccount() {
           }
         } else if (typeof window !== 'undefined' && (window as any).ethereum) {
            // Fallback if no connector but ethereum exists - though wagmi usually should have it
-           const p = new ethers.BrowserProvider((window as any).ethereum)
-           if (isMounted) setProvider(p)
+           const raw = (window as any).ethereum
+           const p = new ethers.BrowserProvider(raw)
+           if (isMounted) {
+             setRawProvider(raw)
+             setProvider(p)
+           }
         }
       } catch (e) {
         console.warn("EVM Provider setup failed (safely handled):", e)
@@ -83,6 +90,7 @@ export function useAccount() {
     isConnected: isActive,
     isHydrated: true, // UnifiedProvider ensures client-side rendering
     provider,
+    rawProvider,
     signer,
     solana: {
       connection: solanaConnection,
@@ -92,7 +100,8 @@ export function useAccount() {
     isConnecting: false, 
     isDisconnected: !isActive,
     status: isActive ? 'connected' : 'disconnected',
-    chain: wagmiAccount.chain 
+    chain: wagmiAccount.chain,
+    chainType: chainType
   }
 }
 

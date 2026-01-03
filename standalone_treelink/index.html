@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lord Belgrave | Official Links</title>
+
+<style>
+/* --- Kleurenpalet & Variabelen --- */
+:root {
+  --gold-light: #fff3d6;
+  --gold-primary: #ffd27d;
+  --gold-secondary: #caa24a;
+  --bg-black: #050505;
+  --red-security: #ff3e3e;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  cursor: none; /* Verbergt de standaard muis voor de custom cursor */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: var(--bg-black);
+  color: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: hidden;
+}
+
+/* --- Custom Golden Cursor Halo --- */
+#cursor-halo {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(218, 165, 32, 0.12) 0%, rgba(0, 0, 0, 0) 70%);
+  position: fixed;
+  pointer-events: none;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  transition: transform 0.1s ease-out;
+}
+
+#cursor-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--gold-primary);
+  position: fixed;
+  pointer-events: none;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  box-shadow: 0 0 15px var(--gold-primary);
+}
+
+.container {
+  width: 100%;
+  max-width: 420px;
+  padding: 40px 20px;
+  text-align: center;
+  position: relative;
+  z-index: 10;
+}
+
+/* --- Elite Flanker Logos (Flanking the Scanner) --- */
+.scanner-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.flanker-logo {
+  height: 45px;
+  width: auto;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 8px rgba(255, 210, 125, 0.4)); /* Subtle gold glow */
+  animation: logoBreath 3s infinite ease-in-out alternate;
+}
+
+.img-shield {
+  filter: invert(1) hue-rotate(180deg) drop-shadow(0 0 8px rgba(255, 210, 125, 0.4));
+}
+
+@keyframes logoBreath {
+  from { transform: translateY(0) scale(1.0); opacity: 0.85; filter: drop-shadow(0 0 5px rgba(255, 210, 125, 0.3)); }
+  to { transform: translateY(-3px) scale(1.05); opacity: 1; filter: drop-shadow(0 0 12px rgba(255, 210, 125, 0.6)); }
+}
+
+.security-scanner {
+  flex: 1; /* Occupy remaining space */
+  position: relative;
+  height: 34px;
+  margin-bottom: 0 !important; /* Managed by wrapper */
+  background: rgba(255, 62, 62, 0.03);
+  border: 1px solid rgba(255, 62, 62, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- Avatar met Idle Glow --- */
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 20px rgba(202, 162, 74, 0.3); border-color: rgba(202, 162, 74, 0.4); }
+  50% { box-shadow: 0 0 50px rgba(202, 162, 74, 0.6); border-color: rgba(202, 162, 74, 0.8); }
+  100% { box-shadow: 0 0 20px rgba(202, 162, 74, 0.3); border-color: rgba(202, 162, 74, 0.4); }
+}
+
+.avatar {
+  width: 130px;
+  height: 130px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  border: 2px solid var(--gold-secondary);
+  background: #000; /* Black background for the container */
+  overflow: hidden;
+  animation: pulseGlow 4s infinite ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- Typografie & Gradients --- */
+h1 {
+  font-size: 32px;
+  letter-spacing: 4px;
+  margin: 10px 0;
+  background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold-primary) 50%, var(--gold-secondary) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-transform: uppercase;
+}
+
+.tagline {
+  font-size: 12px;
+  color: #bfae80;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+/* --- Red Security Scanner (Replaces Language Switch) --- */
+/* Standard security scanner properties moved to .security-scanner above */
+
+.security-text {
+  font-size: 9px;
+  color: var(--red-security);
+  letter-spacing: 3px;
+  font-weight: 800;
+  text-transform: uppercase;
+  z-index: 2;
+  opacity: 0.8;
+  animation: flicker 2s infinite;
+}
+
+.scanner-beam {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60px;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 62, 62, 0.4) 50%, 
+    transparent
+  );
+  box-shadow: 0 0 15px rgba(255, 62, 62, 0.2);
+  z-index: 1;
+  animation: scanLoop 3s infinite ease-in-out alternate;
+}
+
+@keyframes scanLoop {
+  0% { transform: translateX(-60px); }
+  100% { transform: translateX(420px); }
+}
+
+@keyframes flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 0.8; }
+  20%, 24%, 55% { opacity: 0.3; }
+}
+
+/* --- Knoppen / Links --- */
+.link {
+  display: block;
+  padding: 18px;
+  margin-bottom: 15px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  /* Metallic Gold Gradient */
+  background: linear-gradient(
+    135deg, 
+    #bf953f 0%, 
+    #fcf6ba 25%, 
+    #b38728 50%, 
+    #fbf5b7 75%, 
+    #aa771c 100%
+  );
+  color: #000; /* Dark text on gold */
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.320, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.link::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 20%;
+  height: 200%;
+  background: rgba(255, 255, 255, 0.4);
+  transform: rotate(30deg);
+  transition: all 0.6s ease;
+}
+
+.link:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(191, 149, 63, 0.4);
+  filter: brightness(1.1);
+}
+
+.link:hover::after {
+  left: 140%;
+}
+
+/* --- Juridische Footer --- */
+.footer {
+  margin-top: 50px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 10px;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* Mobiele optimalisatie: Custom cursor uit op touchscreens */
+@media (hover: none) {
+  #cursor-halo, #cursor-dot { display: none; }
+  * { cursor: auto; }
+}
+</style>
+</head>
+
+<body>
+
+<div id="cursor-halo"></div>
+<div id="cursor-dot"></div>
+
+<div class="container">
+  <div class="avatar">
+    <img src="./lord_belgrave_logo_v3.png" alt="Lord Belgrave">
+  </div>
+
+  <h1 id="title">LORD BELGRAVE</h1>
+
+  <div class="tagline" id="tagline">Security • Web3 • Anti-Rug Infrastructure</div>
+
+  <!-- Elite Flanker Layout: Logos flanking the Scanner -->
+  <div class="scanner-wrapper">
+    <img src="./bg_shield.png" class="flanker-logo img-shield" alt="Shield">
+    <div class="security-scanner">
+      <div class="scanner-beam"></div>
+      <span class="security-text">INFRASTRUCTURE SECURED</span>
+    </div>
+    <img src="./bg_silhouette.png" class="flanker-logo" alt="Silhouette">
+  </div>
+
+  <a class="link" href="https://noblepad-security-whitepaper.netlify.app/" target="_blank" rel="noopener" id="lnk-wp">📄 Security Whitepaper</a>
+  <a class="link" href="https://noblepad.netlify.app" target="_blank" rel="noopener" id="lnk-lp">🛡 NoblePad Launchpad</a>
+  <a class="link" href="https://t.me/belgravelord" target="_blank" rel="noopener">💬 Telegram Community</a>
+  <a class="link" href="http://lordbelgrave.eu" target="_blank" rel="noopener" id="lnk-web">🌐 Official Website</a>
+
+  <div class="footer">
+    <p id="disclaimer">Investing in digital assets involves high risk. This profile does not constitute financial advice. DYOR.</p>
+    <p>© 2025 LORD BELGRAVE. ALL RIGHTS RESERVED.<br>EU / US COMPLIANT DIGITAL ASSET ENTITY</p>
+  </div>
+</div>
+
+<script>
+// --- Cursor Logica ---
+const halo_el = document.getElementById('cursor-halo');
+const dot = document.getElementById('cursor-dot');
+
+document.addEventListener('mousemove', (e) => {
+  halo_el.style.left = e.clientX + 'px';
+  halo_el.style.top = e.clientY + 'px';
+  dot.style.left = e.clientX + 'px';
+  dot.style.top = e.clientY + 'px';
+});
+
+// Cursor effect op knoppen
+document.querySelectorAll('.link').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    dot.style.transform = 'translate(-50%, -50%) scale(4)';
+    dot.style.background = 'transparent';
+    dot.style.border = '1px solid var(--gold-primary)';
+  });
+  el.addEventListener('mouseleave', () => {
+    dot.style.transform = 'translate(-50%, -50%) scale(1)';
+    dot.style.background = 'var(--gold-primary)';
+    dot.style.border = 'none';
+  });
+});
+</script>
+
+</body>
+</html>

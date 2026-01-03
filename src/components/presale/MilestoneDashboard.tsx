@@ -265,27 +265,51 @@ export function MilestoneDashboard({ projectAddress, chain, totalRaised, milesto
 
               {m.status === 'voting' && (
                 <div className="mt-4 pt-4 border-t border-noble-gold/10">
+                  <div className="bg-noble-gold/5 p-4 rounded-xl mb-4 border border-noble-gold/10">
+                    <div className="text-[10px] uppercase font-bold text-noble-gold/40 mb-2 flex items-center gap-1">
+                      <Zap size={10} /> Milestone Evidence
+                    </div>
+                    <p className="text-sm text-noble-gold/80 italic">
+                      "{m.description}"
+                    </p>
+                    <div className="mt-3 flex gap-2">
+                       <Button variant="outline" size="sm" className="h-7 text-[10px] border-blue-500/20 text-blue-400">
+                          View Github PR
+                       </Button>
+                       <Button variant="outline" size="sm" className="h-7 text-[10px] border-purple-500/20 text-purple-400">
+                          View Demo Video
+                       </Button>
+                    </div>
+                  </div>
+
                   <div className="flex justify-between text-xs mb-3 text-noble-gold/70 font-medium">
-                    <span className="flex items-center gap-1"><TrendingUp size={12} /> Approval: {m.votesApprove.toLocaleString()}</span>
-                    <span>Disputes: {m.votesDispute.toLocaleString()}</span>
+                    <span className="flex items-center gap-1">
+                      <TrendingUp size={12} className="text-green-400" /> 
+                      Approval Rate: {((m.votesApprove / (m.votesApprove + m.votesDispute || 1)) * 100).toFixed(1)}%
+                    </span>
+                    <span className="text-red-400">Disputes: {m.votesDispute.toLocaleString()}</span>
                   </div>
                   
-                  <div className="w-full h-2 bg-noble-gold/5 rounded-full overflow-hidden flex shadow-inner">
+                  <div className="w-full h-3 bg-noble-black rounded-full overflow-hidden flex shadow-inner border border-noble-gold/5">
                     <div 
-                      className="h-full bg-green-500 transition-all duration-1000 ease-out" 
-                      style={{ width: `${(m.votesApprove / (m.votesApprove + m.votesDispute)) * 100}%` }}
+                      className="h-full bg-gradient-to-r from-green-600 to-green-400 transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(34,197,94,0.4)]" 
+                      style={{ width: `${(m.votesApprove / (m.votesApprove + m.votesDispute || 1)) * 100}%` }}
                     ></div>
                     <div 
-                      className="h-full bg-red-500 transition-all duration-1000 ease-out" 
-                      style={{ width: `${(m.votesDispute / (m.votesApprove + m.votesDispute)) * 100}%` }}
+                      className="h-full bg-gradient-to-r from-red-600 to-red-400 transition-all duration-1000 ease-out" 
+                      style={{ width: `${(m.votesDispute / (m.votesApprove + m.votesDispute || 1)) * 100}%` }}
                     ></div>
+                  </div>
+
+                  <div className="mt-3 text-[10px] text-center text-noble-gold/30">
+                    Quorum: 50% Required • Voting ends in 48 hours
                   </div>
 
                   <div className="flex gap-3 mt-6">
                     <Button 
                       disabled={actionLoading === m.id}
                       onClick={() => handleVote(m.id, true)}
-                      className="flex-1 bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/20 py-2.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
+                      className="flex-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/20 py-2.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
                     >
                       {actionLoading === m.id ? '...' : <CheckCircle size={18} />}
                       APPROVE RELEASE

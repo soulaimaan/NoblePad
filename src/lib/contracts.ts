@@ -1,7 +1,7 @@
 // Smart contract interfaces and ABIs for presale and token locking
 
 export const PRESALE_FACTORY_ABI = [
-  // Create presale function
+  // Create presale function - matches PresaleFactory.sol createPresale signature
   {
     "inputs": [
       { "name": "_token", "type": "address" },
@@ -15,20 +15,14 @@ export const PRESALE_FACTORY_ABI = [
       { "name": "_endTime", "type": "uint256" },
       { "name": "_lockPeriod", "type": "uint256" },
       { "name": "_maxSpendPerBuyer", "type": "uint256" },
-      { "name": "_amount", "type": "uint256" },
-      { "name": "_teamVesting", "type": "tuple[]", 
-        "components": [
-          { "name": "recipient", "type": "address" },
-          { "name": "amount", "type": "uint256" },
-          { "name": "unlockTime", "type": "uint256" }
-        ]
-      }
+      { "name": "_amount", "type": "uint256" }
     ],
     "name": "createPresale",
     "outputs": [{ "name": "presaleAddress", "type": "address" }],
     "stateMutability": "payable",
     "type": "function"
   },
+
   // Get presale info
   {
     "inputs": [{ "name": "_presale", "type": "address" }],
@@ -307,23 +301,31 @@ export const STAKING_ABI = [
 
 // Contract addresses by chain (to be updated when contracts are deployed)
 export const CONTRACT_ADDRESSES = {
-  11155111: { // Sepolia
-    presaleFactory: '0x9f2b5f8825A52b3DA237116D917a8abE79002894',
-    tokenLock: '0xF6e99eA68239fb8CcC7740b602c78Ed3dD120771',
+  31337: { // Localhost
+    presaleFactory: '0xa513E6E4b8f2a923D98304ec87F64353C4D5C853',
+    tokenLock: '0x0165878A594ca255338adfa4d48449f69242Eb8F',
     router: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D', // Uniswap V2 Router
-    staking: '0x8592B59b69C30Ae9425f4619e026Aa00E9df1E23',
-    npad: '0x49fF6eb0FCAd92AF753dae8d17d1156BF6e63b92'
+    staking: '0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0',
+    belgrave: '0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e',
+    tokenFactory: '0x610178dA211FEF7D417bC0e6FeD39F05609AD788'
+  },
+  11155111: { // Sepolia
+    presaleFactory: '0x5bB9e48B8850b03D5bD89796BDfAd6252F828Fd9',
+    tokenLock: '0x55E5d769AF515354d57182f3f70A2738148940cf',
+    router: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D', // Uniswap V2 Router (Sepolia)
+    staking: '0x8592B59b69C30Ae9425f4619e026Aa00E9df1E23', // Keep existing staking for now or update if deployed separately
+    belgrave: '0x49fF6eb0FCAd92AF753dae8d17d1156BF6e63b92'
   },
   8453: { // Base
     presaleFactory: '0x...',
     tokenLock: '0x...',
     router: '0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24', // BaseSwap Router
     staking: '0x...',
-    npad: '0x...'
+    belgrave: '0x...'
   }
 } as const
 
-export const getContractAddress = (chainId: number, contract: 'presaleFactory' | 'tokenLock' | 'router' | 'staking' | 'npad') => {
+export const getContractAddress = (chainId: number, contract: 'presaleFactory' | 'tokenLock' | 'router' | 'staking' | 'belgrave' | 'tokenFactory') => {
   const chainAddresses = CONTRACT_ADDRESSES[chainId as keyof typeof CONTRACT_ADDRESSES] as Record<string, string>;
   return chainAddresses?.[contract] || null
 }

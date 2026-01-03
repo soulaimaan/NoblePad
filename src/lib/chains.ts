@@ -7,7 +7,7 @@ interface ContractAddresses {
   wrappedNative?: string
   multicall?: string
   staking?: string
-  npad?: string
+  belgrave?: string
 }
 
 interface ChainConfig {
@@ -159,6 +159,53 @@ export const SUPPORTED_CHAINS: Record<string, ChainConfig> = {
     minimumPresaleAmount: '0.01',
     gasMultiplier: 1.1,
   },
+  localhost: {
+    id: 31337,
+    name: 'Localhost',
+    symbol: 'ETH',
+    rpcUrls: ['http://127.0.0.1:8545'],
+    blockExplorerUrls: [],
+    nativeCurrency: {
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18,
+    },
+    iconUrl: '/chains/ethereum.svg',
+    color: '#627EEA',
+    isMainnet: false,
+    contracts: {
+      tokenFactory: '0x610178dA211FEF7D417bC0e6FeD39F05609AD788',
+      presaleFactory: '0xa513E6E4b8f2a923D98304ec87F64353C4D5C853',
+      tokenLock: '0x0165878A594ca255338adfa4d48449f69242Eb8F',
+      staking: '0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0',
+      belgrave: '0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e',
+      router: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D' // Mock Router for Localhost
+    },
+    minimumPresaleAmount: '0.001',
+    gasMultiplier: 1.0,
+  },
+  xrpl: {
+    id: 144,
+    name: 'XRP Ledger',
+    symbol: 'XRP',
+    rpcUrls: ['https://xrplcluster.com'],
+    blockExplorerUrls: ['https://xrpscan.com'],
+    nativeCurrency: {
+      name: 'XRP',
+      symbol: 'XRP',
+      decimals: 6,
+    },
+    iconUrl: '/chains/xrpl.svg',
+    color: '#23292F',
+    isMainnet: true,
+    contracts: {
+      tokenFactory: 'native',
+      presaleFactory: 'native',
+      tokenLock: 'native',
+    },
+    minimumPresaleAmount: '100', // XRP
+    gasMultiplier: 1.0,
+  },
   // Testnets for development
   sepolia: {
     id: 11155111,
@@ -179,7 +226,7 @@ export const SUPPORTED_CHAINS: Record<string, ChainConfig> = {
       presaleFactory: '0x9f2b5f8825A52b3DA237116D917a8abE79002894',
       tokenLock: '0xF6e99eA68239fb8CcC7740b602c78Ed3dD120771',
       staking: '0x8592B59b69C30Ae9425f4619e026Aa00E9df1E23',
-      npad: '0x49fF6eb0FCAd92AF753dae8d17d1156BF6e63b92'
+      belgrave: '0x49fF6eb0FCAd92AF753dae8d17d1156BF6e63b92'
     },
     minimumPresaleAmount: '0.001',
     gasMultiplier: 1.2,

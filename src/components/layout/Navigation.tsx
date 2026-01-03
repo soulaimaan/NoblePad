@@ -16,11 +16,13 @@ export function Navigation() {
 
   const navigationItems = [
     { name: 'Home', href: '/' },
+    { name: 'Dashboard', href: '/dashboard' },
     { name: 'Presales', href: '/presales' },
     { name: 'Liquidity Locks', href: '/locks' },
     { name: 'Token Locks', href: '/token-locks' },
     { name: 'Staking Hub', href: '/staking' },
-    { name: 'Create', href: '/create' },
+    { name: 'Token Factory', href: '/create-token' },
+    { name: 'Create Presale', href: '/create' },
   ]
 
   return (
@@ -28,7 +30,7 @@ export function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3">
+          <Link href="/" className="flex items-center space-x-3 mr-4 shrink-0">
             <Image
               src="/logo.jpg"
               alt="NoblePad Logo"
@@ -36,16 +38,16 @@ export function Navigation() {
               height={40}
               className="w-10 h-10 object-contain"
             />
-            <span className="text-xl font-bold noble-text-gradient">NoblePad</span>
+            <span className="hidden lg:inline text-xl font-bold noble-text-gradient">NoblePad</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-4 flex-1 justify-center">
             {navigationItems.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-noble-gold/80 hover:text-noble-gold transition-colors duration-200 text-sm font-medium"
+                className="text-noble-gold/80 hover:text-noble-gold transition-colors duration-200 text-xs font-medium whitespace-nowrap"
               >
                 {item.name}
               </Link>

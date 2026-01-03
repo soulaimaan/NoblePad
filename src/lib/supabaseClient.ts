@@ -139,9 +139,34 @@ export class DatabaseOperations {
       () => (this.client
         .from('presales')
         .select('*')
-        .eq('creator_address', walletAddress.toLowerCase())
+        .eq('submitter_address', walletAddress.toLowerCase()) // Fixed from creator_address for legacy support
         .order('created_at', { ascending: false }) as any),
       'Get user presales',
+      []
+    ) as any
+  }
+
+  // Get user commitments
+  async getUserCommitments(walletAddress: string) {
+    return await safeSupabaseOperation(
+      () => (this.client
+        .from('user_commitments')
+        .select('*, presales(*)')
+        .eq('user_address', walletAddress.toLowerCase())
+        .order('created_at', { ascending: false }) as any),
+      'Get user commitments',
+      []
+    ) as any
+  }
+
+  // Get all presales for listing
+  async getPresales() {
+    return await safeSupabaseOperation(
+      () => (this.client
+        .from('presales')
+        .select('*')
+        .order('created_at', { ascending: false }) as any),
+      'Get all presales',
       []
     ) as any
   }

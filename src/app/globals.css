@@ -76,14 +76,54 @@
   }
   
   .noble-button {
-    @apply bg-noble-gold-gradient text-noble-black font-semibold px-6 py-3 rounded-lg 
-           hover:shadow-lg hover:shadow-noble-gold/20 transition-all duration-300 
-           transform hover:scale-105;
+    @apply border border-noble-gold/40 text-noble-gold font-semibold px-6 py-3 rounded-lg 
+           transition-all duration-500 transform hover:scale-105;
+    background: rgba(212, 175, 55, 0.08);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    box-shadow: 
+      inset 0 1px 1px rgba(255, 255, 255, 0.1),
+      0 4px 20px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .noble-button::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -100%;
+    width: 20%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(30deg);
+    transition: all 0.6s ease;
+  }
+
+  .noble-button:hover {
+    background: rgba(212, 175, 55, 0.15);
+    border-color: rgba(212, 175, 55, 0.8);
+    box-shadow: 
+      inset 0 1px 1px rgba(255, 255, 255, 0.2),
+      0 0 25px rgba(212, 175, 55, 0.2);
+    text-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
+  }
+
+  .noble-button:hover::after {
+    left: 150%;
   }
   
   .noble-button-outline {
-    @apply border border-noble-gold text-noble-gold bg-transparent px-6 py-3 rounded-lg 
-           hover:bg-noble-gold hover:text-noble-black transition-all duration-300;
+    @apply border border-white/10 text-white/60 font-medium px-6 py-3 rounded-lg 
+           transition-all duration-300;
+    background: rgba(255, 255, 255, 0.03);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+  
+  .noble-button-outline:hover {
+    @apply border-white/20 text-white bg-white/10;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
   }
   
   .noble-input {

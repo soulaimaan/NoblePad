@@ -1,11 +1,15 @@
 'use client'
 
-import * as React from 'react'
+import * as React from 'react';
+
+interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
+    value?: string;
+}
 
 const Tabs = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+  TabsProps
+>(({ className, value, ...props }, ref) => (
   <div
     ref={ref}
     className={className}
@@ -68,5 +72,5 @@ const TabsContent = React.forwardRef<
 ))
 TabsContent.displayName = 'TabsContent'
 
-export { Tabs, TabsContent, TabsList, TabsTrigger }
+export { Tabs, TabsContent, TabsList, TabsTrigger };
 

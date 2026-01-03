@@ -1,3 +1,21 @@
+# 🔄 RESTART RECOVERY INSTRUCTIONS
+**Last Saved State**: December 31, 2025 - 21:35
+**Immediate Action Required**: Fix Build Memory Error
+
+## How to Resume
+1. Open VS Code
+2. Open terminal in `noblepad` folder
+3. Run `npm run dev` to start server
+4. Check `http://localhost:3001`
+
+## Current Context
+- **Contracts**: Deployed to Sepolia (see `contracts/deployment-sepolia.json`)
+- **Dev Server**: Was running on port 3001
+- **Issue**: `npm run build` failed with JavaScript heap out of memory. 
+- **Fix**: Need to increase Node memory limit (e.g., `NODE_OPTIONS="--max-old-space-size=4096" npm run build`)
+
+---
+
 # 🎯 NEXT IMMEDIATE ACTIONS
 
 **Date**: December 3, 2025  

@@ -69,13 +69,12 @@ const nextConfig = {
   },
 
   // Performance optimizations
+  transpilePackages: ['@reown/appkit', '@reown/appkit-adapter-wagmi'],
   experimental: {
     optimizeCss: false,
     optimizePackageImports: [
       'lucide-react',
       '@supabase/supabase-js',
-      '@reown/appkit',
-      '@reown/appkit-adapter-wagmi',
       '@tanstack/react-query',
       'wagmi',
       'viem'

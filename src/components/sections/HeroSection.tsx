@@ -1,8 +1,9 @@
 'use client'
 
-import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
-import { Shield, Lock, TrendingUp } from 'lucide-react'
+import { SecurityScanner } from '@/components/ui/SecurityScanner'
+import { Lock as LockIcon, Shield, TrendingUp } from 'lucide-react'
+import Link from 'next/link'
 
 export function HeroSection() {
   return (
@@ -13,16 +14,22 @@ export function HeroSection() {
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-noble-gold/3 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20">
         {/* Logo/Brand Section */}
         <div className="mb-8 animate-fade-in">
-          <div className="w-24 h-24 bg-noble-black rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg shadow-noble-gold/20 p-2">
+          <div className="w-24 h-24 bg-noble-black rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg shadow-noble-gold/20 p-2">
             <img 
               src="/logo.jpg" 
               alt="NoblePad Logo" 
               className="w-full h-full object-contain"
             />
           </div>
+
+          {/* New Security Scanner Integration */}
+          <div className="mb-6 max-w-[320px] mx-auto">
+            <SecurityScanner />
+          </div>
+
           <h1 className="text-5xl md:text-7xl font-bold mb-4">
             <span className="noble-text-gradient">NoblePad</span>
           </h1>
@@ -41,15 +48,15 @@ export function HeroSection() {
             </p>
           </div>
           
-          <div className="noble-card text-center animate-slide-in-left" style={{ animationDelay: '0.1s' }}>
-            <Lock className="w-12 h-12 text-noble-gold mx-auto mb-4" />
+          <div className="noble-card text-center animate-slide-in-left [animation-delay:100ms]">
+            <LockIcon className="w-12 h-12 text-noble-gold mx-auto mb-4" />
             <h3 className="text-xl font-semibold mb-2">Anti-Rug Protection</h3>
             <p className="text-noble-gold/70">
               Mandatory liquidity locks and vesting schedules protect investors from rug pulls.
             </p>
           </div>
           
-          <div className="noble-card text-center animate-slide-in-left" style={{ animationDelay: '0.2s' }}>
+          <div className="noble-card text-center animate-slide-in-left [animation-delay:200ms]">
             <TrendingUp className="w-12 h-12 text-noble-gold mx-auto mb-4" />
             <h3 className="text-xl font-semibold mb-2">Guaranteed Allocations</h3>
             <p className="text-noble-gold/70">

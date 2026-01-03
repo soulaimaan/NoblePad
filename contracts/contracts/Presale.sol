@@ -173,7 +173,7 @@ contract Presale is Ownable, ReentrancyGuard {
         uint256 tokensForLiquidity = (nativeForLiquidity * listingRate);
 
         // 2. Add Liquidity to DEX
-        token.safeApprove(address(router), tokensForLiquidity);
+        token.forceApprove(address(router), tokensForLiquidity);
         router.addLiquidityETH{value: nativeForLiquidity}(
             address(token),
             tokensForLiquidity,

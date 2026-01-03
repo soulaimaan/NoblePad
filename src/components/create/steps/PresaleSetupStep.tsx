@@ -11,9 +11,9 @@ interface PresaleSetupStepProps {
 }
 
 export function PresaleSetupStep({ formData, updateFormData }: PresaleSetupStepProps) {
-  const [currentChain, setCurrentChain] = useState(
-    formData.chainId ? getChainById(formData.chainId) : null
-  )
+  // Derive chain directly from formData to ensure sync
+  const currentChain = formData.chainId ? getChainById(Number(formData.chainId)) : null
+  const currency = currentChain?.nativeCurrency?.symbol || 'BNB'
 
   const [calculations, setCalculations] = useState({
     tokensForPresale: '0',
@@ -21,36 +21,6 @@ export function PresaleSetupStep({ formData, updateFormData }: PresaleSetupStepP
     presaleProgress: 0,
     estimatedLiquidity: '0'
   })
-
-  // Get native currency symbol based on selected chain
-  const getNativeCurrency = () => {
-    const chainValue = formData.chainId?.toString() || 'BSC'
-    const currencyMap: Record<string, string> = {
-      'BSC': 'BNB',
-      'ETH': 'ETH',
-      'POLYGON': 'MATIC',
-      'ARB': 'ETH',
-      'BASE': 'ETH',
-      'SOL': 'SOL',
-      'XRPL': 'XRP',
-      '1': 'ETH',      // Ethereum mainnet
-      '56': 'BNB',     // BSC
-      '137': 'MATIC',  // Polygon
-      '42161': 'ETH',  // Arbitrum
-      '8453': 'ETH',   // Base
-    }
-    return currencyMap[chainValue] || 'BNB'
-  }
-
-  const currency = getNativeCurrency()
-
-  // Update chain when formData changes
-  useEffect(() => {
-    if (formData.chainId) {
-      const chain = getChainById(formData.chainId)
-      setCurrentChain(chain)
-    }
-  }, [formData.chainId])
 
   // Calculate presale metrics when relevant fields change
   useEffect(() => {
@@ -63,15 +33,25 @@ export function PresaleSetupStep({ formData, updateFormData }: PresaleSetupStepP
   ])
 
   const calculatePresaleMetrics = () => {
-    if (!formData.hardCap || !formData.tokenPrice || !formData.totalSupply) {
+    if ((!formData.hardCap && formData.saleType !== 'fair_launch') || !formData.tokenPrice || !formData.totalSupply) {
       return
     }
 
-    const hardCapNum = parseFloat(formData.hardCap)
     const tokenPriceNum = parseFloat(formData.tokenPrice)
     const totalSupplyNum = parseFloat(formData.totalSupply)
     const liquidityPercent = parseFloat(formData.liquidityPercentage) || 80
 
+    if (formData.saleType === 'fair_launch') {
+      setCalculations({
+        tokensForPresale: 'Unlimited',
+        tokensForLiquidity: 'Dynamic (Based on Raised Amount)',
+        presaleProgress: 0,
+        estimatedLiquidity: 'Dynamic'
+      })
+      return
+    }
+
+    const hardCapNum = parseFloat(formData.hardCap)
     const tokensForPresale = hardCapNum / tokenPriceNum
     const liquidityTokens = (tokensForPresale * liquidityPercent) / 100
     const estimatedLiquidityValue = hardCapNum * (liquidityPercent / 100)
@@ -112,6 +92,38 @@ export function PresaleSetupStep({ formData, updateFormData }: PresaleSetupStepP
       </div>
 
       <div className="space-y-6">
+        {/* Sale Type Selection */}
+        <div className="bg-noble-gray/20 p-4 rounded-lg border border-noble-gold/20">
+          <label className="block text-sm font-medium text-noble-gold/70 mb-3">Sale Type</label>
+          <div className="flex space-x-4">
+            <button
+              onClick={() => updateFormData({ saleType: 'standard' })}
+              className={`flex-1 py-3 px-4 rounded-lg border text-sm font-medium transition-all ${
+                formData.saleType !== 'fair_launch' // Default to standard
+                  ? 'bg-noble-gold/20 border-noble-gold text-noble-gold'
+                  : 'bg-transparent border-noble-gold/20 text-noble-gold/60 hover:border-noble-gold/50'
+              }`}
+            >
+              Standard Presale
+            </button>
+            <button
+              onClick={() => updateFormData({ saleType: 'fair_launch' })}
+              className={`flex-1 py-3 px-4 rounded-lg border text-sm font-medium transition-all ${
+                formData.saleType === 'fair_launch'
+                  ? 'bg-noble-gold/20 border-noble-gold text-noble-gold'
+                  : 'bg-transparent border-noble-gold/20 text-noble-gold/60 hover:border-noble-gold/50'
+              }`}
+            >
+              Fair Launch
+            </button>
+          </div>
+          {formData.saleType === 'fair_launch' && (
+             <p className="text-xs text-noble-gold/60 mt-2">
+               Fair Launch: No hard cap. The price is determined by the total amount raised divided by tokens sold, or fixed price with unlimited supply until time ends.
+             </p>
+          )}
+        </div>
+
         {/* Basic Presale Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -138,11 +150,16 @@ export function PresaleSetupStep({ formData, updateFormData }: PresaleSetupStepP
                   id="hardCap"
                   type="text"
                   title="Hard Cap"
-                  placeholder="e.g. 100"
-                  className="w-full bg-slate-700 border-slate-600 rounded-lg py-2 px-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={formData.hardCap}
+                  placeholder={formData.saleType === 'fair_launch' ? "Unlimited" : "e.g. 100"}
+                  className={`w-full rounded-lg py-2 px-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    formData.saleType === 'fair_launch' 
+                      ? 'bg-slate-800 border-slate-700 text-gray-500 cursor-not-allowed' 
+                      : 'bg-slate-700 border-slate-600'
+                  }`}
+                  value={formData.saleType === 'fair_launch' ? '' : formData.hardCap}
                   onChange={(e) => updateFormData({ hardCap: e.target.value })}
-                  required
+                  disabled={formData.saleType === 'fair_launch'}
+                  required={formData.saleType !== 'fair_launch'}
                 />
           </div>
 
@@ -164,24 +181,27 @@ export function PresaleSetupStep({ formData, updateFormData }: PresaleSetupStepP
           </div>
 
           <div>
-            <label htmlFor="network" className="block text-sm font-medium text-noble-gold/70 mb-2">
-              Blockchain *
+            <label className="block text-sm font-medium text-noble-gold/70 mb-2">
+              Blockchain
             </label>
-                <select
-                  id="network"
-                  title="Network"
-                  className="w-full bg-slate-700 border-slate-600 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={formData.chainId}
-                  onChange={(e) => updateFormData({ chainId: Number(e.target.value) })}
-                  required
-                >
-              <option value="BSC">Binance Smart Chain (BSC)</option>
-              <option value="ETH">Ethereum</option>
-              <option value="POLYGON">Polygon</option>
-              <option value="ARB">Arbitrum</option>
-              <option value="BASE">Base</option>
-              <option value="SOL">Solana</option>
-            </select>
+            <div className="w-full bg-slate-700/50 border border-slate-600 rounded-lg py-2 px-3 text-white flex items-center space-x-2">
+               {currentChain ? (
+                 <>
+                   <div 
+                      className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold"
+                      style={{ backgroundColor: currentChain.color }}
+                    >
+                      {currentChain.symbol.slice(0, 1)}
+                    </div>
+                   <span>{currentChain.name}</span>
+                 </>
+               ) : (
+                 <span className="text-gray-400">No chain selected</span>
+               )}
+            </div>
+            <p className="text-xs text-noble-gold/50 mt-1">
+              Selected in previous step
+            </p>
           </div>
         </div>
 

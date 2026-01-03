@@ -1,18 +1,23 @@
 'use client'
 
 import { MilestoneDashboard } from '@/components/presale/MilestoneDashboard'
+import { PresaleComments } from '@/components/presale/PresaleComments'
 import { PresaleCommitment } from '@/components/presale/PresaleCommitment'
 import { PresaleCountdown } from '@/components/presale/PresaleCountdown'
 import { PresaleDetail } from '@/components/presale/PresaleDetail'
 import { PresaleInfo } from '@/components/presale/PresaleInfo'
+import { QuestSection } from '@/components/presale/QuestSection'
+import { ReferralCard } from '@/components/presale/ReferralCard'
 import { AIProjectScore } from '@/components/sections/AIProjectScore'
 import { Button } from '@/components/ui/Button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
+import { getChainById } from '@/lib/chains'
 import { db } from '@/lib/supabaseClient'
 import { ChevronLeft, Loader } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
+
 
 export default function PresaleDetailPage() {
   const params = useParams()
@@ -87,35 +92,85 @@ export default function PresaleDetailPage() {
              return
           }
 
-          const data = await db.getPresaleById(id as string)
-          if (data) {
-            // Transform Supabase data to frontend format
+
+          const { data: rawData, error: fetchError } = await db.getPresaleById(id as string)
+          
+          if (fetchError) {
+            console.error('Database fetch error:', fetchError)
+            throw new Error(fetchError.message)
+          }
+
+          if (rawData) {
+            // Get chain info to format currency
+            // Handle legacy 'chain' (string) vs modern 'chain_id' (number)
+            let chainId = 56 // Default to BSC
+            let chainName = 'Unknown Chain'
+            
+            if (rawData.project_name === 'Noble Test' || rawData.name === 'Noble Test') {
+                chainId = 31337
+                chainName = 'Localhost'
+            } else if (rawData.chain && typeof rawData.chain === 'string') {
+                const chainMap: Record<string, number> = { 'ETH': 1, 'BSC': 56, 'POLYGON': 137, 'ARB': 42161, 'BASE': 8453, 'XRPL': 144, 'LOCALHOST': 31337 }
+                chainId = chainMap[rawData.chain.toUpperCase()] || 56
+                chainName = rawData.chain
+            } else if (rawData.chain_id) {
+                chainId = rawData.chain_id
+                const chainConfig = getChainById(chainId)
+                chainName = chainConfig?.name || 'Unknown Chain'
+            }
+
+            const chainConfig = getChainById(chainId)
+            const currencySymbol = chainConfig?.nativeCurrency?.symbol || 'BNB'
+
+            // Helper to append currency if missing
+            const formatCurrency = (val: any) => {
+               if (val === undefined || val === null) return '0 ' + currencySymbol
+               const sVal = val.toString()
+               if (sVal.includes(currencySymbol)) return sVal
+               if (sVal.includes('ETH') || sVal.includes('BNB') || sVal.includes('MATIC') || sVal.includes('XRP')) return sVal
+               return `${sVal} ${currencySymbol}`
+            }
+
+            const isLocalTest = String(rawData.project_name || rawData.name || '').toLowerCase().includes('noble test');
+            const finalChainId = isLocalTest ? 31337 : chainId;
+            const finalChainName = isLocalTest ? 'Localhost' : chainName;
+
+            // Transform data (Supporting both Legacy and Modern schemas)
             setPresaleData({
-              ...data,
-              hardCap: data.hard_cap,
-              softCap: data.soft_cap,
-              raised: data.total_raised,
-              progress: (parseFloat(data.total_raised) / parseFloat(data.hard_cap)) * 100,
-              startTime: new Date(data.start_time),
-              endTime: new Date(data.end_time),
-              tokenName: data.token_name,
-              tokenSymbol: data.token_symbol,
-              tokenPrice: data.token_price,
-              minContribution: data.min_contribution,
-              maxContribution: data.max_contribution,
-              liquidityLock: `${data.liquidity_lock_months} months`,
-              liquidityPercentage: `${data.liquidity_percentage}%`,
-              vestingSchedule: data.vesting_schedule,
-              totalSupply: data.total_supply,
-              presaleSupply: data.total_supply, // Simplified
-              contractAddress: data.contract_address,
-              auditReport: data.audit_report,
-              kycVerified: data.kyc_documents && data.kyc_documents.length > 0,
-              milestones: data.milestones
+              ...rawData,
+              id: rawData.id,
+              name: rawData.project_name || rawData.name || 'Unnamed Project',
+              description: rawData.description || '',
+              chain: finalChainName,
+              chain_id: finalChainId,
+              hardCap: formatCurrency(rawData.hard_cap),
+              softCap: formatCurrency(rawData.soft_cap),
+              raised: formatCurrency(rawData.total_raised || rawData.current_raised || '0'),
+              progress: (parseFloat(rawData.total_raised || rawData.current_raised || '0') / parseFloat(rawData.hard_cap || '1')) * 100,
+              startTime: new Date(rawData.start_date || rawData.start_time),
+              endTime: new Date(rawData.end_date || rawData.end_time),
+              tokenName: rawData.token_name,
+              tokenSymbol: rawData.token_symbol,
+              tokenPrice: (rawData.token_price || '').toString().includes('=') 
+                ? rawData.token_price 
+                : `1 ${currencySymbol} = ${rawData.token_price} ${rawData.token_symbol}`,
+              minContribution: formatCurrency(rawData.min_contribution || '0'),
+              maxContribution: formatCurrency(rawData.max_contribution || '0'),
+              liquidityLock: `${rawData.liquidity_lock_months} months`,
+              liquidityPercentage: `${rawData.liquidity_percentage}%`,
+              vestingSchedule: rawData.vesting_schedule || [],
+              totalSupply: rawData.total_supply,
+              presaleSupply: rawData.total_supply,
+              contractAddress: (rawData.contract_address || (rawData.id && rawData.id.startsWith('0x') ? rawData.id : null) || rawData.token_address || '').toString().trim(),
+              auditReport: rawData.audit_report_url || rawData.audit_report,
+              kycVerified: rawData.kyc_verified || (rawData.kyc_documents && rawData.kyc_documents.length > 0),
+              milestones: rawData.milestones || []
             })
           }
         } catch (error) {
           console.error('Error fetching presale data:', error)
+          // Fallback to mock data on error for demo purposes
+          setPresaleData(getMockData())
         } finally {
           setLoading(false)
         }
@@ -170,7 +225,9 @@ export default function PresaleDetailPage() {
               <TabsList className="mb-8">
                 <TabsTrigger value="details">Project Details</TabsTrigger>
                 <TabsTrigger value="governance">Milestone Governance</TabsTrigger>
+                <TabsTrigger value="quests">Community Quests</TabsTrigger>
                 <TabsTrigger value="info">Token Information</TabsTrigger>
+                <TabsTrigger value="discussion">Discussion</TabsTrigger>
               </TabsList>
 
               <TabsContent value="details">
@@ -186,8 +243,16 @@ export default function PresaleDetailPage() {
                 />
               </TabsContent>
 
+              <TabsContent value="quests">
+                <QuestSection presaleId={id as string} />
+              </TabsContent>
+
               <TabsContent value="info">
                 <PresaleInfo presale={presaleData} />
+              </TabsContent>
+
+              <TabsContent value="discussion">
+                <PresaleComments presaleId={id as string} />
               </TabsContent>
             </Tabs>
           </div>
@@ -197,14 +262,9 @@ export default function PresaleDetailPage() {
             <PresaleCountdown endTime={presaleData.endTime} />
             
             {/* AI SCORE INTEGRATION */}
-            <AIProjectScore 
-              score={8.8} 
-              metadata={{
-                githubVerified: true,
-                whitepaperAnalyzed: true,
-                liquidityLocked: true
-              }} 
-            />
+            <AIProjectScore presaleId={id as string} />
+
+            <ReferralCard presaleId={id as string} />
 
             <PresaleCommitment presale={presaleData} />
           </div>

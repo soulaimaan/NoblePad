@@ -7,6 +7,6 @@ export const XRPL_TOKENS = {
 } as const;
 
 export const XRPL_NETWORKS = {
-  MAINNET: 'https://s1.ripple.com:51234/',
+  MAINNET: 'https://xrplcluster.com/',
   TESTNET: 'https://s.altnet.rippletest.net:51234/'
 } as const;

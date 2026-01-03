@@ -14,32 +14,40 @@ export class BelgraveService {
      * @param amount The amount of BELGRAVE to lock
      * @param durationSeconds The duration to lock for
      */
-    async lockTokens(amount: number, durationSeconds: number) {
-        const sdk = xamanService['_sdk']; // Access private SDK if needed or expose getter
-        if (!sdk) throw new Error("Xaman SDK not initialized");
-        
-        const user = await xamanService.getUser();
-        if (!user?.account) throw new Error("User not connected");
+    /**
+     * Constructs an XRPL EscrowCreate payload for locking tokens
+     * @param account The XRPL account address (sender and receiver)
+     * @param amount The amount of BELGRAVE to lock
+     * @param durationSeconds The duration to lock for in seconds
+     */
+    constructLockPayload(account: string, amount: number, durationSeconds: number) {
+        // Calculate FinishAfter time (Ripple Epoch)
+        // Ripple Epoch is seconds since Jan 1 2000 (946684800 seconds after Unix Epoch)
+        const now = new Date();
+        const finishAfterUnix = Math.floor(now.getTime() / 1000) + durationSeconds;
+        const rippleEpochOffset = 946684800;
+        const finishAfterRipple = finishAfterUnix - rippleEpochOffset;
 
-        // Unlock date in Ripple Epoch time (seconds since 2000-01-01 00:00:00 UTC)
-        const RIPPLE_EPOCH_DIFF = 946684800;
-        const now = Math.floor(Date.now() / 1000);
-        const finishAfter = (now - RIPPLE_EPOCH_DIFF) + durationSeconds;
-
-        const payload = {
+        return {
             TransactionType: "EscrowCreate",
-            Account: user.account,
-            Destination: user.account, // Lock for self
+            Account: account,
+            Destination: account, // Lock to self
             Amount: {
-                currency: XRPL_TOKENS.BELGRAVE.currency,
+                currency: XRPL_TOKENS.BELGRAVE.currencyHex, // Must use Hex for non-standard currency codes > 3 chars
                 issuer: XRPL_TOKENS.BELGRAVE.issuer,
                 value: amount.toString()
             },
-            FinishAfter: finishAfter
-            // Condition: OPTIONAL - We use time-based only for simpler staking
+            FinishAfter: finishAfterRipple,
+            CancelAfter: finishAfterRipple + 31536000 // Expire 1 year after unlock time
         };
+    }
 
-        return await sdk.payload?.create(payload as any);
+    /**
+     * Locks Belgrave tokens in an XRPL Escrow
+     * @deprecated Use constructLockPayload and requestSignature instead
+     */
+    async lockTokens(amount: number, durationSeconds: number) {
+        throw new Error("Use requestSignature flow via StakingPage");
     }
 
     /**
@@ -89,6 +97,26 @@ export class BelgraveService {
             return totalLocked;
         } catch (e) {
             console.error("Failed to fetch locked Belgrave balance:", e);
+            return 0;
+        }
+    }
+
+    /**
+     * Calculates the total qualifying balance for Tiers (Liquid + Locked)
+     * Note: Since TokenEscrow is not yet live on Mainnet, we count Liquid holdings as "Staked"
+     * @param address 
+     */
+    async getQualifyingBalance(address: string): Promise<number> {
+        try {
+            // Static import used above
+            
+            const locked = await this.getLockedBalance(address);
+            const liquidStr = await xamanService.getBelgraveBalance(address);
+            const liquid = parseFloat(liquidStr);
+
+            return locked + liquid;
+        } catch (e) {
+            console.error("Failed to fetch qualifying balance", e);
             return 0;
         }
     }

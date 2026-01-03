@@ -1,7 +1,8 @@
+import { Web3Provider } from '@/components/providers/Web3Provider'
 import dynamic from 'next/dynamic'
 
 const Navigation = dynamic(() => import('@/components/layout/Navigation').then(mod => mod.Navigation), { ssr: false })
-const Web3Provider = dynamic(() => import('@/components/providers/Web3Provider').then(mod => mod.Web3Provider), { ssr: false })
+// UnifiedWalletProvider must be dynamic to avoid hydration mismatch with wallet state
 const UnifiedWalletProvider = dynamic(() => import('@/components/providers/UnifiedWalletProvider').then(mod => mod.UnifiedWalletProvider), { ssr: false })
 const TierProvider = dynamic(() => import('@/components/providers/TierProvider').then(mod => mod.TierProvider), { ssr: false })
 const SolanaProvider = dynamic(() => import('@/components/providers/SolanaProvider').then(mod => mod.SolanaProvider), { ssr: false })

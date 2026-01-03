@@ -1,6 +1,6 @@
 'use client'
 
-import { XRPL_NETWORKS, XRPL_TOKENS } from './constants'
+import { XRPL_NETWORKS } from './constants'
 
 export interface XamanUser {
   account: string
@@ -66,11 +66,46 @@ export class XamanService {
       throw e
     }
   }
+  
+  async createPayload(txjson: any): Promise<{ uuid: string; qrUrl: string; deepLink: string } | null> {
+    try {
+        const response = await fetch('/api/xumm/payload', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                txjson: txjson,
+                options: {
+                    submit: true, // Auto-submit for transactions
+                    return_url: {
+                        web: typeof window !== 'undefined' ? window.location.href : ''
+                    }
+                }
+            })
+        })
 
-  async subscribeToPayload(uuid: string, onSigned: (account: string) => void, onError: (msg: string) => void) {
+        if (!response.ok) {
+            const errorData = await response.json()
+            throw new Error(errorData.error || 'Failed to create payload')
+        }
+
+        const data = await response.json()
+        return {
+            uuid: data.uuid,
+            qrUrl: data.refs.qr_png,
+            deepLink: data.next?.always || `https://xumm.app/sign/${data.uuid}`
+        }
+    } catch (e: any) {
+        console.error('Failed to create Xaman payload:', e)
+        throw e
+    }
+  }
+
+  async subscribeToPayload(uuid: string, onSigned: (data: any) => void, onError: (msg: string) => void) {
     if (uuid === 'simulation') {
       setTimeout(() => {
-        onSigned('rSimulatedXRPLAddress12345')
+        onSigned({ account: 'rSimulatedXRPLAddress12345', txid: 'SIMULATED_HASH' })
       }, 3000)
       return
     }
@@ -90,18 +125,18 @@ export class XamanService {
           }
 
           const data = await response.json()
-          console.log('Xumm Status Check:', { resolved: data.meta?.resolved, signed: data.meta?.signed })
+          // console.log('Xumm Status Check:', { resolved: data.meta?.resolved, signed: data.meta?.signed })
 
           if (data.meta?.resolved || data.meta?.signed) {
             clearInterval(pollInterval)
             
             if (data.meta.signed) {
-              const account = data.response?.account
-              console.log('Xumm Signed! Account:', account)
-              if (account) {
-                this._connectedAccount = account
-                localStorage.setItem('xaman_account', account)
-                onSigned(account)
+              const result = data.response
+              console.log('Xumm Signed!', result)
+              if (result && result.account) {
+                this._connectedAccount = result.account
+                localStorage.setItem('xaman_account', result.account)
+                onSigned(result)
               } else {
                 onError('No account in response')
               }
@@ -172,6 +207,7 @@ export class XamanService {
 
   async getBelgraveBalance(address: string): Promise<string> {
     try {
+      console.log(`Checking Belgrave balance for ${address}...`)
       const response = await fetch(XRPL_NETWORKS.MAINNET, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -181,12 +217,28 @@ export class XamanService {
         })
       })
       const data = await response.json()
+      
+      console.log("XRPL account_lines response:", data)
+
       if (data.result && data.result.lines) {
+        // Log all lines for debugging
+        console.log("Found lines:", data.result.lines)
+
         const belgraveLine = data.result.lines.find((line: any) => 
-          line.currency === XRPL_TOKENS.BELGRAVE.currency && 
-          line.account === XRPL_TOKENS.BELGRAVE.issuer
+          // Check Issuer matches
+          line.account === XRPL_TOKENS.BELGRAVE.issuer &&
+          // Check Currency matches EITHER the string OR the Hex
+          (line.currency === XRPL_TOKENS.BELGRAVE.currency || 
+           line.currency === XRPL_TOKENS.BELGRAVE.currencyHex)
         )
-        return belgraveLine ? belgraveLine.balance : '0'
+        
+        if (belgraveLine) {
+            console.log("Found Belgrave Line:", belgraveLine)
+            return belgraveLine.balance
+        } else {
+            console.warn("No Belgrave trustline found.")
+        }
+        return '0'
       }
       return '0'
     } catch (e) {

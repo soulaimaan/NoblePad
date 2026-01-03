@@ -2,19 +2,16 @@
 import { ethers } from 'ethers'
 import { getChainById } from './chains'
 import {
-    ERC20_ABI,
-    GAS_LIMITS,
-    PRESALE_ABI,
-    PRESALE_FACTORY_ABI,
-    TOKEN_LOCK_ABI,
-    getContractAddress
+  ERC20_ABI,
+  GAS_LIMITS,
+  PRESALE_ABI,
+  PRESALE_FACTORY_ABI,
+  TOKEN_LOCK_ABI,
+  getContractAddress
 } from './contracts'
 import {
-    db,
-    handleSupabaseResponse,
-    safeSupabaseOperation,
-    supabase,
-    type PresaleInsert
+  safeSupabaseOperation,
+  supabase
 } from './supabaseClient'
 
 export interface PresaleFormData {
@@ -44,6 +41,7 @@ export interface PresaleFormData {
   endDate: string
   liquidityPercentage: string
   liquidityLockMonths: string
+  saleType: string // Added to support Fair Launch logic
   
   // Vesting
   vestingEnabled: boolean
@@ -95,20 +93,21 @@ export interface PresaleInfo {
 
 class PresaleService {
   private getProvider() {
-    if (typeof window !== 'undefined' && window.ethereum) {
-      return window.ethereum
+    if (typeof window !== 'undefined') {
+      return (window as any).ethereum || (window as any).okxwallet || null
     }
-    throw new Error('No Ethereum provider found')
+    return null
   }
 
   // Return an ethers provider for convenience
-  private getEthersProvider() {
-    const p = this.getProvider()
+  private getEthersProvider(externalProvider?: any) {
+    const p = externalProvider || this.getProvider()
+    if (!p) return null
     return new ethers.BrowserProvider(p as any)
   }
 
-  // Validate token contract
-  async validateToken(tokenAddress: string, chainId: number): Promise<{
+  // Validate token contract / XRPL Issuer
+  async validateToken(tokenAddress: string, chainId: number, externalProvider?: any): Promise<{
     isValid: boolean
     tokenInfo?: {
       name: string
@@ -120,16 +119,57 @@ class PresaleService {
     error?: string
   }> {
     try {
-      const provider = this.getProvider()
+      if (chainId === 144) {
+        // XRPL Validation
+        if (!tokenAddress.startsWith('r') || tokenAddress.length < 25) {
+          throw new Error('Invalid XRPL address format')
+        }
+
+        // Check if account exists on ledger
+        const response = await fetch('https://xrplcluster.com', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            method: "account_info",
+            params: [{ account: tokenAddress, ledger_index: "validated" }]
+          })
+        })
+        const data = await response.json()
+        
+        if (data.result && data.result.error === 'actNotFound') {
+          throw new Error('Account not found on XRPL. Please ensure the issuer account is activated.')
+        }
+
+        if (data.result && data.result.account_data) {
+          const flags = data.result.account_data.Flags
+          const isDefaultRipple = (flags & 0x00800000) !== 0 // asfDefaultRipple
+          
+          return {
+            isValid: true,
+            tokenInfo: {
+              name: 'XRPL Issued Currency',
+              symbol: 'CUR', // Placeholder, will be updated by user in form
+              decimals: 15, // XRPL standard for issued currencies
+              totalSupply: 'Unlimited (Mintable)',
+              verified: isDefaultRipple
+            }
+          }
+        }
+        
+        throw new Error('Could not verify XRPL account')
+      }
+
+      const provider = externalProvider || this.getProvider()
       
       // Switch to correct network if needed
-      const currentChainId = await provider.request({ method: 'eth_chainId' })
+      const currentChainId = await (provider as any).request({ method: 'eth_chainId' })
       if (parseInt(currentChainId, 16) !== chainId) {
-        await this.switchNetwork(chainId)
+        await this.switchNetwork(chainId, provider)
       }
 
       // Create contract instance
-      const contract = await this.createContract(tokenAddress, ERC20_ABI)
+      const contract = await this.createContract(tokenAddress, ERC20_ABI, provider)
+      if (!contract) throw new Error("Could not initialize contract instance")
       
       // Get token info
       const [name, symbol, decimals, totalSupply] = await Promise.all([
@@ -161,15 +201,16 @@ class PresaleService {
   }
 
   // Create presale on blockchain
-  async createPresaleContract(formData: PresaleFormData, userAddress: string): Promise<{
+  async createPresaleContract(formData: PresaleFormData, userAddress: string, externalProvider?: any): Promise<{
     success: boolean
     presaleAddress?: string
     transactionHash?: string
     error?: string
   }> {
     try {
-      const provider = this.getProvider()
-      const ethersProvider = this.getEthersProvider()
+      const provider = externalProvider || this.getProvider()
+      const ethersProvider = this.getEthersProvider(provider)
+      if (!ethersProvider) throw new Error("Wallet provider not found. Please connect your wallet.")
       const signer = await ethersProvider.getSigner()
       const chain = getChainById(formData.chainId)
       
@@ -187,9 +228,9 @@ class PresaleService {
 
       // Switch to correct network in the wallet if needed
       try {
-        const currentChainId = await provider.request({ method: 'eth_chainId' })
+        const currentChainId = await (provider as any).request({ method: 'eth_chainId' })
         if (parseInt(currentChainId, 16) !== formData.chainId) {
-          await this.switchNetwork(formData.chainId)
+          await this.switchNetwork(formData.chainId, provider)
         }
       } catch (err) {
         // ignore - wallet may not respond
@@ -275,6 +316,7 @@ class PresaleService {
       }
 
       const ethersProvider = this.getEthersProvider()
+      if (!ethersProvider) throw new Error("Wallet provider not found")
       const signer = await ethersProvider.getSigner()
       const lockContract = new ethers.Contract(lockAddress, TOKEN_LOCK_ABI as any, signer)
       const lockIds: number[] = []
@@ -310,6 +352,101 @@ class PresaleService {
     }
   }
 
+  // Contribute to presale on blockchain
+  async contributeToPresale(
+    presaleAddress: string, 
+    amount: string, 
+    chainId: number,
+    externalProvider?: any
+  ): Promise<{ success: boolean; transactionHash?: string; error?: string }> {
+    try {
+      const provider = externalProvider || this.getProvider()
+      const ethersProvider = this.getEthersProvider(provider)
+      if (!ethersProvider) throw new Error("Wallet provider not found")
+      const signer = await ethersProvider.getSigner()
+
+      // Switch to correct network if needed
+      try {
+        let hexChainId = await (provider as any).request({ method: 'eth_chainId' })
+        let currentChainId = parseInt(hexChainId, 16)
+        
+        if (currentChainId !== chainId) {
+          await this.switchNetwork(chainId, provider)
+          
+          // Re-verify after switch
+          hexChainId = await (provider as any).request({ method: 'eth_chainId' })
+          currentChainId = parseInt(hexChainId, 16)
+          
+          if (currentChainId !== chainId) {
+            throw new Error(`Failed to switch network. Expected Chain ID ${chainId}, but got ${currentChainId}.`)
+          }
+        }
+      } catch (err: any) {
+        console.error('[PresaleService] Network switch failed:', err)
+        if (err.code === 4001) {
+            throw new Error('User rejected network switch.')
+        }
+        throw new Error(`Network switch failed: ${err.message || 'Unknown error'}`)
+      }
+
+      const presaleContract = new ethers.Contract(presaleAddress.trim(), PRESALE_ABI as any, signer)
+      
+      // Send contribution
+      const tx = await presaleContract.contribute({
+        value: ethers.parseEther(amount),
+        gasLimit: BigInt(GAS_LIMITS.contribute)
+      })
+
+      const receipt = await tx.wait()
+
+      return {
+        success: true,
+        transactionHash: tx.hash
+      }
+    } catch (error: any) {
+      console.error('Contribution failed:', error)
+      return {
+        success: false,
+        error: error.message || 'Contribution failed'
+      }
+    }
+  }
+
+  // Record contribution in database
+  async recordContributionInDatabase(
+    presaleId: string,
+    userAddress: string,
+    amount: string,
+    transactionHash: string,
+    tokenAllocation: string
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      const apiResponse = await fetch('/api/record-contribution', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          presaleId,
+          userAddress: userAddress.toLowerCase(),
+          amount: parseFloat(amount),
+          tokenAllocation: parseFloat(tokenAllocation),
+          transactionHash
+        })
+      })
+
+      const result = await apiResponse.json()
+      if (!apiResponse.ok || !result.success) {
+        throw new Error(result.error || 'Failed to record contribution via API')
+      }
+
+      return { success: true }
+    } catch (error: any) {
+      console.error('DB Contribution update failed:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
   // Submit presale to database
   async submitPresaleToDatabase(
     formData: PresaleFormData,
@@ -324,13 +461,15 @@ class PresaleService {
         userAddress
       )
 
-      const presaleInsertData: PresaleInsert = {
-        contract_address: contractAddress,
-        chain_id: formData.chainId,
-        creator_address: userAddress.toLowerCase(),
-        
-        // Project info
-        name: formData.projectName,
+      // Map inputs to the legacy DB schema (001_initial_schema.sql)
+      const chainMap: Record<number, string> = {
+        1: 'ETH', 56: 'BSC', 137: 'POLYGON', 42161: 'ARB', 8453: 'BASE', 31337: 'ETH'
+      }
+      const chainName = chainMap[formData.chainId] || 'ETH'
+      
+      const presaleInsertData: any = {
+        // Project Information
+        project_name: formData.projectName,
         description: formData.description,
         website: formData.website || null,
         twitter: formData.twitter || null,
@@ -338,62 +477,60 @@ class PresaleService {
         discord: formData.discord || null,
         whitepaper: formData.whitepaper || null,
         
-        // Token info
-        token_address: formData.tokenAddress.toLowerCase(),
+        // Token Details
         token_name: formData.tokenName,
         token_symbol: formData.tokenSymbol,
-        total_supply: formData.totalSupply,
+        token_address: formData.tokenAddress.toLowerCase(),
+        total_supply: parseInt(formData.totalSupply) || 0,
         
-        // Presale params
-        soft_cap: formData.softCap,
-        hard_cap: formData.hardCap,
-        token_price: formData.tokenPrice,
-        min_contribution: formData.minContribution || null,
-        max_contribution: formData.maxContribution || null,
-        start_time: formData.startDate,
-        end_time: formData.endDate,
-        liquidity_percentage: parseInt(formData.liquidityPercentage),
-        liquidity_lock_months: parseInt(formData.liquidityLockMonths),
+        // Presale Configuration
+        soft_cap: parseFloat(formData.softCap || '0'),
+        hard_cap: parseFloat(formData.hardCap || '0'),
+        token_price: parseFloat(formData.tokenPrice || '0'),
+        min_contribution: parseFloat(formData.minContribution || '0'),
+        max_contribution: parseFloat(formData.maxContribution || '0'),
+        start_date: formData.startDate,
+        end_date: formData.endDate,
+        
+        // Security Settings
+        liquidity_percentage: Math.max(parseInt(formData.liquidityPercentage) || 60, 60),
+        liquidity_lock_months: Math.max(parseInt(formData.liquidityLockMonths) || 6, 6),
+        team_token_lock_months: Math.max(parseInt(formData.teamTokenLockMonths) || 12, 12),
         
         // Vesting
-        vesting_enabled: formData.vestingEnabled,
-        vesting_schedule: formData.vestingSchedule as any,
+        vesting_schedule: formData.vestingSchedule,
         
-        // Security
-        kyc_documents: uploadedKycDocuments,
-        audit_report: formData.auditReport || null,
-        team_token_lock_months: parseInt(formData.teamTokenLockMonths),
-        team_wallets: formData.teamWallets,
-        milestones: formData.milestones as any,
+        // Status & Chain
+        status: 'pending',
+        chain: chainName,
+        submitter_address: userAddress.toLowerCase(),
         
-        // Metadata
-        creation_transaction: transactionHash,
-        status: 'pending_review',
-        total_raised: '0',
-        total_participants: 0,
+        // Extended fields (Supported by API Route auto-filtering)
+        contract_address: contractAddress,
+        audit_report_url: formData.auditReport || null,
+        creation_transaction: transactionHash
       }
 
-      const response = await supabase
-        .from('presales')
-        .insert(presaleInsertData as any)
-        .select('id')
-        .single()
-
-      const savedPresale = handleSupabaseResponse(response as any, 'Submit presale to database')
-
-      // Create initial timeline entry
-      await this.createTimelineEntry(
-        (savedPresale as any).id,
-        'presale_submitted',
-        'Presale submitted for review',
-        transactionHash
-      )
-
-      // Update user session
-      await db.upsertUserSession(userAddress, {
-        presales_created: 1, // This would be incremented in a real implementation
-        total_raised: '0',
+      // Call server-side API to bypass RLS policies
+      const apiResponse = await fetch('/api/create-presale-entry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          insertData: presaleInsertData,
+          transactionHash,
+          userAddress: userAddress.toLowerCase()
+        })
       })
+
+      const apiResult = await apiResponse.json()
+      
+      if (!apiResponse.ok || !apiResult.success) {
+        throw new Error(apiResult.error || 'Failed to submit presale via API')
+      }
+
+      const savedPresale = { id: apiResult.data.id }
 
       return {
         success: true,
@@ -486,10 +623,10 @@ class PresaleService {
     }
   }
 
-  // Helper methods (simplified implementations)
-  private async createContract(address: string, abi: any) {
+  private async createContract(address: string, abi: any, externalProvider?: any) {
     // Create an ethers.js contract instance (read-only by default)
-    const provider = this.getEthersProvider()
+    const provider = this.getEthersProvider(externalProvider)
+    if (!provider) return null
     return new ethers.Contract(address, abi as any, provider)
   }
 
@@ -502,14 +639,17 @@ class PresaleService {
   private async executeTransaction(contract: any, method: string, params: any[], options: any = {}) {
     if (!contract) throw new Error('Contract instance required')
     const ethersProvider = this.getEthersProvider()
+    if (!ethersProvider) throw new Error("Wallet provider not found")
     const signer = await ethersProvider.getSigner()
     const contractWithSigner = contract.connect ? contract.connect(signer) : contract
     const tx = await contractWithSigner[method](...params, options)
     return tx
   }
 
-  private async switchNetwork(chainId: number) {
-    const provider = this.getProvider()
+  private async switchNetwork(chainId: number, externalProvider?: any) {
+    const provider = externalProvider || this.getProvider()
+    if (!provider) return
+    
     const chain = getChainById(chainId)
     
     if (!chain) {
@@ -517,14 +657,14 @@ class PresaleService {
     }
 
     try {
-      await provider.request({
+      await (provider as any).request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: `0x${chainId.toString(16)}` }]
       })
     } catch (error: any) {
       if (error.code === 4902) {
         // Chain not added to wallet, add it
-        await provider.request({
+        await (provider as any).request({
           method: 'wallet_addEthereumChain',
           params: [{
             chainId: `0x${chainId.toString(16)}`,
@@ -541,34 +681,108 @@ class PresaleService {
   }
 
   private prepareContractParams(formData: PresaleFormData, routerAddress: string) {
-    // Convert form data to contract parameters
-    const softCapWei = BigInt(parseFloat(formData.softCap) * 1e18)
-    const hardCapWei = BigInt(parseFloat(formData.hardCap) * 1e18)
-    const presaleRate = BigInt(parseFloat(formData.tokenPrice) * 1e18)
-    const startTime = BigInt(Math.floor(new Date(formData.startDate).getTime() / 1000))
-    const endTime = BigInt(Math.floor(new Date(formData.endDate).getTime() / 1000))
-    const lockPeriod = BigInt(parseInt(formData.liquidityLockMonths) * 30 * 24 * 60 * 60) // Convert months to seconds
+    // Helper to safely convert potentially empty/invalid strings to BigInt
+    const safeBigInt = (val: string | number | undefined, decimals: number = 18): bigint => {
+      if (val === undefined || val === '') return BigInt(0)
+      const parsed = typeof val === 'string' ? parseFloat(val) : val
+      if (isNaN(parsed)) return BigInt(0)
+      return BigInt(Math.floor(parsed * Math.pow(10, decimals)))
+    }
+
+    const safeTimestamp = (dateStr: string): bigint => {
+      if (!dateStr) return BigInt(0)
+      const time = new Date(dateStr).getTime()
+      return isNaN(time) ? BigInt(0) : BigInt(Math.floor(time / 1000))
+    }
+
+    const softCapWei = safeBigInt(formData.softCap)
+    const presaleRate = safeBigInt(formData.tokenPrice)
+    const liquidityPercent = parseInt(formData.liquidityPercentage) || 0
+    
+    let hardCapWei = safeBigInt(formData.hardCap)
+    
+    // For Fair Launch, calculate the maximum possible Hard Cap based on supply
+    if (formData.saleType === 'fair_launch') {
+      const totalSupplyWei = safeBigInt(formData.totalSupply)
+      
+      // Calculate tokens per ETH (presale + liquidity portion)
+      // Rate is implicitly scaled by 1e18 in safeBigInt(tokenPrice), so it represents (Tokens * 1e18 / ETH) ?
+      // No, safeBigInt(1000) -> 1000 * 1e18.
+      // Contract uses: amount = msg.value * rate.
+      // If rate = 1000 * 1e18. 1 Wei buys 1000 Tokens (if 18 decimals).
+      
+      // Tokens needed per 1 ETH raised = Rate + (Rate * Liq / 100)
+      const rateVal = presaleRate // This is the scaled rate
+      const tokensPerEth = rateVal + (rateVal * BigInt(liquidityPercent) / BigInt(100))
+      
+      if (tokensPerEth > BigInt(0)) {
+         // WEI_RAISABLE = TOTAL_SUPPLY_WEI * 1e18 / TOKENS_PER_ETH_SCALED
+         // (Supply * 1e18) / (Rate * 1e18) = Supply / Rate. (Correct for ETH amount)
+         // But we are mixing scaled integers.
+         // hardCapWei = (totalSupplyWei * BigInt(1e18)) / tokensPerEth
+         hardCapWei = (totalSupplyWei * BigInt(1e18)) / tokensPerEth
+      }
+      
+      // Safety margin (99.9%)
+       hardCapWei = hardCapWei * BigInt(999) / BigInt(1000)
+    }
+
+    // Ensure startTime is at least 120 seconds in the future to prevent block.timestamp collisions
+    let startTime = safeTimestamp(formData.startDate)
+    const now = BigInt(Math.floor(Date.now() / 1000))
+    if (startTime <= now) {
+      startTime = now + BigInt(120) // Add 2 minute buffer
+    }
+
+    const endTime = safeTimestamp(formData.endDate)
+    const lockPeriod = BigInt((parseInt(formData.liquidityLockMonths) || 0) * 30 * 24 * 60 * 60)
+    
+    // Calculate total tokens required for presale
+    const totalTokensRequired = formData.saleType === 'fair_launch' 
+      ? safeBigInt(formData.totalSupply)
+      : (hardCapWei * presaleRate / BigInt(1e18)) + 
+        ((hardCapWei * BigInt(liquidityPercent) / BigInt(100)) * presaleRate / BigInt(1e18))
+
+    // Convert rate to simple integer (tokens per 1 ETH, not scaled)
+    // User enters "1000" meaning 1000 tokens per ETH. Contract does: msg.value * rate
+    // 1 ETH (1e18 wei) * 1000 = 1000e18 wei worth of tokens = 1000 tokens (with 18 decimals)
+    const rateInteger = parseFloat(formData.tokenPrice) || 0
+    
+    // Ensure liquidity is at least 60% as required by contract
+    const finalLiquidityPercent = Math.max(liquidityPercent, 60)
+    
+    // PresaleFactory.createPresale expects exactly 12 parameters:
+    // _token, _router, _softCap, _hardCap, _presaleRate, _listingRate, 
+    // _liquidityPercent, _startTime, _endTime, _lockPeriod, _maxSpendPerBuyer, _amount
+    const contractParams = [
+        formData.tokenAddress,                        // _token
+        routerAddress,                                // _router
+        softCapWei.toString(),                        // _softCap (in wei)
+        hardCapWei.toString(),                        // _hardCap (in wei)
+        BigInt(Math.floor(rateInteger)).toString(),   // _presaleRate (tokens per 1 ETH worth of wei)
+        BigInt(Math.floor(rateInteger)).toString(),   // _listingRate (same as presale)
+        BigInt(finalLiquidityPercent).toString(),     // _liquidityPercent (60-100)
+        startTime.toString(),                         // _startTime (unix timestamp)
+        endTime.toString(),                           // _endTime (unix timestamp)
+        lockPeriod.toString(),                        // _lockPeriod (seconds)
+        safeBigInt(formData.maxContribution).toString(), // _maxSpendPerBuyer (in wei)
+        totalTokensRequired.toString()                // _amount (total tokens in wei)
+    ]
+    
+    console.log('--- Presale Deployment Params ---')
+    console.log('Token:', contractParams[0])
+    console.log('Router:', contractParams[1])
+    console.log('SoftCap:', contractParams[2])
+    console.log('HardCap:', contractParams[3])
+    console.log('Rate:', contractParams[4])
+    console.log('Liq%:', contractParams[6])
+    console.log('StartTime:', contractParams[7])
+    console.log('EndTime:', contractParams[8])
+    console.log('Amount:', contractParams[11])
+    console.log('---------------------------------')
     
     return {
-      contractParams: [
-        formData.tokenAddress,
-        routerAddress,
-        softCapWei.toString(),
-        hardCapWei.toString(),
-        presaleRate.toString(),
-        presaleRate.toString(), // listing rate same as presale for now
-        BigInt(parseInt(formData.liquidityPercentage)).toString(),
-        startTime.toString(),
-        endTime.toString(),
-        lockPeriod.toString(),
-        BigInt(parseFloat(formData.maxContribution) * 1e18).toString(),
-        BigInt(parseFloat(formData.hardCap) * parseFloat(formData.tokenPrice) * 1e18).toString(), // Total tokens for presale
-        formData.vestingSchedule.map(v => ({
-          recipient: formData.teamWallets[0] || '0x0000000000000000000000000000000000000000',
-          amount: BigInt(parseFloat(formData.totalSupply) * v.percentage / 100 * 1e18).toString(),
-          unlockTime: BigInt(v.unlockTime).toString()
-        }))
-      ],
+      contractParams,
       creationFee: BigInt(0.01 * 1e18) // 0.01 ETH creation fee
     }
   }
@@ -585,6 +799,7 @@ class PresaleService {
 
   private async waitForTransaction(hash: string) {
     const ethersProvider = this.getEthersProvider()
+    if (!ethersProvider) throw new Error("Wallet provider not found")
     const receipt = await ethersProvider.getTransactionReceipt(hash)
     return receipt
   }

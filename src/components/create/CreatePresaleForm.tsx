@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/Button'
+import { useAccount } from '@/hooks/useCompatibleAccount'
 import { presaleService } from '@/lib/presaleService'
 import { useEffect, useState } from 'react'
 import { MilestoneTemplateStep } from './steps/MilestoneTemplateStep'
@@ -32,6 +33,7 @@ interface FormData {
   chainId: number
   
   // Presale Setup
+  saleType: 'standard' | 'fair_launch'
   softCap: string
   hardCap: string
   tokenPrice: string
@@ -63,6 +65,7 @@ interface FormData {
 }
 
 export function CreatePresaleForm({ currentStep, onStepChange }: CreatePresaleFormProps) {
+  const { address: userAddress, rawProvider, isConnected: isUnifiedConnected } = useAccount()
   const [formData, setFormData] = useState<FormData>({
     // Initialize with empty values
     projectName: '',
@@ -77,6 +80,7 @@ export function CreatePresaleForm({ currentStep, onStepChange }: CreatePresaleFo
     tokenAddress: '',
     totalSupply: '',
     chainId: 0, // Will be set when chain is selected
+    saleType: 'standard',
     softCap: '',
     hardCap: '',
     tokenPrice: '',
@@ -113,11 +117,27 @@ export function CreatePresaleForm({ currentStep, onStepChange }: CreatePresaleFo
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    // Read query parameters to pre-fill form
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search)
+      const token = urlParams.get('token')
+      const symbol = urlParams.get('symbol')
+      const chain = urlParams.get('chain')
+      
+      if (token || symbol || chain) {
+        setFormData(prev => ({
+          ...prev,
+          tokenAddress: token || prev.tokenAddress,
+          tokenSymbol: symbol || prev.tokenSymbol,
+          chainId: chain === 'xrpl' ? 144 : (chain === 'evm' ? 31337 : prev.chainId) 
+        }))
+      }
+    }
+
     // Initialize dates on client side to avoid hydration mismatch
     const now = Math.floor(Date.now() / 1000)
     setFormData(prev => {
-      // Only update if they are 0 (prevent overwriting if state was restored/persisted?)
-      // Actually this runs once on mount. formData is fresh.
+      // Only update if they are 0
       if (prev.vestingSchedule[0].unlockTime !== 0) return prev
       
       return {
@@ -156,14 +176,12 @@ export function CreatePresaleForm({ currentStep, onStepChange }: CreatePresaleFo
       }
 
       // Get user wallet address
-      const accounts = await window.ethereum?.request({ method: 'eth_accounts' })
-      if (!accounts || accounts.length === 0) {
+      if (!userAddress) {
         throw new Error('Please connect your wallet first')
       }
-      const userAddress = accounts[0]
 
       // Step 1: Create presale contract
-      const contractResult = await presaleService.createPresaleContract(formData, userAddress)
+      const contractResult = await presaleService.createPresaleContract(formData, userAddress, rawProvider)
       if (!contractResult.success) {
         throw new Error(contractResult.error || 'Failed to create presale contract')
       }
@@ -199,25 +217,7 @@ export function CreatePresaleForm({ currentStep, onStepChange }: CreatePresaleFo
         throw new Error(dbResult.error || 'Failed to save presale data')
       }
 
-      // Step 4: Call Supabase Edge Function for additional processing
-      const response = await fetch('/api/create-presale', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          presaleId: dbResult.presaleId,
-          contractAddress: contractResult.presaleAddress,
-          transactionHash: contractResult.transactionHash,
-          formData
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to process presale submission')
-      }
-
-      // Success!
+      // Step 4: Success! (Server-side processing now handled in Step 3 via API proxy)
       alert(`🎉 Presale created successfully!\n\nContract: ${contractResult.presaleAddress}\nTransaction: ${contractResult.transactionHash}\n\nOur team will review your application within 24-48 hours.`)
       
       // Reset form or redirect to dashboard
@@ -234,8 +234,13 @@ export function CreatePresaleForm({ currentStep, onStepChange }: CreatePresaleFo
   const validateFormData = (): boolean => {
     const required = [
       'projectName', 'description', 'tokenName', 'tokenSymbol', 'tokenAddress',
-      'softCap', 'hardCap', 'tokenPrice', 'startDate', 'endDate', 'chainId'
+      'softCap', 'tokenPrice', 'startDate', 'endDate', 'chainId'
     ]
+    
+    // Hard cap is only required for standard presales
+    if (formData.saleType !== 'fair_launch') {
+        required.push('hardCap')
+    }
     
     for (const field of required) {
       if (!formData[field as keyof FormData]) {
@@ -263,7 +268,7 @@ export function CreatePresaleForm({ currentStep, onStepChange }: CreatePresaleFo
     const softCap = parseFloat(formData.softCap)
     const hardCap = parseFloat(formData.hardCap)
 
-    if (hardCap <= softCap) {
+    if (formData.saleType !== 'fair_launch' && hardCap <= softCap) {
       alert('Hard cap must be greater than soft cap')
       return false
     }

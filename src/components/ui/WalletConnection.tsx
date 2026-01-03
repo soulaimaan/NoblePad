@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { useEffect, useState } from 'react'
 
 export function ConnectWallet() {
-  const { connect, isConnecting } = useUnifiedWallet()
+  const { connect, isConnecting, connectors } = useUnifiedWallet()
   const [showOptions, setShowOptions] = useState(false)
   const [isClient, setIsClient] = useState(false)
 
@@ -15,8 +15,24 @@ export function ConnectWallet() {
 
   if (!isClient) return <Button variant="outline">Connect Wallet</Button>
 
-  const handleConnect = async (type: WalletType) => {
+  const handleConnect = async (type: WalletType, isDirect: boolean = false) => {
     if (!type) return
+    
+    if (type === 'evm' && isDirect && connectors && connectors.length > 0) {
+      // Find MetaMask or Injected connector
+      const mmConnector = connectors.find(c => 
+        c.id === 'io.metamask' || 
+        c.id === 'metaMaskSDK' || 
+        (c.id === 'injected' && c.name.toLowerCase().includes('metamask'))
+      ) || connectors.find(c => c.id === 'injected')
+
+      if (mmConnector) {
+        await connect('evm', mmConnector)
+        setShowOptions(false)
+        return
+      }
+    }
+
     await connect(type)
     setShowOptions(false)
   }
@@ -29,6 +45,24 @@ export function ConnectWallet() {
              <h3 className="text-sm font-medium text-noble-gold mb-3">Select Chain</h3>
              
              {/* EVM */}
+             {/* Direct Extension Connection (MetaMask/Brave/Opera) */}
+             {connectors && connectors.length > 0 && connectors.some(c => c.id === 'injected' || c.id === 'io.metamask') && (
+                <Button 
+                   variant="outline" 
+                   className="w-full justify-start text-left bg-orange-500/10 hover:bg-orange-500/20 border-orange-500/30"
+                   onClick={() => handleConnect('evm', true)}
+                   disabled={isConnecting}
+                >
+                   <div className="flex items-center gap-3">
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Alpha_Software_Logo.svg" className="w-6 h-6" alt="Wallet" />
+                      <div className="flex flex-col">
+                          <span className="text-sm font-bold text-orange-400">Browser Wallet (Direct)</span>
+                          <span className="text-[10px] text-orange-300/60">Fastest connection detected</span>
+                      </div>
+                   </div>
+                </Button>
+             )}
+
              <Button 
                 variant="outline" 
                 className="w-full justify-start text-left bg-black/20 hover:bg-black/40 border-noble-gold/30"
@@ -38,8 +72,8 @@ export function ConnectWallet() {
                 <div className="flex items-center gap-3">
                    <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-[10px] text-white font-bold">E</div>
                    <div className="flex flex-col">
-                       <span className="text-sm font-bold">EVM / Ethereum</span>
-                       <span className="text-[10px] text-gray-400">Metamask, Rainbow, etc.</span>
+                       <span className="text-sm font-bold">Other EVM Wallets</span>
+                       <span className="text-[10px] text-gray-400">Rainbow, WalletConnect, etc.</span>
                    </div>
                 </div>
              </Button>

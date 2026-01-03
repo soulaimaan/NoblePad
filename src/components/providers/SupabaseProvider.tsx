@@ -15,6 +15,12 @@ export function SupabaseProvider({
 }: {
   children: React.ReactNode
 }) {
+  // If supabase client is not initialized (missing env vars), just render children
+  if (!supabase) {
+    console.warn('SupabaseProvider: Supabase client not initialized. Rendering children without Supabase context.')
+    return <>{children}</>
+  }
+
   // Use the shared client instead of creating a new one
 
   useEffect(() => {

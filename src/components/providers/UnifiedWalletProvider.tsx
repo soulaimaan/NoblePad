@@ -3,8 +3,9 @@
 import { XamanLoginModal } from '@/components/wallet/XamanLoginModal'
 import { xamanService } from '@/lib/xrpl/xamanService'
 import { useAppKit } from '@reown/appkit/react'
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
-import { useAccount, useDisconnect } from 'wagmi'
+import { ethers } from 'ethers'
+import { createContext, useContext, useEffect, useState } from 'react'
+import { useAccount, useBalance, useConnect, useDisconnect } from 'wagmi'
 
 export type WalletType = 'evm' | 'xrpl' | null
 
@@ -13,13 +14,15 @@ interface UnifiedWalletContextType {
   address: string | null
   walletType: WalletType
   chainType: 'evm' | 'xrpl' | null
-  connect: (type: WalletType) => Promise<void>
+  connect: (type: WalletType, connector?: any) => Promise<void>
   disconnect: () => Promise<void>
   isConnecting: boolean
   balance: {
     formatted: string
     symbol: string
   }
+  connectors: any[]
+  requestSignature: (txjson: any) => Promise<any>
 }
 
 const UnifiedWalletContext = createContext<UnifiedWalletContextType | null>(null)
@@ -29,6 +32,7 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
   const { address: evmAddress, isConnected: isEvmConnected, isConnecting: isEvmConnecting } = useAccount()
   const { disconnect: disconnectEvm } = useDisconnect()
   const { open: openAppKit } = useAppKit()
+  const { connect: wagmiConnect, connectors } = useConnect()
 
   // Local State for XRPL
   const [xrplAddress, setXrplAddress] = useState<string | null>(null)
@@ -49,7 +53,7 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
     setIsMounted(true)
   }, [])
 
-  // 1. Initial Mount: Check for persisted sessions
+  // 1. Initial Mount: Check for stored session
   useEffect(() => {
     if (!isMounted) return
     const checkSessions = async () => {
@@ -93,10 +97,55 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
 
 
   // ACTIONS
-  const connect = async (type: WalletType) => {
+  const requestSignature = async (txjson: any): Promise<any> => {
+      return new Promise(async (resolve, reject) => {
+          setXamanStatus('Preparing transaction...')
+          setShowXamanModal(true)
+          setXamanQr(null)
+          
+          try {
+              const payload = await xamanService.createPayload(txjson)
+              
+              if (payload?.qrUrl) {
+                  setXamanQr(payload.qrUrl)
+                  setXamanDeepLink(payload.deepLink)
+                  setXamanStatus('Scan the QR code to sign')
+                  
+                  xamanService.subscribeToPayload(
+                      payload.uuid,
+                      (data: any) => {
+                          setShowXamanModal(false)
+                          resolve(data)
+                      },
+                      (errorMsg: string) => {
+                          setXamanStatus(`Error: ${errorMsg}`)
+                          setTimeout(() => {
+                             setShowXamanModal(false)
+                             reject(errorMsg)
+                          }, 3000)
+                      }
+                  )
+              } else {
+                  setXamanStatus('Failed to create QR code')
+                  setTimeout(() => setShowXamanModal(false), 2000)
+                  reject("Failed to create payload")
+              }
+          } catch (e: any) {
+              console.error("XRPL Sign Error", e)
+              setXamanStatus(`Failed: ${e.message}`)
+              setTimeout(() => setShowXamanModal(false), 3000)
+              reject(e)
+          }
+      })
+  }
+
+  const connect = async (type: WalletType, connector?: any) => {
     if (type === 'evm') {
-        // AppKit Modal
-        openAppKit() 
+        if (connector) {
+            wagmiConnect({ connector })
+        } else {
+            openAppKit() 
+        }
     } else if (type === 'xrpl') {
         const initError = xamanService.getInitError()
         if (initError) {
@@ -106,7 +155,6 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
             return
         }
 
-        // Prevent double-firing
         if (isXrplConnecting) return
 
         setIsXrplConnecting(true)
@@ -125,7 +173,8 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
                 // Subscribe to payload events
                 xamanService.subscribeToPayload(
                     payload.uuid,
-                    async (account: string) => {
+                    async (data: any) => {
+                        const account = data.account
                         setXamanStatus('Verified! Connected.')
                         setXrplAddress(account)
                         setActiveWallet('xrpl')
@@ -165,16 +214,23 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
     setActiveWallet(null)
   }
 
+  const { data: evmBalanceData } = useBalance({
+    address: evmAddress as `0x${string}`,
+    query: {
+      enabled: !!evmAddress && activeWallet === 'evm'
+    }
+  })
+
   // DERIVED STATE
   // Ensure we only render wallet-specific data after mounting to prevent hydration errors
   const address = !isMounted ? null : (activeWallet === 'evm' ? (evmAddress ?? null) : (xrplAddress ?? null))
   
   const balance = !isMounted ? { formatted: '0.00', symbol: '' } : (
     activeWallet === 'evm' ? {
-      formatted: '0.00', // Note: Add EVM balance hook if needed
-      symbol: 'ETH'
+      formatted: evmBalanceData ? ethers.formatUnits(evmBalanceData.value, evmBalanceData.decimals) : '0.00',
+      symbol: evmBalanceData?.symbol || 'ETH'
     } : {
-      formatted: xrplBalance,
+      formatted: xrplBalance || '0.00',
       symbol: 'XRP'
     }
   )
@@ -190,7 +246,9 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
         connect,
         disconnect,
         isConnecting: isEvmConnecting || isXrplConnecting,
-        balance
+        balance,
+        connectors: connectors as any[],
+        requestSignature
     }}>
       {children}
       <XamanLoginModal 

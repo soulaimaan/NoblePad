@@ -87,3 +87,6 @@ node-v25.2.1-win-x64/
 backup_noblepad.zip
 nobleGIT.zip
 noblepad-deploy-*.zip
+
+# Local Netlify folder
+.netlify

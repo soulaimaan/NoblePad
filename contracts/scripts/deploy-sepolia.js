@@ -12,6 +12,7 @@
  *   - ETHERSCAN_API_KEY: (optional) For contract verification
  */
 
+import 'dotenv/config';
 import { ethers } from 'ethers';
 import * as fs from 'fs';
 import * as path from 'path';
