@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { RefreshCw, CheckCircle, Clock, AlertCircle, Code, Database, Palette, Server, Shield, Rocket } from 'lucide-react'
+import styles from '@/styles/AgentMonitor.module.css'
 
 interface AgentStatus {
   name: string
@@ -27,7 +28,7 @@ export default function AgentMonitorPage() {
       currentTask: 'Monitoring system architecture',
       completedTasks: [
         'Database schema design (12 tables)',
-        'API route architecture (50+ endpoints)', 
+        'API route architecture (50+ endpoints)',
         'Integration patterns defined',
         'Security requirements documented'
       ],
@@ -148,10 +149,10 @@ export default function AgentMonitorPage() {
 
   const refreshAgentStatus = async () => {
     setIsRefreshing(true)
-    
+
     // Simulate fetching agent status (in reality, this would read from files or APIs)
     setTimeout(() => {
-      setAgents(prevAgents => 
+      setAgents(prevAgents =>
         prevAgents.map(agent => ({
           ...agent,
           lastUpdate: 'Just now',
@@ -198,9 +199,9 @@ export default function AgentMonitorPage() {
             🤖 Agent Progress Monitor
           </h1>
           <p className="text-xl text-noble-gold/70 mb-6">
-            Real-time status of autonomous AI agents building NoblePad Launchpad
+            Real-time status of autonomous AI agents building the Belgrave System
           </p>
-          
+
           {/* Overall Progress */}
           <div className="max-w-md mx-auto mb-6">
             <div className="flex items-center justify-between mb-2">
@@ -208,9 +209,9 @@ export default function AgentMonitorPage() {
               <span className="text-sm text-noble-gold">{overallProgress}%</span>
             </div>
             <div className="w-full bg-noble-gray rounded-full h-3">
-              <div 
-                className="bg-gradient-to-r from-noble-gold to-yellow-400 h-3 rounded-full transition-all duration-500"
-                style={{ width: `${overallProgress}%` }}
+              <div
+                className={`${styles.progressBar} h-3 rounded-full transition-all duration-500`}
+                style={{ '--progress': `${overallProgress}%` } as React.CSSProperties}
               />
             </div>
           </div>
@@ -253,9 +254,9 @@ export default function AgentMonitorPage() {
                     <span className="text-sm text-noble-gold">{agent.progress}%</span>
                   </div>
                   <div className="w-full bg-noble-gray rounded-full h-2">
-                    <div 
-                      className={`bg-gradient-to-r from-${agent.color.split('-')[1]}-400 to-${agent.color.split('-')[1]}-500 h-2 rounded-full transition-all duration-500`}
-                      style={{ width: `${agent.progress}%` }}
+                    <div
+                      className={`${styles.agentProgressBar} bg-gradient-to-r from-${agent.color.split('-')[1]}-400 to-${agent.color.split('-')[1]}-500 h-2 rounded-full transition-all duration-500`}
+                      style={{ '--progress': `${agent.progress}%` } as React.CSSProperties}
                     />
                   </div>
                 </div>
@@ -304,8 +305,8 @@ export default function AgentMonitorPage() {
 
         {/* Quick Actions */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => window.open('/debug', '_blank')}
             className="h-16"
           >
@@ -314,9 +315,9 @@ export default function AgentMonitorPage() {
               <div className="text-xs opacity-70">Test wallet connections</div>
             </div>
           </Button>
-          
-          <Button 
-            variant="outline" 
+
+          <Button
+            variant="outline"
             onClick={() => window.open('/create', '_blank')}
             className="h-16"
           >
@@ -325,9 +326,9 @@ export default function AgentMonitorPage() {
               <div className="text-xs opacity-70">Try presale creation</div>
             </div>
           </Button>
-          
-          <Button 
-            variant="outline" 
+
+          <Button
+            variant="outline"
             onClick={() => window.open('/', '_blank')}
             className="h-16"
           >

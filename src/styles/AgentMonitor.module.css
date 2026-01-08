@@ -1,0 +1,10 @@
+.progressBar {
+    @apply h-3 rounded-full transition-all duration-500 bg-gradient-to-r from-noble-gold to-yellow-400;
+    width: var(--progress);
+}
+
+.agentProgressBar {
+    @apply h-2 rounded-full transition-all duration-500;
+    width: var(--progress);
+    /* Colors handled by dynamic classes, but width via var */
+}
