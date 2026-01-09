@@ -6,120 +6,121 @@ import { TrendingBar } from '@/components/presale/TrendingBar'
 import { getChainById } from '@/lib/chains'
 import { db } from '@/lib/supabaseClient'
 import { Search } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useEffect, useState, useMemo } from 'react'
 
 export default function PresalesPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedChain, setSelectedChain] = useState('all')
   const [selectedStatus, setSelectedStatus] = useState('all')
-  const [presales, setPresales] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchPresales = async () => {
-      setLoading(true)
-      try {
-        const { data } = await db.getPresales()
-        
-        let fetchedPresales: any[] = []
-        
-        if (data && data.length > 0) {
-          fetchedPresales = data.map((p: any) => {
-            // Handle legacy 'chain' (string) vs modern 'chain_id' (number)
-            let chainId = 56 // Default to BSC
-            let chainName = 'Unknown'
-            
-            if (p.chain && typeof p.chain === 'string') {
-                const chainMap: Record<string, number> = { 'ETH': 1, 'BSC': 56, 'POLYGON': 137, 'ARB': 42161, 'BASE': 8453, 'XRPL': 144 }
-                chainId = chainMap[p.chain.toUpperCase()] || 56
-                chainName = p.chain
-            } else if (p.chain_id) {
-                chainId = p.chain_id
-                const chainConfig = getChainById(chainId)
-                chainName = chainConfig?.name || 'Unknown'
-            }
+  const { data: presales = [], isLoading: loading } = useQuery({
+    queryKey: ['presales'],
+    queryFn: async () => {
+      const { data } = await db.getPresales()
+      let fetchedPresales: any[] = []
 
+      if (data && data.length > 0) {
+        fetchedPresales = data.map((p: any) => {
+          let chainId = 56
+          let chainName = 'Unknown'
+
+          if (p.chain && typeof p.chain === 'string') {
+            const chainMap: Record<string, number> = { 'ETH': 1, 'BSC': 56, 'POLYGON': 137, 'ARB': 42161, 'BASE': 8453, 'XRPL': 144 }
+            chainId = chainMap[p.chain.toUpperCase()] || 56
+            chainName = p.chain
+          } else if (p.chain_id) {
+            chainId = p.chain_id
             const chainConfig = getChainById(chainId)
-            const currencySymbol = chainConfig?.nativeCurrency?.symbol || 'BNB'
-            
-            return {
-              id: p.id,
-              name: p.project_name || p.token_name || 'Agile Project',
-              logo: p.logo_url || `/api/placeholder/128/128`,
-              hardCap: p.hard_cap ? `${p.hard_cap} ${currencySymbol}` : 'Unlimited',
-              softCap: p.soft_cap ? `${p.soft_cap} ${currencySymbol}` : 'Unset',
-              raised: (p.total_raised || p.current_raised) ? `${p.total_raised || p.current_raised} ${currencySymbol}` : `0 ${currencySymbol}`,
-              progress: p.hard_cap && (p.total_raised || p.current_raised) ? (parseFloat(p.total_raised || p.current_raised) / parseFloat(p.hard_cap)) * 100 : 0,
-              endTime: new Date(p.end_date || p.end_time || Date.now() + 86400000),
-              status: p.status || 'live',
-              chain: chainName,
-              liquidityLock: p.liquidity_lock_months ? `${p.liquidity_lock_months} months` : '12 months',
-              aiScore: p.ai_score || Math.floor(Math.random() * 3) + 7 
-            }
-          })
-        }
-
-        // Add Mock Valid Data for Demo if empty or for "xrpl-test"
-        const mockPresales = [
-          {
-            id: 'xrpl-test',
-            name: 'Belgrave XRPL Launch',
-            logo: '/api/placeholder/128/128',
-            hardCap: '50,000 XRP',
-            softCap: '25,000 XRP',
-            raised: '12,450 XRP',
-            progress: 24,
-            endTime: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
-            status: 'live',
-            chain: 'XRPL',
-            liquidityLock: '12 months',
-            aiScore: 9.2
-          },
-          {
-            id: '2',
-            name: 'NobleSwap',
-            logo: '/api/placeholder/128/128',
-            hardCap: '500 BNB',
-            softCap: '250 BNB',
-            raised: '387 BNB',
-            progress: 77,
-            endTime: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-            status: 'live',
-            chain: 'BSC',
-            liquidityLock: '12 months',
-            aiScore: 8.8
+            chainName = chainConfig?.name || 'Unknown'
           }
-        ]
-        
-        // Merge mock data if not already present by ID
-        mockPresales.forEach(mock => {
-            if (!fetchedPresales.find(p => p.id === mock.id)) {
-                fetchedPresales.push(mock)
-            }
+
+          const chainConfig = getChainById(chainId)
+          const currencySymbol = chainConfig?.nativeCurrency?.symbol || 'BNB'
+
+          return {
+            id: p.id,
+            name: p.project_name || p.token_name || 'Agile Project',
+            logo: p.logo_url || `/api/placeholder/128/128`,
+            hardCap: p.hard_cap ? `${p.hard_cap} ${currencySymbol}` : 'Unlimited',
+            softCap: p.soft_cap ? `${p.soft_cap} ${currencySymbol}` : 'Unset',
+            raised: (p.total_raised || p.current_raised) ? `${p.total_raised || p.current_raised} ${currencySymbol}` : `0 ${currencySymbol}`,
+            progress: p.hard_cap && (p.total_raised || p.current_raised) ? (parseFloat(p.total_raised || p.current_raised) / parseFloat(p.hard_cap)) * 100 : 0,
+            endTime: new Date(p.end_date || p.end_time || Date.now() + 86400000),
+            status: p.status || 'live',
+            chain: chainName,
+            liquidityLock: p.liquidity_lock_months ? `${p.liquidity_lock_months} months` : '12 months',
+            aiScore: p.ai_score || Math.floor(Math.random() * 3) + 7
+          }
         })
-
-        // Initial Filter
-        setPresales(fetchedPresales)
-        
-      } catch (error) {
-        console.error('Failed to fetch presales', error)
-      } finally {
-        setLoading(false)
       }
-    }
 
-    fetchPresales()
-  }, [])
+      const mockPresales = [
+        {
+          id: 'mock-1',
+          name: 'Belgrave Official',
+          logo: '/logo.jpg',
+          hardCap: '100,000 XRP',
+          softCap: '50,000 XRP',
+          raised: '75,000 XRP',
+          progress: 75,
+          endTime: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+          status: 'live',
+          chain: 'XRPL',
+          liquidityLock: '12 months',
+          aiScore: 9.8
+        },
+        {
+          id: 'mock-2',
+          name: 'NobleDefi Protocol',
+          logo: '/api/placeholder/128/128',
+          hardCap: '500 BNB',
+          softCap: '250 BNB',
+          raised: '387 BNB',
+          progress: 77,
+          endTime: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+          status: 'live',
+          chain: 'BSC',
+          liquidityLock: '12 months',
+          aiScore: 9.2
+        },
+        {
+          id: 'mock-3',
+          name: 'Base AI Agent',
+          logo: '/api/placeholder/128/128',
+          hardCap: '50 ETH',
+          softCap: '10 ETH',
+          raised: '42 ETH',
+          progress: 84,
+          endTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          status: 'upcoming',
+          chain: 'Base',
+          liquidityLock: '6 months',
+          aiScore: 8.9
+        }
+      ]
+
+      mockPresales.forEach(mock => {
+        if (!fetchedPresales.find(p => p.id === mock.id)) {
+          fetchedPresales.push(mock)
+        }
+      })
+
+      // Filter out test entries from DB if they exist
+      return fetchedPresales.filter(p => !p.name.toLowerCase().includes('nole test'))
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes cache
+  })
 
   // Client-side filtering
   const filteredPresales = presales.filter(presale => {
-    const matchesSearch = presale.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          presale.chain.toLowerCase().includes(searchTerm.toLowerCase())
-    
-    const matchesChain = selectedChain === 'all' || 
-                         (presale.chain.toUpperCase().includes(selectedChain)) ||
-                         (selectedChain === 'ETH' && presale.chain.includes('Ethereum')) // simple mapping
-    
+    const matchesSearch = presale.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      presale.chain.toLowerCase().includes(searchTerm.toLowerCase())
+
+    const matchesChain = selectedChain === 'all' ||
+      (presale.chain.toUpperCase().includes(selectedChain)) ||
+      (selectedChain === 'ETH' && presale.chain.includes('Ethereum')) // simple mapping
+
     const matchesStatus = selectedStatus === 'all' || presale.status === selectedStatus
 
     return matchesSearch && matchesChain && matchesStatus

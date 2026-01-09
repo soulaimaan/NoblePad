@@ -19,10 +19,7 @@ export function PresaleFilters({
     { value: 'all', label: 'All Chains' },
     { value: 'ETH', label: 'Ethereum' },
     { value: 'BSC', label: 'BNB Smart Chain' },
-    { value: 'POLYGON', label: 'Polygon' },
-    { value: 'ARB', label: 'Arbitrum One' },
     { value: 'BASE', label: 'Base' },
-    { value: 'SOL', label: 'Solana' },
     { value: 'XRPL', label: 'XRPL (Native)' }
   ]
 
