@@ -97,6 +97,34 @@ export default function PresalesPage() {
           chain: 'Base',
           liquidityLock: '6 months',
           aiScore: 8.9
+        },
+        {
+          id: 'mock-4',
+          name: 'GreenEnergy Token',
+          logo: '/api/placeholder/128/128',
+          hardCap: '250,000 XRP',
+          softCap: '100,000 XRP',
+          raised: '220,000 XRP',
+          progress: 88,
+          endTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+          status: 'live',
+          chain: 'XRPL',
+          liquidityLock: '24 months',
+          aiScore: 9.5
+        },
+        {
+          id: 'mock-5',
+          name: 'GameFi Arcade',
+          logo: '/api/placeholder/128/128',
+          hardCap: '200 ETH',
+          softCap: '50 ETH',
+          raised: '0 ETH',
+          progress: 0,
+          endTime: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+          status: 'upcoming',
+          chain: 'Base',
+          liquidityLock: '12 months',
+          aiScore: 8.7
         }
       ]
 
@@ -106,8 +134,13 @@ export default function PresalesPage() {
         }
       })
 
-      // Filter out test entries from DB if they exist
-      return fetchedPresales.filter(p => !p.name.toLowerCase().includes('nole test'))
+      // Filter out test entries from DB if they exist (Robust filtering)
+      return fetchedPresales.filter(p => {
+        const lowerName = p.name.toLowerCase()
+        return !lowerName.includes('noble test') &&
+          !lowerName.includes('nole test') &&
+          !lowerName.includes('test project')
+      })
     },
     staleTime: 5 * 60 * 1000, // 5 minutes cache
   })
