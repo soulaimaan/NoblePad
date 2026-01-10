@@ -42,21 +42,21 @@ export function PresaleCard({ presale }: PresaleCardProps) {
       // Safely handle potential date string vs Date object mismatch
       const endTime = presale.endTime instanceof Date ? presale.endTime : new Date(presale.endTime)
       const timeDiff = endTime.getTime() - now.getTime()
-      
+
       if (timeDiff <= 0) {
         setTimeLeft('Ended')
         return
       }
-      
+
       const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24))
       const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-      
+
       setTimeLeft(`${days}d ${hours}h`)
     }
-    
+
     updateTime() // Initial call
     const interval = setInterval(updateTime, 60000) // Update every minute
-    
+
     return () => clearInterval(interval)
   }, [presale?.endTime])
 
@@ -110,7 +110,7 @@ export function PresaleCard({ presale }: PresaleCardProps) {
           <span>{presale.progress || 0}%</span>
         </div>
         <div className="w-full bg-noble-gray rounded-full h-2">
-          <div 
+          <div
             className="bg-noble-gold-gradient h-2 rounded-full transition-all duration-500"
             style={{ width: `${presale.progress || 0}%` }}
           />
@@ -130,7 +130,7 @@ export function PresaleCard({ presale }: PresaleCardProps) {
           </div>
           <span className="text-sm text-noble-gold">{presale.softCap || '-'}</span>
         </div>
-        
+
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Shield size={16} className="text-noble-gold/60" />
@@ -138,7 +138,7 @@ export function PresaleCard({ presale }: PresaleCardProps) {
           </div>
           <span className="text-sm text-noble-gold">{presale.liquidityLock || '-'}</span>
         </div>
-        
+
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Clock size={16} className="text-noble-gold/60" />
@@ -153,11 +153,10 @@ export function PresaleCard({ presale }: PresaleCardProps) {
         {presale.aiScore && (
           <div className="flex items-center justify-between pt-2 mt-2 border-t border-noble-gold/10">
             <div className="flex items-center space-x-2">
-              <span className="text-xs font-bold uppercase tracking-tight text-noble-gold/40">Noble AI Security</span>
+              <span className="text-xs font-bold uppercase tracking-tight text-noble-gold/40">Belgrave AI Security</span>
             </div>
-            <div className={`px-2 py-0.5 rounded text-xs font-black ${
-              presale.aiScore >= 8.5 ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
-            }`}>
+            <div className={`px-2 py-0.5 rounded text-xs font-black ${presale.aiScore >= 8.5 ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
+              }`}>
               {presale.aiScore}/10
             </div>
           </div>

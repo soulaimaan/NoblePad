@@ -1,0 +1,38 @@
+﻿
+> noblepad@0.1.0 build
+> next build
+
+  Ôû▓ Next.js 14.2.33
+  - Environments: .env
+
+   Creating an optimized production build ...
+node.exe : Failed to comp
+ile.
+At C:\Program Files\nodej
+s\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_
+JS $args
++   ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo       
+       : NotSpecified:   
+  (Failed to compile.:   
+ String) [], RemoteEx    
+ception
+    + FullyQualifiedErro 
+   rId : NativeCommandE  
+  rror
+ 
+
+./pages/agents/dashboard.
+js
+Module not found: Can't r
+esolve '../../src/compone
+nts/NoblepadDashboard'
+
+https://nextjs.org/docs/m
+essages/module-not-found
+
+
+> Build failed because of
+ webpack errors

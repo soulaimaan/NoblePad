@@ -18,9 +18,9 @@ export function HeroSection() {
         {/* Logo/Brand Section */}
         <div className="mb-8 animate-fade-in">
           <div className="w-24 h-24 bg-noble-black rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg shadow-noble-gold/20 p-2">
-            <img 
-              src="/logo.jpg" 
-              alt="NoblePad Logo" 
+            <img
+              src="/logo.jpg"
+              alt="Belgrave Logo"
               className="w-full h-full object-contain"
             />
           </div>
@@ -31,10 +31,10 @@ export function HeroSection() {
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold mb-4">
-            <span className="noble-text-gradient">NoblePad</span>
+            <span className="noble-text-gradient">Belgrave System</span>
           </h1>
           <p className="text-xl md:text-2xl text-noble-gold/80 mb-8">
-            Anti-Rug Launchpad. Powered by Trust.
+            The Standard for Decentralized Allocation.
           </p>
         </div>
 
@@ -47,7 +47,7 @@ export function HeroSection() {
               Three-tier architecture ensures all sensitive operations are secured through our application layer.
             </p>
           </div>
-          
+
           <div className="noble-card text-center animate-slide-in-left [animation-delay:100ms]">
             <LockIcon className="w-12 h-12 text-noble-gold mx-auto mb-4" />
             <h3 className="text-xl font-semibold mb-2">Anti-Rug Protection</h3>
@@ -55,12 +55,12 @@ export function HeroSection() {
               Mandatory liquidity locks and vesting schedules protect investors from rug pulls.
             </p>
           </div>
-          
+
           <div className="noble-card text-center animate-slide-in-left [animation-delay:200ms]">
             <TrendingUp className="w-12 h-12 text-noble-gold mx-auto mb-4" />
             <h3 className="text-xl font-semibold mb-2">Guaranteed Allocations</h3>
             <p className="text-noble-gold/70">
-              Stake $NPAD tokens to unlock guaranteed allocation tiers for exclusive presales.
+              Stake $BELGRAVE tokens to unlock guaranteed allocation tiers for exclusive presales.
             </p>
           </div>
         </div>

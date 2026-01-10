@@ -13,11 +13,11 @@ function getAuthToken(): string | null {
 // Helper to make authenticated requests
 async function apiCall(endpoint: string, options: RequestInit = {}) {
   const token = getAuthToken()
-  
-  const headers = {
+
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'apikey': SUPABASE_ANON_KEY,
-    ...options.headers,
+    ...(options.headers as Record<string, string> || {}),
   }
 
   if (token) {
@@ -53,7 +53,7 @@ export const presalesAPI = {
         searchParams.append(key, value.toString())
       }
     })
-    
+
     return apiCall(`get-presales?${searchParams.toString()}`)
   },
 
@@ -165,14 +165,14 @@ export const uploadAPI = {
     const formData = new FormData()
     formData.append('file', file)
     formData.append('presale_id', presaleId)
-    
+
     const token = getAuthToken()
     const response = await fetch(`${SUPABASE_URL}/storage/v1/object/kyc-documents/${presaleId}/${file.name}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
         'apikey': SUPABASE_ANON_KEY,
-      },
+      } as any,
       body: file,
     })
 

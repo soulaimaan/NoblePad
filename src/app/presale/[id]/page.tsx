@@ -38,8 +38,8 @@ export default function PresaleDetailPage() {
 
       return {
         id: id as string,
-        name: isXrpl ? 'Belgrave XRPL Launch' : 'NobleSwap',
-        description: isXrpl 
+        name: isXrpl ? 'Belgrave XRPL Launch' : 'BelgraveSwap',
+        description: isXrpl
           ? 'The official XRPL launch of the Belgrave token. Secure your allocation on the XRP Ledger.'
           : 'A revolutionary DEX built on BSC with advanced AMM features and yield farming.',
         logo: '/api/placeholder/128/128',
@@ -52,7 +52,7 @@ export default function PresaleDetailPage() {
         endTime: new Date(now + 5 * 24 * 60 * 60 * 1000),
         status: 'live' as const,
         chain: isXrpl ? 'XRPL' : 'BSC',
-        tokenName: isXrpl ? 'Belgrave' : 'NobleSwap Token',
+        tokenName: isXrpl ? 'Belgrave' : 'BelgraveSwap Token',
         tokenSymbol: isXrpl ? 'BELGRAVE' : 'NST',
         tokenIssuer: isXrpl ? 'rMU2jwW88fdwSvRQmPr6CWJtg3xW31SuEG' : undefined,
         tokenCurrency: isXrpl ? 'BELGRAVE' : undefined,
@@ -86,15 +86,15 @@ export default function PresaleDetailPage() {
         setLoading(true)
         try {
           if (id === 'xrpl-test' || id === '2') {
-             // Mock data for test cases
-             await new Promise(resolve => setTimeout(resolve, 500))
-             setPresaleData(getMockData())
-             return
+            // Mock data for test cases
+            await new Promise(resolve => setTimeout(resolve, 500))
+            setPresaleData(getMockData())
+            return
           }
 
 
           const { data: rawData, error: fetchError } = await db.getPresaleById(id as string)
-          
+
           if (fetchError) {
             console.error('Database fetch error:', fetchError)
             throw new Error(fetchError.message)
@@ -105,18 +105,18 @@ export default function PresaleDetailPage() {
             // Handle legacy 'chain' (string) vs modern 'chain_id' (number)
             let chainId = 56 // Default to BSC
             let chainName = 'Unknown Chain'
-            
-            if (rawData.project_name === 'Noble Test' || rawData.name === 'Noble Test') {
-                chainId = 31337
-                chainName = 'Localhost'
+
+            if (rawData.project_name === 'Belgrave Test' || rawData.name === 'Belgrave Test') {
+              chainId = 31337
+              chainName = 'Localhost'
             } else if (rawData.chain && typeof rawData.chain === 'string') {
-                const chainMap: Record<string, number> = { 'ETH': 1, 'BSC': 56, 'POLYGON': 137, 'ARB': 42161, 'BASE': 8453, 'XRPL': 144, 'LOCALHOST': 31337 }
-                chainId = chainMap[rawData.chain.toUpperCase()] || 56
-                chainName = rawData.chain
+              const chainMap: Record<string, number> = { 'ETH': 1, 'BSC': 56, 'POLYGON': 137, 'ARB': 42161, 'BASE': 8453, 'XRPL': 144, 'LOCALHOST': 31337 }
+              chainId = chainMap[rawData.chain.toUpperCase()] || 56
+              chainName = rawData.chain
             } else if (rawData.chain_id) {
-                chainId = rawData.chain_id
-                const chainConfig = getChainById(chainId)
-                chainName = chainConfig?.name || 'Unknown Chain'
+              chainId = rawData.chain_id
+              const chainConfig = getChainById(chainId)
+              chainName = chainConfig?.name || 'Unknown Chain'
             }
 
             const chainConfig = getChainById(chainId)
@@ -124,11 +124,11 @@ export default function PresaleDetailPage() {
 
             // Helper to append currency if missing
             const formatCurrency = (val: any) => {
-               if (val === undefined || val === null) return '0 ' + currencySymbol
-               const sVal = val.toString()
-               if (sVal.includes(currencySymbol)) return sVal
-               if (sVal.includes('ETH') || sVal.includes('BNB') || sVal.includes('MATIC') || sVal.includes('XRP')) return sVal
-               return `${sVal} ${currencySymbol}`
+              if (val === undefined || val === null) return '0 ' + currencySymbol
+              const sVal = val.toString()
+              if (sVal.includes(currencySymbol)) return sVal
+              if (sVal.includes('ETH') || sVal.includes('BNB') || sVal.includes('MATIC') || sVal.includes('XRP')) return sVal
+              return `${sVal} ${currencySymbol}`
             }
 
             const isLocalTest = String(rawData.project_name || rawData.name || '').toLowerCase().includes('noble test');
@@ -151,8 +151,8 @@ export default function PresaleDetailPage() {
               endTime: new Date(rawData.end_date || rawData.end_time),
               tokenName: rawData.token_name,
               tokenSymbol: rawData.token_symbol,
-              tokenPrice: (rawData.token_price || '').toString().includes('=') 
-                ? rawData.token_price 
+              tokenPrice: (rawData.token_price || '').toString().includes('=')
+                ? rawData.token_price
                 : `1 ${currencySymbol} = ${rawData.token_price} ${rawData.token_symbol}`,
               minContribution: formatCurrency(rawData.min_contribution || '0'),
               maxContribution: formatCurrency(rawData.max_contribution || '0'),
@@ -235,10 +235,10 @@ export default function PresaleDetailPage() {
               </TabsContent>
 
               <TabsContent value="governance">
-                <MilestoneDashboard 
-                  projectAddress={presaleData.contractAddress} 
-                  chain={presaleData.chain || 'EVM'} 
-                  totalRaised={presaleData.raised} 
+                <MilestoneDashboard
+                  projectAddress={presaleData.contractAddress}
+                  chain={presaleData.chain || 'EVM'}
+                  totalRaised={presaleData.raised}
                   milestones={presaleData.milestones}
                 />
               </TabsContent>
@@ -260,7 +260,7 @@ export default function PresaleDetailPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             <PresaleCountdown endTime={presaleData.endTime} />
-            
+
             {/* AI SCORE INTEGRATION */}
             <AIProjectScore presaleId={id as string} />
 

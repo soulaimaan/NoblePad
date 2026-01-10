@@ -27,7 +27,8 @@ contract PresaleFactory {
         uint256 _endTime,
         uint256 _lockPeriod,
         uint256 _maxSpendPerBuyer,
-        uint256 _amount
+        uint256 _amount,
+        bytes32 _snapshotRoot
     ) external payable returns (address) {
         require(msg.value >= creationFee, "Insufficient fee");
         Presale presale = new Presale(
@@ -43,7 +44,7 @@ contract PresaleFactory {
             _lockPeriod,
             _maxSpendPerBuyer,
             _amount,
-            tokenLock,
+            _snapshotRoot,
             msg.sender
         );
         emit PresaleCreated(address(presale), msg.sender, _token);

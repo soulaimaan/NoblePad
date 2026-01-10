@@ -1,321 +1,181 @@
-# NoblePad Launchpad - Smart Contract Deployment Status
+# 🚀 NoblePad Multi-Chain Deployment Summary
 
-## ✅ Compilation Complete
+## ✅ Deployment Status: COMPLETE
 
-All 6 Solidity contracts have been successfully compiled with no errors:
-
-```
-✅ Presale.sol          - Core presale contract with contributions, finalization, refunds
-✅ PresaleFactory.sol   - Factory for deploying presales
-✅ TokenLock.sol        - Token locking mechanism for liquidity
-✅ Vesting.sol          - Team/advisor token vesting schedules
-✅ TreasuryTimelock.sol - Delayed treasury operations
-✅ Greeter.sol          - Test contract
-```
-
-**Compiler**: solc 0.8.20  
-**Optimization**: viaIR enabled (runs: 200)  
-**Status**: Production-ready for testnet deployment
+**Date**: January 6, 2026  
+**Deployer Address**: `0xe2E1e20D0B2822D11472464f3b4bA77323253c63`
 
 ---
 
-## 🚀 Next: Deploy to Sepolia Testnet
+## 📊 Deployed Networks
 
-### Prerequisites
+### 1. Ethereum Mainnet (Chain ID: 1)
 
-1. **Get Sepolia ETH** (free from faucet):
-   - Visit: https://sepoliafaucet.com
-   - OR: https://www.alchemy.com/faucets/ethereum-sepolia
-   - Need ~0.5 ETH for all deployments
+- **TokenLock**: `0x0DB492BFF4e1A6dB3c2576027075b48895B25D1f`
+- **PresaleFactory**: `0x2285321a0c76695c7E900E951Aa45378843b3BC3`
+- **Router**: Uniswap V2 (`0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D`)
+- **Explorer**: [Etherscan](https://etherscan.io)
+  - [TokenLock on Etherscan](https://etherscan.io/address/0x0DB492BFF4e1A6dB3c2576027075b48895B25D1f)
+  - [PresaleFactory on Etherscan](https://etherscan.io/address/0x2285321a0c76695c7E900E951Aa45378843b3BC3)
 
-2. **Set Environment Variables**:
-```bash
-# Create .env file in contracts/ folder
-PRIVATE_KEY=0x... (your deployer private key, with 0x prefix)
-SEPOLIA_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_ALCHEMY_KEY
-# OR
-SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_INFURA_KEY
-```
+### 2. BSC Mainnet (Chain ID: 56)
 
-3. **Install ethers.js** (if not already):
-```bash
-cd contracts
-npm install ethers
-```
+- **TokenLock**: `0x0DB492BFF4e1A6dB3c2576027075b48895B25D1f`
+- **PresaleFactory**: `0x2285321a0c76695c7E900E951Aa45378843b3BC3`
+- **Router**: PancakeSwap V2 (`0x10ED43C718714eb63d5aA57B78B54704E256024E`)
+- **Explorer**: [BSCScan](https://bscscan.com)
+  - [TokenLock on BSCScan](https://bscscan.com/address/0x0DB492BFF4e1A6dB3c2576027075b48895B25D1f)
+  - [PresaleFactory on BSCScan](https://bscscan.com/address/0x2285321a0c76695c7E900E951Aa45378843b3BC3)
 
-### Deploy
+### 3. Base Mainnet (Chain ID: 8453)
 
-From the `contracts/` folder:
-
-```bash
-# Set environment variables
-$env:PRIVATE_KEY = "0x..."
-$env:SEPOLIA_RPC_URL = "https://..."
-
-# Run deployment
-npm run deploy:sepolia
-```
-
-**What it does**:
-1. Deploys TokenLock contract
-2. Deploys PresaleFactory (with TokenLock address)
-3. Deploys Vesting contract
-4. Deploys TreasuryTimelock contract
-5. Saves deployment info to `deployment-sepolia.json`
-6. Displays all deployed addresses
+- **TokenLock**: `0x0DB492BFF4e1A6dB3c2576027075b48895B25D1f`
+- **PresaleFactory**: `0x2285321a0c76695c7E900E951Aa45378843b3BC3`
+- **Router**: BaseSwap (`0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24`)  
+- **Explorer**: [BaseScan](https://basescan.org)
+  - [TokenLock on BaseScan](https://basescan.org/address/0x0DB492BFF4e1A6dB3c2576027075b48895B25D1f)
+  - [PresaleFactory on BaseScan](https://basescan.org/address/0x2285321a0c76695c7E900E951Aa45378843b3BC3)
 
 ---
 
-## 📋 Deployment Checklist
+## 🎯 Frontend Integration
 
-- [ ] 1. Get Sepolia ETH from faucet
-- [ ] 2. Create `.env` file with PRIVATE_KEY and SEPOLIA_RPC_URL
-- [ ] 3. Run `npm run deploy:sepolia`
-- [ ] 4. Save deployment addresses from output
-- [ ] 5. Update `src/lib/contracts.ts` with Sepolia addresses
-- [ ] 6. Verify contracts on Etherscan (use `hardhat verify` command)
-- [ ] 7. Test presale creation and contributions
-- [ ] 8. Run integration tests on testnet
-- [ ] 9. Schedule security audit
-- [ ] 10. Plan mainnet deployment
+All contract addresses have been added to `src/lib/contracts.ts`:
 
----
-
-## 🔐 Security & Audits
-
-### Before Mainnet:
-1. **Static Analysis** - Run Slither:
-   ```bash
-   pip install slither-analyzer
-   slither contracts/
-   ```
-
-2. **External Audit** - Engage security firm:
-   - Recommended: Trail of Bits, Consensys Diligence, OpenZeppelin
-   - Budget: $10k-50k depending on scope
-   - Timeline: 2-4 weeks
-
-3. **Community Review** - Share audit report on Discord/Twitter
-
-### Key Security Features Implemented:
-- ✅ 60% minimum liquidity lock enforced in Presale.sol
-- ✅ 12+ month token lock with unlock schedule
-- ✅ Cliff-based vesting (configurable)
-- ✅ Refund mechanism if soft cap not reached
-- ✅ Hard cap limits
-- ✅ Owner-controlled parameters
-- ✅ Emergency pause capabilities (to be added if needed)
-
----
-
-## 📊 Contract Architecture
-
-```
-┌─────────────────────────────────────────┐
-│         PresaleFactory                  │
-│  (Creates and manages presales)         │
-└────────────┬────────────────────────────┘
-             │
-             ├─→ Presale Contract (1 per project)
-             │   ├─ Accepts contributions
-             │   ├─ Enforces 60% LP lock
-             │   ├─ Handles finalization
-             │   └─ Processes refunds
-             │
-             └─→ TokenLock Contract (for LP)
-                 ├─ Locks UNI-V2 LP tokens
-                 ├─ Tracks unlock times
-                 └─ Releases after duration
-
-┌─────────────────────────────────────────┐
-│    Vesting Contract                     │
-│  (Team/advisor token distribution)      │
-├─ Cliff period support                   │
-├─ Linear vesting schedule                │
-└─ Batch vesting for multiple addresses   │
-
-┌─────────────────────────────────────────┐
-│  TreasuryTimelock Contract              │
-│  (Delayed treasury operations)          │
-├─ Timelock for sensitive functions       │
-├─ Multi-sig compatible                   │
-└─ Audit trail of scheduled operations    │
-```
-
----
-
-## 🧪 Testing After Deployment
-
-### 1. Create a Test Presale
-```javascript
-// From PresaleFactory
-await presaleFactory.createPresale(
-  tokenAddress,        // Project token
-  routerAddress,       // Uniswap router
-  100n,               // Soft cap (wei)
-  200n,               // Hard cap (wei)
-  1n,                 // Presale rate
-  1n,                 // Listing rate
-  60n,                // Liquidity % (min 60)
-  startTime,          // Presale start
-  endTime,            // Presale end
-  lockDays * 86400,   // Lock period (seconds)
-  maxSpend,           // Max spend per buyer
-  initialLiquidity    // Initial liquidity amount
-);
-```
-
-### 2. Participate in Presale
-```javascript
-await presale.contribute({ value: contributionAmount });
-```
-
-### 3. Verify Token Lock
-```javascript
-const lockRecords = await tokenLock.getLockRecords(presaleAddress);
-// Should show LP tokens locked with unlock timestamp
-```
-
-### 4. Test Vesting
-```javascript
-// Create vesting for team members
-await vesting.createVesting(
-  recipientAddress,
-  tokenAddress,
-  vestingAmount,
-  startTime,
-  cliffDuration,  // e.g., 30 days
-  vestingDuration // e.g., 365 days
-);
-
-// After cliff, should be able to claim
-const releasable = await vesting.releasableAmount(vestingId);
-if (releasable > 0) {
-  await vesting.release(vestingId);
-}
-```
-
----
-
-## 📱 Frontend Integration
-
-After deployment, wire up the frontend:
-
-1. **Update Contract Addresses** (`src/lib/contracts.ts`):
 ```typescript
-export const CONTRACTS = {
-  sepolia: {
-    presaleFactory: '0x...',
-    tokenLock: '0x...',
-    vesting: '0x...',
-    treasuryTimelock: '0x...'
+export const CONTRACT_ADDRESSES = {
+  1: {    // Ethereum Mainnet
+    presaleFactory: '0x2285321a0c76695c7E900E951Aa45378843b3BC3',
+    tokenLock: '0x0DB492BFF4e1A6dB3c2576027075b48895B25D1f',
+    router: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
+  },
+  56: {   // BSC Mainnet
+    presaleFactory: '0x2285321a0c76695c7E900E951Aa45378843b3BC3',
+    tokenLock: '0x0DB492BFF4e1A6dB3c2576027075b48895B25D1f',
+    router: '0x10ED43C718714eb63d5aA57B78B54704E256024E'
+  },
+  8453: { // Base Mainnet
+    presaleFactory: '0x2285321a0c76695c7E900E951Aa45378843b3BC3',
+    tokenLock: '0x0DB492BFF4e1A6dB3c2576027075b48895B25D1f',
+    router: '0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24'
   }
-};
-```
-
-2. **Implement Presale Creation UI** (`src/app/presales/create`):
-   - Form for project details
-   - Contract deployment via factory
-   - Event listeners for PresaleCreated
-
-3. **Implement Presale Participation UI** (`src/app/presales/[id]/participate`):
-   - Contribution input
-   - Balance display
-   - Transaction status
-   - Refund claim option
-
-4. **Dashboard Updates** (`src/app/dashboard`):
-   - Display all deployed presales
-   - Show participant counts
-   - Display raised amounts
-   - Show lock status for each presale
-
----
-
-## 🌐 Multi-Chain Deployment
-
-Once Sepolia testing is complete, deploy to other testnet chains:
-
-### Testnet Deployments:
-- **Sepolia** (Ethereum) - CURRENT
-- **Mumbai** (Polygon)
-- **BSC Testnet** (Binance Smart Chain)
-- **Arbitrum Sepolia** (Layer 2)
-
-### Add Network Configs to hardhat.config.js:
-```javascript
-networks: {
-  sepolia: { url: SEPOLIA_RPC_URL, accounts: [PRIVATE_KEY] },
-  mumbai: { url: MUMBAI_RPC_URL, accounts: [PRIVATE_KEY] },
-  bscTestnet: { url: BSC_TESTNET_RPC_URL, accounts: [PRIVATE_KEY] },
-  arbitrumSepolia: { url: ARB_SEPOLIA_RPC_URL, accounts: [PRIVATE_KEY] }
 }
 ```
 
-### Mainnet Deployment (After Audits):
-- Ethereum Mainnet
-- Polygon Mainnet
-- BSC Mainnet
-- Arbitrum Mainnet
+---
+
+## 🧪 Testing Instructions
+
+### Quick Start
+
+1. **Start Dev Server**: Already running at `http://localhost:3000`
+2. **Open Browser**: Navigate to localhost
+3. **Connect Wallet**: Click "Connect Wallet"
+4. **Test Networks**: Switch between Ethereum, BSC, and Base in MetaMask
+
+### Detailed Testing
+
+See `NETWORK_TESTING_GUIDE.md` for comprehensive testing scenarios.
 
 ---
 
-## 📞 Support & Troubleshooting
+## 🌐 Web3Provider Configuration
 
-### "Transaction out of gas"
-- Increase gas limit in deployment script
-- Check contract size (might be too large)
-- Reduce optimizer runs if needed
+The following networks are configured in `src/components/providers/Web3Provider.tsx`:
 
-### "Revert: UnknownError"
-- Check constructor parameters are correct
-- Verify TokenLock is deployed before PresaleFactory
-- Check account has sufficient balance
+```typescript
+export const networks = [
+  mainnet,    // Ethereum Mainnet (Chain 1)
+  bsc,        // BSC Mainnet (Chain 56)
+  base,       // Base Mainnet (Chain 8453)
+  polygon,    // Polygon (for future)
+  optimism,   // Optimism (for future)
+  arbitrum,   // Arbitrum (for future)
+  sepolia,    // Sepolia Testnet
+  hardhat     // Local development
+]
+```
 
-### "Contract already exists"
-- Check if contract was already deployed to this address
-- Use different deployer account or reset network
-
----
-
-## 📝 Documentation Links
-
-- **Smart Contracts**: See `DEPLOYMENT_GUIDE.md` for detailed instructions
-- **Contract Source**: All `.sol` files in `contracts/contracts/`
-- **Anti-Rug Spec**: See `ANTI_RUG_SPEC.md` for security requirements
-- **Architecture**: See `LAUNCHPAD_ARCHITECTURE.md` for system design
+**Active Mainnets**: Ethereum, BSC, Base  
+**Configured but not deployed**: Polygon, Optimism, Arbitrum
 
 ---
 
-## ⏭️ Timeline to Mainnet
+## 📝 Testing Checklist
 
-| Phase | Duration | Status |
-|-------|----------|--------|
-| Smart Contract Development | 1 week | ✅ Done |
-| Testnet Deployment & Testing | 1 week | ⏳ Next |
-| Security Audit | 2-4 weeks | 📅 Scheduled |
-| Mainnet Preparation | 1 week | 📅 After Audit |
-| Mainnet Deployment | 1 day | 📅 After Approval |
+### Browser Testing
 
-**Est. Mainnet Launch**: 4-6 weeks from today
+- [ ] Navigate to `http://localhost:3000`
+- [ ] Connect MetaMask wallet
+- [ ] Switch to **Ethereum Mainnet**
+  - [ ] Wallet connects successfully
+  - [ ] Balance displays correctly
+  - [ ] Network badge shows "EVM"
+- [ ] Switch to **BSC Mainnet**
+  - [ ] Wallet stays connected
+  - [ ] Balance updates
+  - [ ] No errors in console
+- [ ] Switch to **Base Mainnet**
+  - [ ] Wallet stays connected
+  - [ ] Balance updates
+  - [ ] No errors in console
+
+### Page Navigation Tests
+
+- [ ] Homepage loads without errors
+- [ ] `/presales` page loads
+- [ ] `/create` page loads
+- [ ] `/locks` page loads
+- [ ] `/staking` page loads
+
+### Contract Interaction (Optional)
+
+- [ ] Can read contract data on all networks
+- [ ] Transaction preview shows correct contract addresses
+- [ ] No "contract not found" errors
 
 ---
 
-## 🎯 Success Criteria
+## 🎉 Success Criteria
 
-- [ ] All 6 contracts deployed to Sepolia
-- [ ] All contracts verified on Etherscan
-- [ ] 10+ test presales created successfully
-- [ ] Token locking verified (LP tokens locked)
-- [ ] Vesting schedules working (cliff + linear)
-- [ ] Refund mechanism tested
-- [ ] Security audit passed
-- [ ] Community review completed
-- [ ] Mainnet contracts deployed
-- [ ] Launch announcement published
+✅ All 3 networks deployed successfully  
+✅ Frontend configured with correct addresses  
+✅ Web3 provider supports all networks  
+✅ Build completes without errors  
+✅ Dev server running at localhost:3000
+
+**Status**: READY FOR TESTING
 
 ---
 
-**Last Updated**: December 3, 2025  
-**Status**: Ready for Sepolia deployment  
-**Next Action**: Deploy contracts to Sepolia testnet
+## 📚 Additional Resources
+
+- **Testing Guide**: `NETWORK_TESTING_GUIDE.md`
+- **Deployment Files**:
+  - `contracts/deployment-mainnet.json` (Ethereum)
+  - `contracts/deployment-bsc.json` (BSC)
+  - `contracts/deployment-base.json` (Base)
+- **Configuration**: `src/lib/contracts.ts`
+
+---
+
+## 🚦 Next Steps
+
+1. **Test in Browser** (Current Step)
+   - Connect wallet to all 3 networks
+   - Verify no errors
+   - Test basic navigation
+
+2. **Optional: Contract Verification**
+   - Verify contracts on Etherscan
+   - Verify contracts on BSCScan
+   - Verify contracts on BaseScan
+
+3. **Future Expansion**
+   - Consider Solana integration (implementation plan created)
+   - Deploy to Polygon/Arbitrum/Optimism if needed
+   - Add Sepolia testnet for development testing
+
+---
+
+**Ready to test!** Open `http://localhost:3000` in your browser and start testing the multi-chain deployment. 🚀

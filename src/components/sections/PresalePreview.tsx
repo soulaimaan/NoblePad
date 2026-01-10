@@ -9,7 +9,7 @@ export function PresalePreview() {
   const mockPresales = [
     {
       id: '1',
-      name: 'NobleSwap',
+      name: 'BelgraveSwap',
       logo: '/api/placeholder/64/64',
       hardCap: '500 BNB',
       softCap: '250 BNB',

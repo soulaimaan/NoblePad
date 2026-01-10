@@ -1,0 +1,1 @@
+﻿src/components/web3/ConnectWallet.tsx(68,49): error TS2339: Property 'message' does not exist on type '{}'.

@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
   const body = req.body || {};
-  const message = body.message || body.text || req.query.message || 'Test message from NoblePad (server)';
+  const message = body.message || body.text || req.query.message || 'Test message from Belgrave System (server)';
 
   if (!token || !chatId) {
     return res.status(500).json({ error: 'Missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID in server env' });

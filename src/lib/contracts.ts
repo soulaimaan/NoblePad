@@ -26,7 +26,7 @@ export const PRESALE_FACTORY_ABI = [
   // Get presale info
   {
     "inputs": [{ "name": "_presale", "type": "address" }],
-    "name": "getPresaleInfo", 
+    "name": "getPresaleInfo",
     "outputs": [
       { "name": "token", "type": "address" },
       { "name": "owner", "type": "address" },
@@ -317,11 +317,25 @@ export const CONTRACT_ADDRESSES = {
     belgrave: '0x49fF6eb0FCAd92AF753dae8d17d1156BF6e63b92'
   },
   8453: { // Base
-    presaleFactory: '0x...',
-    tokenLock: '0x...',
+    presaleFactory: '0x2285321a0c76695c7E900E951Aa45378843b3BC3',
+    tokenLock: '0x0DB492BFF4e1A6dB3c2576027075b48895B25D1f',
     router: '0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24', // BaseSwap Router
-    staking: '0x...',
-    belgrave: '0x...'
+    staking: '',
+    belgrave: ''
+  },
+  56: { // BSC Mainnet
+    presaleFactory: '0x2285321a0c76695c7E900E951Aa45378843b3BC3',
+    tokenLock: '0x0DB492BFF4e1A6dB3c2576027075b48895B25D1f',
+    router: '0x10ED43C718714eb63d5aA57B78B54704E256024E', // PancakeSwap V2
+    staking: '',
+    belgrave: ''
+  },
+  1: { // Ethereum Mainnet
+    presaleFactory: '0x2285321a0c76695c7E900E951Aa45378843b3BC3',
+    tokenLock: '0x0DB492BFF4e1A6dB3c2576027075b48895B25D1f',
+    router: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D', // Uniswap V2
+    staking: '', // XRPL Staking
+    belgrave: '' // XRPL Token
   }
 } as const
 

@@ -34,7 +34,7 @@ export default function AdminPage() {
           </div>
           <h1 className="text-2xl font-bold text-noble-gold mb-4">Admin Access Required</h1>
           <p className="text-noble-gold/70">
-            Connect your admin wallet to access the NoblePad administration panel.
+            Connect your admin wallet to access the Belgrave administration panel.
           </p>
         </div>
       </div>

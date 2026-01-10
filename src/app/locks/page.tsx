@@ -21,7 +21,7 @@ export default function LiquidityLocksPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedChain, setSelectedChain] = useState('all')
   const [isMounted, setIsMounted] = useState(false)
-  
+
   useEffect(() => {
     setIsMounted(true)
   }, [])
@@ -36,7 +36,7 @@ export default function LiquidityLocksPage() {
     setMockLocks([
       {
         id: '1',
-        projectName: 'NobleSwap',
+        projectName: 'BelgraveSwap',
         tokenSymbol: 'NST',
         lpTokenAddress: '0x742d35cc6bf5d532a0b17e0bfe95e5b4e6a8f9e4',
         amount: '400 BNB',
@@ -93,7 +93,7 @@ export default function LiquidityLocksPage() {
         id: '6',
         projectName: 'XRP-Venture',
         tokenSymbol: 'XVTR',
-        lpTokenAddress: 'rNoblePadXRPToken...',
+        lpTokenAddress: 'rBelgraveXRPToken...',
         amount: '50,000 XRP',
         unlockDate: new Date(now + 6 * 30 * 24 * 60 * 60 * 1000), // 6 months
         percentage: 100,
@@ -105,22 +105,22 @@ export default function LiquidityLocksPage() {
 
   const filteredLocks = mockLocks.filter(lock => {
     const matchesSearch = lock.projectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         lock.tokenSymbol.toLowerCase().includes(searchTerm.toLowerCase())
+      lock.tokenSymbol.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesChain = selectedChain === 'all' || lock.chain === selectedChain
-    
+
     return matchesSearch && matchesChain
   })
 
   const formatTimeLeft = (unlockDate: Date) => {
     const now = new Date()
     const timeDiff = unlockDate.getTime() - now.getTime()
-    
+
     if (timeDiff <= 0) return 'Unlocked'
-    
+
     const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24))
     const months = Math.floor(days / 30)
     const years = Math.floor(months / 12)
-    
+
     if (years > 0) return `${years}y ${months % 12}m`
     if (months > 0) return `${months}m ${days % 30}d`
     return `${days}d`

@@ -26,7 +26,7 @@ export function ConnectWallet() {
           <span>{truncateAddress(address)}</span>
           <ChevronDown size={16} />
         </button>
-        
+
         {isDropdownOpen && (
           <div className="absolute right-0 mt-2 w-48 noble-card py-2 z-50">
             <button
@@ -47,23 +47,23 @@ export function ConnectWallet() {
   const handleConnect = async () => {
     console.log('Connect button clicked!')
     console.log('Available connectors:', connectors)
-    
+
     try {
       if (connectors.length === 0) {
         alert('No Web3 wallet detected. Please install MetaMask.')
         return
       }
-      
+
       const connector = connectors.find(c => c.name === 'MetaMask') || connectors[0]
       console.log('Using connector:', connector?.name)
-      
+
       if (connector) {
         await connect({ connector })
         console.log('Connection successful!')
       } else {
         alert('Please install MetaMask or another Web3 wallet')
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Connection failed:', error)
       alert(`Failed to connect wallet: ${error?.message || 'Unknown error'}`)
     }

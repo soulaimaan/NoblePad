@@ -40,8 +40,8 @@ export class StakingService {
                 totalStaked: '1000000', // Mock global staked for now
                 userStaked: userStaked,
                 userBalance: userBalance,
-                stakingTokenAddress: 'rNoblePad...Token', // Needs actual Issuer Address
-                stakingTokenSymbol: 'NPAD',
+                stakingTokenAddress: 'rBelgrave...Token', // Needs actual Issuer Address
+                stakingTokenSymbol: 'BELGRAVE',
                 stakingTokenDecimals: 6
             }
         }
@@ -106,7 +106,7 @@ export class StakingService {
             console.log("XRPL Staking not implemented yet")
             return
         }
-        
+
         const numericId = typeof chainId === 'string' ? parseInt(chainId) : chainId
         if (isNaN(numericId)) throw new Error(`Invalid EVM Chain ID: ${chainId}`)
 
@@ -140,7 +140,7 @@ export class StakingService {
             console.log("XRPL Withdraw not implemented yet")
             return
         }
-        
+
         const numericId = typeof chainId === 'string' ? parseInt(chainId) : chainId
         if (isNaN(numericId)) throw new Error(`Invalid EVM Chain ID: ${chainId}`)
 

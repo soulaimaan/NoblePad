@@ -31,7 +31,7 @@ export function SecurityReviewStep({ formData, updateFormData }: SecurityReviewS
   const handleFileDrop = (e: any) => {
     e.preventDefault()
     setDragActive(false)
-    
+
     const files = Array.from(e.dataTransfer.files)
     updateFormData({ kycDocuments: [...formData.kycDocuments, ...files] })
   }
@@ -65,13 +65,12 @@ export function SecurityReviewStep({ formData, updateFormData }: SecurityReviewS
           <p className="text-sm text-noble-gold/70 mb-4">
             Upload identification documents for all team members with token allocations
           </p>
-          
+
           <div
-            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-              dragActive 
-                ? 'border-noble-gold bg-noble-gold/5' 
+            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${dragActive
+                ? 'border-noble-gold bg-noble-gold/5'
                 : 'border-noble-gold/30 hover:border-noble-gold/50'
-            }`}
+              }`}
             onDragEnter={() => setDragActive(true)}
             onDragLeave={() => setDragActive(false)}
             onDragOver={(e) => e.preventDefault()}
@@ -147,7 +146,7 @@ export function SecurityReviewStep({ formData, updateFormData }: SecurityReviewS
           <label className="block text-sm font-medium text-noble-gold/70 mb-2">
             Team Token Lock Period *
           </label>
-          <select 
+          <select
             value={formData.teamTokenLockMonths}
             onChange={(e) => updateFormData({ teamTokenLockMonths: e.target.value })}
             className="noble-input w-full"
@@ -231,10 +230,10 @@ export function SecurityReviewStep({ formData, updateFormData }: SecurityReviewS
               </span>
             </div>
           </div>
-          
+
           <div className="mt-4 p-3 bg-noble-gray/30 rounded-lg">
             <p className="text-xs text-noble-gold/60">
-              Upon approval, your presale will be listed on NoblePad with verified status. 
+              Upon approval, your presale will be listed on the Belgrave System with verified status.
               Any issues will be communicated via email for resolution.
             </p>
           </div>

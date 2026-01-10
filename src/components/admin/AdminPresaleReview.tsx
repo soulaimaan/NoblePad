@@ -44,7 +44,7 @@ export function AdminPresaleReview({ activeTab }: AdminPresaleReviewProps) {
     approved: [
       {
         id: 'ps3',
-        projectName: 'NobleSwap',
+        projectName: 'BelgraveSwap',
         tokenSymbol: 'NST',
         approvedDate: '2024-01-10',
         submitterAddress: '0x456...',
@@ -164,7 +164,7 @@ export function AdminPresaleReview({ activeTab }: AdminPresaleReviewProps) {
                 <Eye size={16} className="mr-1" />
                 Review
               </Button>
-              
+
               {activeTab === 'pending' && (
                 <>
                   <Button
@@ -186,7 +186,7 @@ export function AdminPresaleReview({ activeTab }: AdminPresaleReviewProps) {
                   </Button>
                 </>
               )}
-              
+
               {(activeTab === 'approved' || activeTab === 'live') && (
                 <Button
                   variant="outline"
@@ -229,13 +229,13 @@ export function AdminPresaleReview({ activeTab }: AdminPresaleReviewProps) {
                 Close
               </Button>
             </div>
-            
+
             <div className="space-y-4 text-sm">
               <p className="text-noble-gold/70">
                 Detailed review interface would show all project documentation,
                 KYC documents, audit reports, and allow for detailed approval/rejection actions.
               </p>
-              
+
               <div className="p-4 bg-noble-gray/30 rounded-lg">
                 <p className="text-noble-gold">Project: {selectedPresale.projectName}</p>
                 <p className="text-noble-gold/70">This is where the full project details would be displayed for review.</p>

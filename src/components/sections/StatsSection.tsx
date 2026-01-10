@@ -15,7 +15,7 @@ export function StatsSection() {
     {
       value: "1,250+",
       label: "Active Investors",
-      description: "Trust NoblePad for launches"
+      description: "Trust Belgrave for launches"
     },
     {
       value: "0",

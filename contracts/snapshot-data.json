@@ -1,0 +1,28 @@
+{
+  "root": "0xf0dd379d6696b1be2c320c95b2dad53c37fd8df8b4b6c486edc561b18b0088dc",
+  "proofs": {
+    "0x81e8F8220e7536db2072870aB0526571E60DB293": {
+      "tier": 3,
+      "maxAlloc": "5000000000000000000",
+      "proof": [
+        "0x70984a82c1fbb3848189791c124017d1430cd5284d8fbe431caacfb82dce5b72",
+        "0xb31b0f3aafa98d483096f2397f1f4dc3ea563097c77e8c3c873156a49ea7fadf"
+      ]
+    },
+    "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": {
+      "tier": 2,
+      "maxAlloc": "2000000000000000000",
+      "proof": [
+        "0x0c40f74043488b61c0404ee51c41b9048a90deabb49749defb890e60e0533f6d",
+        "0xb31b0f3aafa98d483096f2397f1f4dc3ea563097c77e8c3c873156a49ea7fadf"
+      ]
+    },
+    "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": {
+      "tier": 1,
+      "maxAlloc": "1000000000000000000",
+      "proof": [
+        "0x952a6768ce4778df144fb6cab0cb9a81e2361363a0832991d644c3ee91edba0a"
+      ]
+    }
+  }
+}

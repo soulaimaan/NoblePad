@@ -1,0 +1,231 @@
+﻿node.exe : FAIL src/lib/_
+_tests__/scenarios.test.t
+s
+At C:\Program Files\nodej
+s\npx.ps1:29 char:3
++   & $NODE_EXE $NPX_CLI_
+JS $args
++   ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo       
+       : NotSpecified:   
+  (FAIL src/lib/__test   
+ s__/scenarios.test.t    
+s:String) [], Remote    E
+xception
+    + FullyQualifiedErro 
+   rId : NativeCommandE  
+  rror
+ 
+  Tier System Scenario Te
+sts
+    ├ù Scenario 1: Massiv
+e Oversubscription in all
+ tiers (3 ms)
+    ├ù Scenario 2: Rolldo
+wn with Partial Fills (1 
+ms)
+    ├ù Scenario 3: Anti-W
+hale Hard Cap enforcement
+    ├ù Scenario 4: One Ti
+er per Wallet (Same addre
+ss twice)
+
+  ÔùÅ Tier System Scenari
+o Tests ÔÇ║ Scenario 1: M
+assive Oversubscription i
+n all tiers
+
+    TypeError: results.fi
+nd is not a function
+
+    [0m [90m 24 |[39m 
+        [90m// Total Poo
+l Distribution: 20k Gold,
+ 30k Silver, 50k Bronze[
+39m
+     [90m 25 |[39m     
+    [90m// Gold: 10 user
+s requesting 500k total f
+or 20k pool -> 0.04x scal
+ing[39m
+    [31m[1m>[22m[39m
+[90m 26 |[39m         [
+36mconst[39m goldUser [
+33m=[39m results[33m.[
+39mfind(p [33m=>[39m p
+[33m.[39mwallet [33m===
+[39m [32m'G0'[39m)[33
+m;[39m
+     [90m    |[39m     
+                         
+    [31m[1m^[22m[39m
+     [90m 27 |[39m     
+    expect(goldUser[33m?
+[39m[33m.[39mallocated
+Amount)[33m.[39mtoBeClo
+seTo([35m2000[39m[33m,
+[39m [35m0[39m)[33m;
+[39m [90m// 20000 / 10[
+39m
+     [90m 28 |[39m
+     [90m 29 |[39m     
+    [90m// Silver: 20 us
+ers requesting 500k total
+ for 30k pool -> 0.06x sc
+aling[39m[0m
+
+      at Object.find (src
+/lib/__tests__/scenarios.
+test.ts:26:34)
+
+  ÔùÅ Tier System Scenari
+o Tests ÔÇ║ Scenario 2: R
+olldown with Partial Fill
+s
+
+    TypeError: results.fi
+nd is not a function
+
+    [0m [90m 55 |[39m
+     [90m 56 |[39m     
+    [90m// Gold: gets fu
+ll request[39m
+    [31m[1m>[22m[39m
+[90m 57 |[39m         ex
+pect(results[33m.[39mfi
+nd(p [33m=>[39m p[33m.
+[39mwallet [33m===[39m
+ [32m'G1'[39m)[33m?[3
+9m[33m.[39mallocatedAmo
+unt)[33m.[39mtoBe([35m
+5000[39m)[33m;[39m
+     [90m    |[39m     
+                   [31m
+[1m^[22m[39m
+     [90m 58 |[39m
+     [90m 59 |[39m     
+    [90m// Silver: gets 
+full request (no scaling 
+needed as 20k < 30k)[39m
+     [90m 60 |[39m     
+    expect(results[33m.
+[39mfind(p [33m=>[39m p
+[33m.[39mwallet [33m==
+=[39m [32m'S1'[39m)[3
+3m?[39m[33m.[39malloca
+tedAmount)[33m.[39mtoBe
+([35m10000[39m)[33m;[
+39m[0m
+
+      at Object.find (src
+/lib/__tests__/scenarios.
+test.ts:57:24)
+
+  ÔùÅ Tier System Scenari
+o Tests ÔÇ║ Scenario 3: A
+nti-Whale Hard Cap enforc
+ement
+
+    TypeError: results.fi
+nd is not a function
+
+    [0m [90m 80 |[39m
+     [90m 81 |[39m     
+    [36mconst[39m resul
+ts [33m=[39m distribute
+AllocationsWithRolldown(p
+articipants[33m,[39m { 
+totalTokens })[33m;[39m
+    [31m[1m>[22m[39m
+[90m 82 |[39m         [
+36mconst[39m whale [33m
+=[39m results[33m.[39m
+find(p [33m=>[39m p[33
+m.[39mwallet [33m===[3
+9m [32m'Whale1'[39m)[3
+3m;[39m
+     [90m    |[39m     
+                         
+ [31m[1m^[22m[39m
+     [90m 83 |[39m
+     [90m 84 |[39m     
+    expect(whale[33m?[3
+9m[33m.[39mallocatedAmo
+unt)[33m.[39mtoBeLessTh
+anOrEqual([33mMAX_ALLOCA
+TION_PER_WALLET[39m)[33
+m;[39m
+     [90m 85 |[39m     
+    expect(whale[33m?[3
+9m[33m.[39mallocatedAmo
+unt)[33m.[39mtoBe([35m
+25000[39m)[33m;[39m[0
+m
+
+      at Object.find (src
+/lib/__tests__/scenarios.
+test.ts:82:31)
+
+  ÔùÅ Tier System Scenari
+o Tests ÔÇ║ Scenario 4: O
+ne Tier per Wallet (Same 
+address twice)
+
+    TypeError: results.fi
+nd is not a function
+
+    [0m [90m 100 |[39m
+         [90m// If logic
+ doesn't de-duplicate, it
+ will allocate twice. [3
+9m
+     [90m 101 |[39m    
+     [90m// We should pr
+obably add de-duplication
+ to the service if it's n
+ot there.[39m
+    [31m[1m>[22m[39m
+[90m 102 |[39m         
+[36mconst[39m userX_Gold
+ [33m=[39m results[33m
+.[39mfind(r [33m=>[39m
+ r[33m.[39mwallet [33m
+===[39m [32m'UserX'[39
+m [33m&&[39m r[33m.[3
+9mtier [33m===[39m [32
+m'GOLD'[39m)[33m;[39m
+     [90m     |[39m    
+                         
+       [31m[1m^[22m[3
+9m
+     [90m 103 |[39m    
+     [36mconst[39m user
+X_Bronze [33m=[39m resu
+lts[33m.[39mfind(r [33
+m=>[39m r[33m.[39mwall
+et [33m===[39m [32m'Us
+erX'[39m [33m&&[39m r
+[33m.[39mtier [33m===[
+39m [32m'BRONZE'[39m)[
+33m;[39m
+     [90m 104 |[39m
+     [90m 105 |[39m    
+     expect(userX_Gold)[
+33m.[39mtoBeDefined()[3
+3m;[39m[0m
+
+      at Object.find (src
+/lib/__tests__/scenarios.
+test.ts:102:36)
+
+Test Suites: 1 failed, 1 
+total
+Tests:       4 failed, 4 
+total
+Snapshots:   0 total
+Time:        0.314 s, est
+imated 1 s
+Ran all test suites match
+ing src/lib/__tests__/sce
+narios.test.ts.

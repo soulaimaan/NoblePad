@@ -1,0 +1,9 @@
+{
+  "network": "mainnet",
+  "timestamp": "2026-01-06T07:34:27.762Z",
+  "deployer": "0xe2E1e20D0B2822D11472464f3b4bA77323253c63",
+  "contracts": {
+    "TokenLock": "0x0DB492BFF4e1A6dB3c2576027075b48895B25D1f",
+    "PresaleFactory": "0x2285321a0c76695c7E900E951Aa45378843b3BC3"
+  }
+}

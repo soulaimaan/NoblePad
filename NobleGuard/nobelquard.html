@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belgrave Guard - User Manual | NoblePad Security</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+        
+        * { font-family: 'Inter', sans-serif; }
+        
+        body {
+            background: #0a0a0a;
+            color: #e5e5e5;
+            /* Subtle global text glow for a high-end feel */
+            text-shadow: 0 0 1px rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Realistic Metal Gradients */
+        .gradient-gold {
+            background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .gradient-silver {
+            background: linear-gradient(135deg, #C0C0C0 0%, #E8E8E8 25%, #A9A9A9 50%, #FFFFFF 75%, #808080 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Shiny/Glowing Text Effects */
+        .neon-gold {
+            color: #D4AF37;
+            text-shadow: 0 0 12px rgba(212, 175, 55, 0.5);
+        }
+
+        .text-glow {
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.15);
+        }
+        
+        .card-glow {
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.05) 0%, rgba(212, 175, 55, 0.05) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-glow {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px #D4AF37);
+            animation: neon-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes neon-pulse {
+            0%, 100% { filter: drop-shadow(0 0 8px #D4AF37); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 18px #D4AF37); transform: scale(1.02); }
+        }
+        
+        .btn-gold {
+            background: linear-gradient(135deg, #BF953F 0%, #D4AF37 100%);
+            color: #0a0a0a;
+            font-weight: 800;
+            padding: 14px 32px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-gold:hover {
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .grid-bg {
+            background-image: 
+                linear-gradient(rgba(212, 175, 55, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(212, 175, 55, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        .tier-table th { color: #D4AF37; border-bottom: 2px solid rgba(212, 175, 55, 0.3); padding: 15px; text-transform: uppercase; letter-spacing: 1px; }
+        .tier-table td { padding: 20px 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+    </style>
+</head>
+<body class="grid-bg">
+
+    <header class="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-xl border-b border-yellow-500/20">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <img src="alleen logo.PNG" alt="NoblePad Logo" class="logo-glow" />
+                <span class="text-3xl font-black gradient-gold tracking-tighter">NoblePad</span>
+            </div>
+            <a href="https://noblepad.netlify.app" class="btn-gold">
+                LAUNCH APP →
+            </a>
+        </div>
+    </header>
+
+    <section class="pt-48 pb-16 px-6 text-center">
+        <div class="max-w-4xl mx-auto">
+            <div class="inline-block mb-8 px-8 py-2 bg-yellow-500/10 border border-yellow-500/30 rounded-full">
+                <span class="neon-gold text-xs font-black tracking-widest uppercase">The Standard for Decentralized Allocation</span>
+            </div>
+            <h1 class="text-6xl md:text-8xl font-black mb-6 leading-none tracking-tight">
+                BELGRAVE <span class="gradient-silver">GUARD</span>
+            </h1>
+            <p class="text-2xl text-gray-400 font-light max-w-2xl mx-auto text-glow">
+                Security-Enforced Participation & Protocol Standards.
+            </p>
+        </div>
+    </section>
+
+    <section class="py-12 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="card-glow rounded-3xl p-10 md:p-16 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-yellow-500 to-transparent"></div>
+                <h2 class="text-4xl font-black gradient-gold mb-8 italic">01. INTRODUCTION</h2>
+                <p class="text-xl text-gray-300 mb-8 leading-relaxed text-glow">
+                    The <span class="text-white font-bold">Belgrave Guard</span> serves as the operational manual for the Belgrave System. While the Whitepaper defines the mathematical model, this document defines the <span class="text-white font-bold">user experience</span>, <span class="text-white font-bold">security protocols</span>, and <span class="text-white font-bold">safety standards</span> that protect every <span class="neon-gold font-bold">$BELGRAVE</span> staker.
+                </p>
+                <div class="bg-black/60 border border-yellow-500/30 p-8 rounded-2xl shadow-inner">
+                    <p class="text-2xl font-black text-center text-white tracking-wide uppercase">
+                        Our mission is simple: <span class="neon-gold underline decoration-yellow-500/50">Eliminate the rugpull.</span>
+                    </p>
+                    <p class="mt-4 text-center text-gray-400 text-sm">
+                        Through <span class="text-white font-bold">automated code enforcement</span>, <span class="text-white font-bold">AI-driven auditing</span>, and <span class="text-white font-bold">decentralized governance</span>, Belgrave ensures that "Code is Law" is a technical reality.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 px-6">
+        <div class="max-w-5xl mx-auto text-center mb-16">
+            <h2 class="text-5xl font-black gradient-silver tracking-tighter uppercase">02. The Security Stack</h2>
+        </div>
+        <div class="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
+            <div class="card-glow rounded-3xl p-10 transform transition hover:-translate-y-2 border-yellow-500/40">
+                <div class="text-5xl mb-6">🤖</div>
+                <h3 class="text-2xl font-black neon-gold mb-6 uppercase">Gemini 3 Flash Auditor</h3>
+                <ul class="text-sm text-gray-300 space-y-4">
+                    <li class="flex items-start gap-2">
+                        <span class="text-yellow-500">✦</span>
+                        <span><span class="text-white font-bold">Backdoor Detection</span>: Identifying hidden mint functions or ownership backdoors.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-yellow-500">✦</span>
+                        <span><span class="text-white font-bold">Blacklist Protection</span>: Flagging contracts that can freeze user funds.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-yellow-500">✦</span>
+                        <span><span class="text-white font-bold">Tax Analysis</span>: Automatically rejecting "honeypot" contracts with unchangeable 100% sell taxes.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-yellow-500">✦</span>
+                        <span><span class="text-white font-bold">Instant Rejection</span>: Any code that fails the audit is blocked from deployment.</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-glow rounded-3xl p-10 transform transition hover:-translate-y-2 border-white/20">
+                <div class="text-5xl mb-6">🔒</div>
+                <h3 class="text-2xl font-black neon-silver mb-6 uppercase">Milestone Escrow</h3>
+                <ul class="text-sm text-gray-300 space-y-4">
+                    <li class="flex items-start gap-2">
+                        <span class="text-gray-400">✦</span>
+                        <span><span class="text-white font-bold">Proof of Progress</span>: Funds are unlocked only after predefined development milestones are met.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-gray-400">✦</span>
+                        <span><span class="text-white font-bold">Governance Oversight</span>: Stakers can vote to halt funding if a team fails to deliver.</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-glow rounded-3xl p-10 transform transition hover:-translate-y-2 border-red-900/40">
+                <div class="text-5xl mb-6">🚨</div>
+                <h3 class="text-2xl font-black text-red-500 mb-6 uppercase">Hard-Coded Kill-Switch</h3>
+                <ul class="text-sm text-gray-300 space-y-4">
+                    <li class="flex items-start gap-2">
+                        <span class="text-red-500">✦</span>
+                        <span><span class="text-white font-bold">Automatic Refund</span>: If a project shows zero activity for <span class="text-white font-bold">6 consecutive months</span>, a refund is triggered.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-red-500">✦</span>
+                        <span><span class="text-white font-bold">No Intermediation</span>: Direct smart contract function requiring no human intervention.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 px-6 bg-white/[0.02]">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-4xl font-black gradient-gold mb-12 uppercase italic text-center">03. HOW TO PARTICIPATE</h2>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6 text-glow">
+                    <h3 class="text-2xl font-bold neon-silver mb-8">Step-by-Step Security Protocol</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4 bg-white/5 p-4 rounded-xl border-l-4 border-yellow-500">
+                            <span class="text-2xl font-black text-white">01</span>
+                            <p class="text-gray-300"><span class="text-white font-bold">Wallet Connection</span>: Connect via EVM, Solana, or XRPL (Xaman).</p>
+                        </div>
+                        <div class="flex items-center gap-4 bg-white/5 p-4 rounded-xl border-l-4 border-gray-400">
+                            <span class="text-2xl font-black text-white">02</span>
+                            <p class="text-gray-300"><span class="text-white font-bold">Staking</span>: Lock $BELGRAVE for the mandatory 6-month period.</p>
+                        </div>
+                        <div class="flex items-center gap-4 bg-white/5 p-4 rounded-xl border-l-4 border-yellow-500">
+                            <span class="text-2xl font-black text-white">03</span>
+                            <p class="text-gray-300"><span class="text-white font-bold">Tier Classification</span>: System assigns tier based on snapshot block height.</p>
+                        </div>
+                        <div class="flex items-center gap-4 bg-white/5 p-4 rounded-xl border-l-4 border-gray-400">
+                            <span class="text-2xl font-black text-white">04</span>
+                            <p class="text-gray-300"><span class="text-white font-bold">Allocation Window</span>: Access dashboard to view available presales.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-glow rounded-3xl p-8 border-yellow-500/20 shadow-2xl">
+                    <h3 class="text-2xl font-bold gradient-gold mb-6 text-center">TIER MECHANICS RECAP</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="text-yellow-500 text-xs font-black">
+                                <tr class="border-b border-yellow-500/20">
+                                    <th class="py-4">TIER</th>
+                                    <th class="py-4">STAKE</th>
+                                    <th class="py-4">MULT.</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm">
+                                <tr class="border-b border-white/5">
+                                    <td class="py-6 font-bold text-orange-400">BRONZE</td>
+                                    <td class="text-gray-300">17,500,000</td>
+                                    <td class="text-white font-black">1.0x</td>
+                                </tr>
+                                <tr class="border-b border-white/5">
+                                    <td class="py-6 font-bold text-gray-200">SILVER</td>
+                                    <td class="text-gray-300">87,500,000</td>
+                                    <td class="text-white font-black">2.5x</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-6 font-bold neon-gold">GOLD</td>
+                                    <td class="text-gray-300">175,000,000</td>
+                                    <td class="text-white font-black">5.0x</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 px-6">
+        <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-10">
+            <div class="card-glow rounded-3xl p-12 hover:border-yellow-500/50 transition-colors">
+                <h2 class="text-3xl font-black gradient-gold mb-8 uppercase">04. Education & Safety Hub</h2>
+                <ul class="space-y-6 text-glow">
+                    <li class="bg-black/40 p-5 rounded-xl border border-white/5">
+                        <span class="text-white font-bold block mb-2">The Safety Checker</span>
+                        <p class="text-sm text-gray-400">Diagnostic tool for simulated audits on external contract addresses.</p>
+                    </li>
+                    <li class="bg-black/40 p-5 rounded-xl border border-white/5">
+                        <span class="text-white font-bold block mb-2">Education Hub</span>
+                        <p class="text-sm text-gray-400">Repository on DeFi security, red flags, and liquidity manipulation.</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-glow rounded-3xl p-12 hover:border-gray-400/50 transition-colors">
+                <h2 class="text-3xl font-black gradient-silver mb-8 uppercase">05. System Standards</h2>
+                <ul class="space-y-6 text-glow">
+                    <li class="bg-black/40 p-5 rounded-xl border border-white/5">
+                        <span class="text-white font-bold block mb-2">Anti-Whale Protection</span>
+                        <p class="text-sm text-gray-400">Strict per-wallet caps enforced to prevent single-entity dominance.</p>
+                    </li>
+                    <li class="bg-black/40 p-5 rounded-xl border border-white/5">
+                        <span class="text-white font-bold block mb-2">Snapshot Integrity</span>
+                        <p class="text-sm text-gray-400">Eligibility based on verifiable Merkle Proofs captured at announcement.</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <footer class="border-t border-yellow-500/20 py-16 px-6 bg-black">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
+            <div class="flex items-center space-x-4">
+                <img src="alleen logo.PNG" alt="NoblePad Logo" class="w-12 h-12 object-contain" />
+                <div>
+                    <span class="text-2xl font-black gradient-gold block leading-none">NoblePad</span>
+                    <span class="text-[10px] text-gray-500 tracking-[0.3em] uppercase">Belgrave System</span>
+                </div>
+            </div>
+            
+            <div class="text-center md:text-right">
+                <p class="text-sm text-gray-400 font-bold mb-2 uppercase">The Standard for Decentralized Allocation</p>
+                <p class="text-xs text-gray-600 mb-4 italic">Manual Version 1.1 - Fully Rebranded & Logic-Verified</p>
+                <p class="text-[10px] text-gray-700">© 2025 NoblePad. [cite_start]Security-First DeFi. [cite: 113]</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

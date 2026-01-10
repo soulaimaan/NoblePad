@@ -29,11 +29,15 @@ export class XamanService {
   async createSignInPayload(): Promise<{ uuid: string; qrUrl: string; deepLink: string } | null> {
     try {
       // Call our server-side proxy instead of Xumm directly
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
       const response = await fetch('/api/xumm/payload', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
+        signal: controller.signal,
         body: JSON.stringify({
           txjson: {
             TransactionType: 'SignIn'
@@ -46,6 +50,7 @@ export class XamanService {
           }
         })
       })
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorData = await response.json()
@@ -69,11 +74,15 @@ export class XamanService {
 
   async createPayload(txjson: any): Promise<{ uuid: string; qrUrl: string; deepLink: string } | null> {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
       const response = await fetch('/api/xumm/payload', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
+        signal: controller.signal,
         body: JSON.stringify({
           txjson: txjson,
           options: {
@@ -84,6 +93,7 @@ export class XamanService {
           }
         })
       })
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorData = await response.json()

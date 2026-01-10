@@ -1,5 +1,5 @@
 /**
- * Noble AI Scoring Service
+ * Belgrave AI Scoring Service
  * Provides automated risk assessment and project scoring for presales.
  * In production, this would integrate with Gemini 1.5 Flash for deep analysis.
  */
@@ -23,11 +23,11 @@ export class AIService {
     async analyzeProject(presaleData: any): Promise<AIScoreResult> {
         let score = 5.0 // Start at base 5
         const reasoning: string[] = []
-        
+
         // 1. Liquidity analysis
         const lpPct = Number(presaleData.liquidity_percentage || presaleData.liquidityPercentage || 0)
         const lpLock = Number(presaleData.liquidity_lock_months || presaleData.liquidityLockMonths || 0)
-        
+
         if (lpPct >= 80 && lpLock >= 12) {
             score += 1.5
             reasoning.push("Strong liquidity commitment: 80%+ locked for 12+ months.")
@@ -50,14 +50,14 @@ export class AIService {
         // 3. Document Analysis (Audits & KYC)
         const hasAudit = !!(presaleData.audit_report || presaleData.auditReport)
         const hasKyc = (presaleData.kyc_documents || presaleData.kycDocuments || []).length > 0
-        
+
         if (hasAudit) {
             score += 1.5
             reasoning.push("Security audit report detected and verified.")
         }
         if (hasKyc) {
             score += 1.0
-            reasoning.push("Team has completed NoblePad KYC verification.")
+            reasoning.push("Team has completed Belgrave KYC verification.")
         }
 
         // 4. Social Presence
@@ -83,7 +83,7 @@ export class AIService {
 
         // Final Cap
         score = Math.min(Math.max(score, 1.0), 10.0)
-        
+
         // Determing risk level
         let riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' = 'MEDIUM'
         if (score >= 8.0) riskLevel = 'LOW'
@@ -98,8 +98,8 @@ export class AIService {
                 liquidityLocked: lpPct >= 60
             },
             reasoning,
-            summary: score >= 8 
-                ? "This project exhibits high transparency and strong security fundamentals." 
+            summary: score >= 8
+                ? "This project exhibits high transparency and strong security fundamentals."
                 : "Standard project metrics. Exercise normal due diligence."
         }
     }

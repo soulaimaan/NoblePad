@@ -128,7 +128,7 @@ export function MilestoneDashboard({ projectAddress, chain, totalRaised, milesto
         await new Promise(r => setTimeout(r, 2000))
         alert('Your vote has been recorded on the Governance Layer (Simulation)')
       } else {
-        // EVM: Call NobleMilestoneEscrow.voteForRelease
+        // EVM: Call BelgraveMilestoneEscrow.voteForRelease
         console.log(`EVM: Voting ${approve ? 'Approve' : 'Dispute'} for milestone ${milestoneId}`)
         await new Promise(r => setTimeout(r, 2000))
         alert('Vote transaction sent to MetaMask! (Simulation)')

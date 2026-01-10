@@ -14,10 +14,10 @@ interface TrendingProject {
 
 // Mock data for trending projects
 const MOCK_TRENDING: TrendingProject[] = [
-  { id: '1', name: 'NoblePad', symbol: 'NPAD', change24h: 12.5, isHot: true },
+  { id: '1', name: 'Belgrave System', symbol: 'BELGRAVE', change24h: 12.5, isHot: true },
   { id: '2', name: 'SafeMoon 3.0', symbol: 'SFM3', change24h: 5.2, isHot: true },
   { id: '3', name: 'Pepe AI', symbol: 'PEPEAI', change24h: 24.8, isHot: true },
-  { id: '4', name: 'Belgrave', symbol: 'BLGRV', change24h: 8.9, isHot: false },
+  { id: '4', name: 'Belgrave', symbol: 'BELGRAVE', change24h: 8.9, isHot: false },
   { id: '5', name: 'DogeVerse', symbol: 'DOGEV', change24h: -2.1, isHot: false },
 ]
 
@@ -36,12 +36,12 @@ export function TrendingBar() {
         <Flame className="text-orange-500 mr-2 animate-pulse" size={16} />
         <span className="text-xs font-bold text-noble-gold uppercase tracking-wider">Trending</span>
       </div>
-      
+
       {/* Marquee Effect */}
       <div className="flex items-center space-x-8 animate-marquee whitespace-nowrap pl-32">
         {[...MOCK_TRENDING, ...MOCK_TRENDING].map((project, i) => (
-          <Link 
-            key={`${project.id}-${i}`} 
+          <Link
+            key={`${project.id}-${i}`}
             href={`/presale/${project.id}`}
             className="flex items-center space-x-2 group hover:opacity-100 opacity-70 transition-opacity"
           >

@@ -1,12 +1,11 @@
 {
   "network": "sepolia",
-  "timestamp": "2025-12-31T22:23:04.336Z",
+  "timestamp": "2026-01-04T14:29:03.088Z",
   "deployer": "0x81e8F8220e7536db2072870aB0526571E60DB293",
-  "blockNumber": 9954748,
   "contracts": {
-    "TokenLock": "0x55E5d769AF515354d57182f3f70A2738148940cf",
-    "PresaleFactory": "0x5bB9e48B8850b03D5bD89796BDfAd6252F828Fd9",
-    "Vesting": "0xc6e09488aBCBc84EB0bF48988426Dc3c8E0D6b97",
-    "TreasuryTimelock": "0x175A0735D7a20ee3950560C1031a5E23a9372836"
+    "TokenLock": "0xe7E5b2D18e4CfbB51f18845e58eed4165316b255",
+    "NoblePadToken": "0x03A01EA6FF90680A0189cf698d7060e9441FBF3F",
+    "PresaleFactory": "0x0180dd9c89a552a29cCae6c9C34410F42271F43D",
+    "NPADStaking": "0xAF53f8164bEDB0FB1623acDFaEe208e33DCeD100"
   }
 }

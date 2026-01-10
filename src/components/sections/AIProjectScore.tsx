@@ -3,7 +3,7 @@
 import { AlertCircle, Brain, CheckCircle2, Loader, TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-interface NobleScoreProps {
+interface BelgraveScoreProps {
   presaleId?: string;
   // Fallback props for static display
   score?: number;
@@ -15,7 +15,7 @@ interface NobleScoreProps {
   }
 }
 
-export function AIProjectScore({ presaleId, score: initialScore, metadata: initialMetadata }: NobleScoreProps) {
+export function AIProjectScore({ presaleId, score: initialScore, metadata: initialMetadata }: BelgraveScoreProps) {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(!!presaleId);
 
@@ -63,13 +63,13 @@ export function AIProjectScore({ presaleId, score: initialScore, metadata: initi
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-2">
           <Brain className="w-6 h-6" />
-          <h3 className="text-xl font-bold uppercase tracking-wider">Noble AI Score</h3>
+          <h3 className="text-xl font-bold uppercase tracking-wider">Belgrave AI Score</h3>
         </div>
         <div className="flex flex-col items-end">
-            <div className="text-4xl font-black">{score}/10</div>
-            <div className="text-[10px] uppercase font-bold tracking-widest opacity-60">
-                {score >= 8 ? 'Safe Entry' : (score >= 5 ? 'Moderate Risk' : 'High Risk')}
-            </div>
+          <div className="text-4xl font-black">{score}/10</div>
+          <div className="text-[10px] uppercase font-bold tracking-widest opacity-60">
+            {score >= 8 ? 'Safe Entry' : (score >= 5 ? 'Moderate Risk' : 'High Risk')}
+          </div>
         </div>
       </div>
 
@@ -90,21 +90,21 @@ export function AIProjectScore({ presaleId, score: initialScore, metadata: initi
 
       {reasoning.length > 0 && (
         <div className="mb-6 space-y-2">
-            <h4 className="text-[10px] uppercase font-bold text-white/40 flex items-center mb-2">
-                <TrendingUp size={10} className="mr-1" /> Key Insights
-            </h4>
-            {reasoning.slice(0, 3).map((r: string, i: number) => (
-                <div key={i} className="flex items-start space-x-2 text-xs leading-relaxed opacity-80">
-                    <CheckCircle2 size={12} className="mt-0.5 flex-shrink-0" />
-                    <span>{r}</span>
-                </div>
-            ))}
+          <h4 className="text-[10px] uppercase font-bold text-white/40 flex items-center mb-2">
+            <TrendingUp size={10} className="mr-1" /> Key Insights
+          </h4>
+          {reasoning.slice(0, 3).map((r: string, i: number) => (
+            <div key={i} className="flex items-start space-x-2 text-xs leading-relaxed opacity-80">
+              <CheckCircle2 size={12} className="mt-0.5 flex-shrink-0" />
+              <span>{r}</span>
+            </div>
+          ))}
         </div>
       )}
 
       <div className="pt-4 border-t border-current/10 flex items-start space-x-2 opacity-50 italic text-[10px]">
         <AlertCircle className="w-3 h-3 flex-shrink-0 mt-0.5" />
-        <span>Scored by NoblePad AI (Gemini 1.5 Flash). Dynamic risk engine updated real-time.</span>
+        <span>Scored by Belgrave AI (Gemini 1.5 Flash). Dynamic risk engine updated real-time.</span>
       </div>
     </div>
   )

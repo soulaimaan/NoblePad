@@ -53,9 +53,10 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-noble-black text-noble-gold font-sans antialiased;
-    background-image: 
+    background-image:
       radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
       radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
       radial-gradient(circle at 40% 80%, rgba(212, 175, 55, 0.08) 0%, transparent 50%);
@@ -74,20 +75,19 @@
     backdrop-filter: blur(8px);
     box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
   }
-  
+
   .noble-button {
-    @apply border border-noble-gold/40 text-noble-gold font-semibold px-6 py-3 rounded-lg 
-           transition-all duration-500 transform hover:scale-105;
+    @apply border border-noble-gold/40 text-noble-gold font-semibold px-6 py-3 rounded-lg transition-all duration-500 transform hover:scale-105;
     background: rgba(212, 175, 55, 0.08);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
-    box-shadow: 
+    box-shadow:
       inset 0 1px 1px rgba(255, 255, 255, 0.1),
       0 4px 20px rgba(0, 0, 0, 0.4);
     position: relative;
     overflow: hidden;
   }
-  
+
   .noble-button::after {
     content: "";
     position: absolute;
@@ -103,7 +103,7 @@
   .noble-button:hover {
     background: rgba(212, 175, 55, 0.15);
     border-color: rgba(212, 175, 55, 0.8);
-    box-shadow: 
+    box-shadow:
       inset 0 1px 1px rgba(255, 255, 255, 0.2),
       0 0 25px rgba(212, 175, 55, 0.2);
     text-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
@@ -112,28 +112,30 @@
   .noble-button:hover::after {
     left: 150%;
   }
-  
+
   .noble-button-outline {
-    @apply border border-white/10 text-white/60 font-medium px-6 py-3 rounded-lg 
-           transition-all duration-300;
+    @apply border border-white/10 text-white/60 font-medium px-6 py-3 rounded-lg transition-all duration-300;
     background: rgba(255, 255, 255, 0.03);
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
   }
-  
+
   .noble-button-outline:hover {
     @apply border-white/20 text-white bg-white/10;
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
   }
-  
+
   .noble-input {
-    @apply bg-noble-gray border border-noble-gold/30 text-noble-gold placeholder-noble-gold/50 
-           rounded-lg px-4 py-3 focus:border-noble-gold focus:ring-2 focus:ring-noble-gold/20 
-           transition-all duration-200;
+    @apply bg-noble-gray border border-noble-gold/30 text-noble-gold placeholder-noble-gold/50 rounded-lg px-4 py-3 focus:border-noble-gold focus:ring-2 focus:ring-noble-gold/20 transition-all duration-200;
   }
-  
+
   .noble-text-gradient {
     @apply bg-clip-text text-transparent bg-noble-gold-gradient;
+  }
+
+  .progress-fill {
+    @apply transition-all duration-500 ease-out;
+    width: var(--progress, 0%);
   }
 }
 
@@ -156,16 +158,12 @@
 
 /* Solana Wallet Adapter Styling */
 .wallet-adapter-button {
-  @apply bg-noble-gold-gradient text-noble-black font-semibold px-6 py-3 rounded-lg 
-         hover:shadow-lg hover:shadow-noble-gold/20 transition-all duration-300 
-         transform hover:scale-105 !important;
+  @apply bg-noble-gold-gradient text-noble-black font-semibold px-6 py-3 rounded-lg hover:shadow-lg hover:shadow-noble-gold/20 transition-all duration-300 transform hover:scale-105 !important;
   border: none !important;
 }
 
 .wallet-adapter-button-trigger {
-  @apply bg-noble-gold-gradient text-noble-black font-semibold px-6 py-3 rounded-lg 
-         hover:shadow-lg hover:shadow-noble-gold/20 transition-all duration-300 
-         transform hover:scale-105 !important;
+  @apply bg-noble-gold-gradient text-noble-black font-semibold px-6 py-3 rounded-lg hover:shadow-lg hover:shadow-noble-gold/20 transition-all duration-300 transform hover:scale-105 !important;
 }
 
 .wallet-adapter-dropdown {
@@ -197,8 +195,7 @@
 }
 
 .wallet-adapter-modal-list-item {
-  @apply bg-noble-gray border border-noble-gold/20 hover:bg-noble-gold/10 
-         transition-colors duration-200 rounded-lg !important;
+  @apply bg-noble-gray border border-noble-gold/20 hover:bg-noble-gold/10 transition-colors duration-200 rounded-lg !important;
 }
 
 .wallet-adapter-modal-list-item:not([disabled]):hover {

@@ -66,10 +66,14 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!isMounted) return
     const checkSessions = async () => {
-      const xamanUser = await xamanService.getUser()
-      if (xamanUser) {
-        setXrplAddress(xamanUser.account)
-        setActiveWallet('xrpl')
+      try {
+        const xamanUser = await xamanService.getUser()
+        if (xamanUser) {
+          setXrplAddress(xamanUser.account)
+          setActiveWallet('xrpl')
+        }
+      } catch (e) {
+        console.warn("Session check failed, skipping automatic XRPL restore", e)
       }
     }
     checkSessions()

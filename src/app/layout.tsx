@@ -1,12 +1,12 @@
+import { SupabaseProvider } from '@/components/providers/SupabaseProvider'
 import { Web3Provider } from '@/components/providers/Web3Provider'
+import { SolanaProvider } from '@/components/providers/SolanaProvider'
 import dynamic from 'next/dynamic'
 
 const Navigation = dynamic(() => import('@/components/layout/Navigation').then(mod => mod.Navigation), { ssr: false })
 // UnifiedWalletProvider must be dynamic to avoid hydration mismatch with wallet state
 const UnifiedWalletProvider = dynamic(() => import('@/components/providers/UnifiedWalletProvider').then(mod => mod.UnifiedWalletProvider), { ssr: false })
 const TierProvider = dynamic(() => import('@/components/providers/TierProvider').then(mod => mod.TierProvider), { ssr: false })
-const SolanaProvider = dynamic(() => import('@/components/providers/SolanaProvider').then(mod => mod.SolanaProvider), { ssr: false })
-const SupabaseProvider = dynamic(() => import('@/components/providers/SupabaseProvider').then(mod => mod.SupabaseProvider), { ssr: false })
 
 
 import type { Metadata } from 'next'
@@ -16,9 +16,9 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'NoblePad - Anti-Rug Launchpad. Powered by Trust.',
-  description: 'The premier decentralized token launchpad with maximum security, anti-rug protection, and guaranteed allocations for stakers.',
-  keywords: 'crypto, launchpad, presale, IDO, anti-rug, defi, blockchain, tokens',
+  title: 'Belgrave System - The Allocation Protocol',
+  description: 'The standardized decentralized allocation protocol. Fair, tier-based access for the Ethereum, Base, BSC, and XRPL ecosystems.',
+  keywords: 'belgrave, launchpad, staking, tiers, eth, base, bsc, xrpl',
 }
 
 export default function RootLayout({
@@ -31,18 +31,18 @@ export default function RootLayout({
       <body className={inter.className}>
         <SupabaseProvider>
           <Web3Provider>
-            <UnifiedWalletProvider>
-              <TierProvider>
-                <SolanaProvider>
+            <SolanaProvider>
+              <UnifiedWalletProvider>
+                <TierProvider>
                   <div className="min-h-screen bg-noble-black">
                     <Navigation />
                     <main className="pt-20">
                       {children}
                     </main>
                   </div>
-                </SolanaProvider>
-              </TierProvider>
-            </UnifiedWalletProvider>
+                </TierProvider>
+              </UnifiedWalletProvider>
+            </SolanaProvider>
           </Web3Provider>
         </SupabaseProvider>
       </body>

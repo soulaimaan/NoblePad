@@ -47,10 +47,10 @@ export function TokenDetailsStep({ formData, updateFormData }: TokenDetailsStepP
   const validateToken = async () => {
     if (!rawProvider) return
     setTokenValidation(prev => ({ ...prev, isValidating: true, error: null }))
-    
+
     try {
       const result = await presaleService.validateToken(formData.tokenAddress, formData.chainId, rawProvider)
-      
+
       if (result.isValid && result.tokenInfo) {
         setTokenValidation({
           isValidating: false,
@@ -58,7 +58,7 @@ export function TokenDetailsStep({ formData, updateFormData }: TokenDetailsStepP
           error: null,
           tokenInfo: result.tokenInfo
         })
-        
+
         // Auto-fill token details
         updateFormData({
           tokenName: result.tokenInfo.name,
@@ -106,7 +106,7 @@ export function TokenDetailsStep({ formData, updateFormData }: TokenDetailsStepP
             <Network className="inline mr-2" size={16} />
             Select Blockchain *
           </label>
-          
+
           {/* Mainnets */}
           <div className="mb-4">
             <h3 className="text-xs font-semibold text-noble-gold/50 uppercase tracking-wider mb-2">Main Networks</h3>
@@ -118,14 +118,14 @@ export function TokenDetailsStep({ formData, updateFormData }: TokenDetailsStepP
                   onClick={() => handleChainSelect(chain)}
                   className={`
                     p-4 border-2 rounded-lg transition-all duration-200 text-left
-                    ${selectedChain?.id === chain.id 
-                      ? 'border-noble-gold bg-noble-gold/10' 
+                    ${selectedChain?.id === chain.id
+                      ? 'border-noble-gold bg-noble-gold/10'
                       : 'border-noble-gold/20 hover:border-noble-gold/40'
                     }
                   `}
                 >
                   <div className="flex items-center space-x-3">
-                    <div 
+                    <div
                       className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
                       style={{ backgroundColor: chain.color }}
                     >
@@ -153,14 +153,14 @@ export function TokenDetailsStep({ formData, updateFormData }: TokenDetailsStepP
                   onClick={() => handleChainSelect(chain)}
                   className={`
                     p-4 border-2 rounded-lg transition-all duration-200 text-left
-                    ${selectedChain?.id === chain.id 
-                      ? 'border-noble-gold bg-noble-gold/10' 
+                    ${selectedChain?.id === chain.id
+                      ? 'border-noble-gold bg-noble-gold/10'
                       : 'border-noble-gold/20 hover:border-noble-gold/40'
                     }
                   `}
                 >
                   <div className="flex items-center space-x-3">
-                    <div 
+                    <div
                       className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shadow-sm"
                       style={{ backgroundColor: chain.color }}
                     >
@@ -213,7 +213,7 @@ export function TokenDetailsStep({ formData, updateFormData }: TokenDetailsStepP
               value={formData.tokenName}
               onChange={(e) => updateFormData({ tokenName: e.target.value })}
               className="noble-input w-full"
-              placeholder="e.g., NobleSwap Token"
+              placeholder="e.g., BelgraveSwap Token"
               required
             />
           </div>
@@ -264,19 +264,19 @@ export function TokenDetailsStep({ formData, updateFormData }: TokenDetailsStepP
               )}
             </div>
           </div>
-          
+
           {!selectedChain && (
             <p className="text-xs text-orange-400 mt-1">
               Please select a blockchain first
             </p>
           )}
-          
+
           {tokenValidation.error && (
             <p className="text-xs text-red-400 mt-1">
               {tokenValidation.error}
             </p>
           )}
-          
+
           {tokenValidation.isValid && tokenValidation.tokenInfo && (
             <div className="mt-2 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
               <div className="flex items-center space-x-2 text-green-400 text-sm mb-2">
@@ -288,18 +288,18 @@ export function TokenDetailsStep({ formData, updateFormData }: TokenDetailsStepP
                 <div>Symbol: <span className="text-noble-gold">{tokenValidation.tokenInfo.symbol}</span></div>
                 {selectedChain?.id !== 144 && <div>Decimals: <span className="text-noble-gold">{tokenValidation.tokenInfo.decimals}</span></div>}
                 <div>Supply: <span className="text-noble-gold">
-                  {selectedChain?.id === 144 
-                    ? tokenValidation.tokenInfo.totalSupply 
+                  {selectedChain?.id === 144
+                    ? tokenValidation.tokenInfo.totalSupply
                     : parseFloat(ethers.formatUnits(tokenValidation.tokenInfo.totalSupply, tokenValidation.tokenInfo.decimals)).toLocaleString()
                   }
                 </span></div>
               </div>
             </div>
           )}
-          
+
           <p className="text-xs text-noble-gold/50 mt-1">
-            {selectedChain?.id === 144 
-              ? 'Must be a valid XRPL account address with DefaultRipple enabled' 
+            {selectedChain?.id === 144
+              ? 'Must be a valid XRPL account address with DefaultRipple enabled'
               : `Must be a verified contract on ${selectedChain?.name || 'the selected blockchain'}`}
           </p>
         </div>

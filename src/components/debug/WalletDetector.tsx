@@ -16,15 +16,16 @@ export function WalletDetector() {
 
   const detectWallets = () => {
     const detectedWallets = []
+    const eth = (window as any).ethereum
 
-    if (window.ethereum) {
-      if (window.ethereum.providers?.length) {
+    if (eth) {
+      if (eth.providers?.length) {
         // Multiple providers
-        (window.ethereum as any).providers.forEach((provider: any, index: number) => {
+        eth.providers.forEach((provider: any, index: number) => {
           detectedWallets.push({
             id: `provider_${index}`,
             name: getWalletName(provider),
-            isActive: provider === window.ethereum,
+            isActive: provider === eth,
             isMetaMask: provider.isMetaMask,
             isOkxWallet: provider.isOkxWallet,
             isCoinbaseWallet: provider.isCoinbaseWallet,
@@ -36,13 +37,13 @@ export function WalletDetector() {
         // Single provider
         detectedWallets.push({
           id: 'single_provider',
-          name: getWalletName(window.ethereum),
+          name: getWalletName(eth),
           isActive: true,
-          isMetaMask: (window.ethereum as any).isMetaMask,
-          isOkxWallet: (window.ethereum as any).isOkxWallet,
-          isCoinbaseWallet: (window.ethereum as any).isCoinbaseWallet,
-          selectedAddress: (window.ethereum as any).selectedAddress,
-          provider: window.ethereum
+          isMetaMask: eth.isMetaMask,
+          isOkxWallet: eth.isOkxWallet,
+          isCoinbaseWallet: eth.isCoinbaseWallet,
+          selectedAddress: eth.selectedAddress,
+          provider: eth
         })
       }
     }
@@ -70,9 +71,9 @@ export function WalletDetector() {
   }
 
   const openExtensionsPage = () => {
-    const isChrome = navigator.userAgent.includes('Chrome')
-    const isEdge = navigator.userAgent.includes('Edge')
-    
+    const isChrome = typeof navigator !== 'undefined' && navigator.userAgent.includes('Chrome')
+    const isEdge = typeof navigator !== 'undefined' && navigator.userAgent.includes('Edge')
+
     if (isChrome) {
       window.open('chrome://extensions/', '_blank')
     } else if (isEdge) {
@@ -95,8 +96,8 @@ export function WalletDetector() {
       <div className="mb-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm">
         <div className="font-medium text-blue-400 mb-1">Detected Wallet Extensions:</div>
         <div className="text-noble-gold/70">
-          {wallets.length === 0 
-            ? 'No wallet extensions detected' 
+          {wallets.length === 0
+            ? 'No wallet extensions detected'
             : `Found ${wallets.length} wallet extension${wallets.length > 1 ? 's' : ''}`
           }
         </div>
@@ -105,19 +106,17 @@ export function WalletDetector() {
       {wallets.length > 0 && (
         <div className="space-y-3">
           {wallets.map((wallet) => (
-            <div 
+            <div
               key={wallet.id}
-              className={`p-4 rounded-lg border-2 transition-all ${
-                wallet.isMetaMask 
-                  ? 'border-green-500/40 bg-green-500/10' 
+              className={`p-4 rounded-lg border-2 transition-all ${wallet.isMetaMask
+                  ? 'border-green-500/40 bg-green-500/10'
                   : 'border-noble-gold/20 bg-noble-gray/20'
-              }`}
+                }`}
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-3">
-                  <div className={`w-3 h-3 rounded-full ${
-                    wallet.isActive ? 'bg-green-400' : 'bg-gray-400'
-                  }`} />
+                  <div className={`w-3 h-3 rounded-full ${wallet.isActive ? 'bg-green-400' : 'bg-gray-400'
+                    }`} />
                   <span className="font-medium text-noble-gold">{wallet.name}</span>
                   {wallet.isMetaMask && (
                     <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded">

@@ -14,7 +14,7 @@ export default function CreatePresalePage() {
 
   // Hydration fix
   const [isMounted, setIsMounted] = useState(false)
-  
+
   // Use useEffect to ensure we are on the client
   // avoiding hydration mismatch between server (which assumes not connected)
   // and client (which might be connected via local storage)
@@ -32,7 +32,7 @@ export default function CreatePresalePage() {
           </div>
           <h1 className="text-2xl font-bold text-noble-gold mb-4">Connect Your Wallet</h1>
           <p className="text-noble-gold/70 mb-6">
-            You need to connect your wallet to create a presale project on NoblePad.
+            You need to connect your wallet to create a presale project on the Belgrave System.
           </p>
         </div>
       </div>
@@ -44,10 +44,10 @@ export default function CreatePresalePage() {
   if (!isMounted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-noble-black">
-         <div className="text-center">
-           <div className="w-12 h-12 border-2 border-noble-gold border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-           <p className="text-noble-gold/70">Loading...</p>
-         </div>
+        <div className="text-center">
+          <div className="w-12 h-12 border-2 border-noble-gold border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-noble-gold/70">Loading...</p>
+        </div>
       </div>
     )
   }
@@ -63,7 +63,7 @@ export default function CreatePresalePage() {
           <p className="text-xl text-noble-gold/70 mb-6">
             Launch your project with maximum security and anti-rug protection
           </p>
-          
+
           {/* Security Notice */}
           <div className="noble-card max-w-2xl mx-auto">
             <div className="flex items-start space-x-3">
@@ -75,7 +75,7 @@ export default function CreatePresalePage() {
                   <li>• Minimum 60% liquidity lock for 6+ months mandatory</li>
                   <li>• Team tokens must be locked for minimum 12 months</li>
                   <li>• Smart contract audit report required</li>
-                  <li>• All submissions reviewed by NoblePad team</li>
+                  <li>• All submissions reviewed by Belgrave System team</li>
                 </ul>
               </div>
             </div>

@@ -1,4 +1,5 @@
 import "@nomicfoundation/hardhat-ethers";
+import "@nomicfoundation/hardhat-verify";
 import dotenv from "dotenv";
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -53,6 +54,10 @@ export default {
     arbitrum: {
       url: `https://arbitrum-mainnet.infura.io/v3/${INFURA_API_KEY}`,
       accounts: DEPLOYER_PRIVATE_KEY ? [DEPLOYER_PRIVATE_KEY] : []
+    },
+    base: {
+      url: "https://mainnet.base.org",
+      accounts: DEPLOYER_PRIVATE_KEY ? [DEPLOYER_PRIVATE_KEY] : []
     }
   },
   etherscan: {
@@ -61,7 +66,8 @@ export default {
       sepolia: process.env.ETHERSCAN_API_KEY || "",
       bsc: process.env.BSCSCAN_API_KEY || "",
       polygon: process.env.POLYGONSCAN_API_KEY || "",
-      arbitrumOne: process.env.ARBISCAN_API_KEY || ""
+      arbitrumOne: process.env.ARBISCAN_API_KEY || "",
+      base: process.env.BASESCAN_API_KEY || ""
     }
   },
   sourcify: {

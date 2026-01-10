@@ -8,7 +8,7 @@ export interface MilestoneEscrowParams {
   amountXRP: string
   milestoneId: string
   // For emergency refund: 180 days after estimated delivery
-  cancelAfterDays: number 
+  cancelAfterDays: number
 }
 
 export class XRPL_Escrow_Handler {
@@ -23,7 +23,7 @@ export class XRPL_Escrow_Handler {
     }
 
     const amountDrops = (parseFloat(params.amountXRP) * 1000000).toString()
-    
+
     // Calculate CancelAfter date (in Ripple Epoch seconds)
     // Ripple Epoch starts at 2000-01-01 00:00:00 UTC
     const RIPPLE_EPOCH_OFFSET = 946684800
@@ -38,7 +38,7 @@ export class XRPL_Escrow_Handler {
       Amount: amountDrops,
       CancelAfter: cancelAfterRipple,
       // Condition can be added here if using a crypto-condition based release
-      // For NoblePad, we rely on the Oracle signature for FinishEscrow
+      // For Belgrave, we rely on the Oracle signature for FinishEscrow
     }
 
     const created = await sdk.payload?.create(payload as any)
@@ -52,8 +52,8 @@ export class XRPL_Escrow_Handler {
   async finishEscrow(sender: string, sequence: number, userAddress: string) {
     const sdk = (xamanService as any).getSdk()
     if (!sdk) {
-        console.log('Simulation: Finishing Escrow', sequence)
-        return { mock: true, uuid: 'mock-finish-' + Date.now() }
+      console.log('Simulation: Finishing Escrow', sequence)
+      return { mock: true, uuid: 'mock-finish-' + Date.now() }
     }
 
     const payload = {

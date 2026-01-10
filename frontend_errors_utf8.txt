@@ -1,0 +1,50 @@
+﻿src/components/debug/ManualMetaMaskConnector.tsx(24,32): error TS18046: 'window.ethereum.request' is of type 'unknown'.
+src/components/debug/WalletDetector.tsx(21,38): error TS2339: Property 'length' does not exist on type '{}'.
+src/components/providers/UnifiedWalletProvider.tsx(33,65): error TS2304: Cannot find name 'ReactNode'.
+src/components/ui/ConnectKitButton.tsx(3,34): error TS2307: Cannot find module 'connectkit' or its corresponding type declarations.
+src/components/ui/ConnectKitButton.tsx(11,11): error TS7031: Binding element 'isConnected' implicitly has an 'any' type.
+src/components/ui/ConnectKitButton.tsx(11,24): error TS7031: Binding element 'isConnecting' implicitly has an 'any' type.
+src/components/ui/ConnectKitButton.tsx(11,38): error TS7031: Binding element 'show' implicitly has an 'any' type.
+src/components/ui/ConnectKitButton.tsx(11,44): error TS7031: Binding element 'hide' implicitly has an 'any' type.
+src/components/ui/ConnectKitButton.tsx(11,50): error TS7031: Binding element 'address' implicitly has an 'any' type.
+src/components/ui/ConnectKitButton.tsx(11,59): error TS7031: Binding element 'ensName' implicitly has an 'any' type.
+src/components/ui/ConnectKitButton.tsx(11,68): error TS7031: Binding element 'chain' implicitly has an 'any' type.
+src/components/ui/SimpleWalletConnection.tsx(4,24): error TS1149: File name 'C:/Users/aboes/noblepad/src/components/ui/button.tsx' differs from already included file name 'C:/Users/aboes/noblepad/src/components/ui/Button.tsx' only in casing.
+  The file is in the program because:
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/wallet/XamanLoginModal.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/ui/WalletConnection.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/sections/HeroSection.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/presale/PresaleCard.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/sections/PresalePreview.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/admin/AdminPresaleReview.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/admin/AdminNavigation.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/app/agent-monitor/page.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/create/CreatePresaleForm.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/create/steps/MilestoneTemplateStep.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/create/steps/PresaleSetupStep.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/create/steps/SecurityReviewStep.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/test/PresaleCreationTest.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/app/create-token/page.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/dashboard/CreatorDashboard.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/app/dashboard/page.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/debug/ManualMetaMaskConnector.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/debug/WalletDetector.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/presale/MilestoneDashboard.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/presale/PresaleComments.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/presale/PresaleCommitment.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/presale/PresaleDetail.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/presale/PresaleInfo.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/presale/QuestSection.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/app/presale/[id]/page.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/presale/PresaleFilters.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/app/real-progress/page.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/app/staking/page.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/locks/CreateTokenLock.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/locks/TokenLockManager.tsx'
+    Matched by include pattern '**/*.tsx' in 'C:/Users/aboes/noblepad/tsconfig.json'
+    Imported via './button' from file 'C:/Users/aboes/noblepad/src/components/ui/SimpleWalletConnection.tsx'
+    Imported via '@/components/ui/Button' from file 'C:/Users/aboes/noblepad/src/components/web3/ConnectWallet.tsx'
+src/components/ui/SimpleWalletConnection.tsx(5,31): error TS2307: Cannot find module '@/components/providers/SimpleWeb3Provider' or its corresponding type declarations.
+src/components/web3/ConnectWallet.tsx(68,49): error TS2339: Property 'message' does not exist on type '{}'.
+src/lib/api.ts(24,5): error TS7053: Element implicitly has an 'any' type because expression of type '"Authorization"' can't be used to index type '{ 'Content-Type': string; apikey: string; } | { append(name: string, value: string): void; append(name: string, value: string): void; delete(name: string): void; delete(name: string): void; get(name: string): string | null; get(name: string): string | null; ... 9 more ...; apikey: string; } | { ...; } | { ...; }'.
+  Property 'Authorization' does not exist on type '{ 'Content-Type': string; apikey: string; } | { append(name: string, value: string): void; append(name: string, value: string): void; delete(name: string): void; delete(name: string): void; get(name: string): string | null; get(name: string): string | null; ... 9 more ...; apikey: string; } | { ...; } | { ...; }'.

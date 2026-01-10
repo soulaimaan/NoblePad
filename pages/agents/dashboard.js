@@ -4,12 +4,12 @@ import dynamic from 'next/dynamic';
 
 // Import the dashboard component with no SSR
 const DynamicAgentsDashboard = dynamic(
-  () => import('../../src/components/NoblepadDashboard'),
-  { 
+  () => import('../../src/components/BelgraveDashboard'),
+  {
     ssr: false,
     loading: () => (
       <div className="flex items-center justify-center min-h-[80vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#D4AF37]"></div>
       </div>
     )
   }
@@ -26,7 +26,7 @@ function ClientOnlyDashboard() {
   if (!mounted) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#D4AF37]"></div>
       </div>
     );
   }
@@ -46,16 +46,16 @@ export default function AgentsDashboardPage() {
   if (!isClient) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#D4AF37]"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 font-sans">
       <Head>
-        <title>Agent Dashboard | NoblePad</title>
-        <meta name="description" content="Monitor and manage NoblePad agents" />
+        <title>Agent Dashboard | Belgrave System</title>
+        <meta name="description" content="Monitor and manage Belgrave System agents" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -63,7 +63,7 @@ export default function AgentsDashboardPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Agent Monitoring Dashboard</h1>
           <p className="mt-2 text-gray-600">
-            Real-time status and metrics for NoblePad agents
+            Real-time status and metrics for Belgrave System agents
           </p>
         </div>
 
@@ -72,7 +72,7 @@ export default function AgentsDashboardPage() {
 
       <footer className="mt-12 border-t border-gray-200 py-6">
         <div className="container mx-auto px-4 text-center text-gray-500 text-sm">
-          <p>NoblePad Agent Monitoring System</p>
+          <p>Belgrave System Agent Monitoring</p>
           <p className="mt-1">Last updated: {new Date().toLocaleString()}</p>
         </div>
       </footer>

@@ -46,10 +46,10 @@ export function PresaleCommitment({ presale }: PresaleCommitmentProps) {
       checkTL()
     }
   }, [isMounted, address, chainType, presale.tokenIssuer, presale.tokenCurrency])
-  
+
   const maxCommitment = parseFloat(presale?.maxContribution?.split(' ')[0] || '0')
   const minCommitment = parseFloat(presale?.minContribution?.split(' ')[0] || '0')
-  
+
   const handleCreateTrustLine = async () => {
     if (!address || !presale.tokenIssuer || !presale.tokenCurrency) return
     setLoading(true)
@@ -57,7 +57,7 @@ export function PresaleCommitment({ presale }: PresaleCommitmentProps) {
       const result = await xrplPresaleService.ensureTrustLine(address, presale.tokenIssuer, presale.tokenCurrency)
       if (result && (result as any).uuid) {
         alert('TrustLine request sent! Please sign it in Xaman.')
-        
+
         // Poll for TrustLine existence
         let attempts = 0
         const pollInterval = setInterval(async () => {
@@ -103,23 +103,23 @@ export function PresaleCommitment({ presale }: PresaleCommitmentProps) {
     }
 
     setLoading(true)
-    
+
     try {
       if (chainType === 'xrpl') {
         // Step 1: Ensure TrustLine exists
         console.log('Checking TrustLine before contribution...')
         const exists = await xrplPresaleService.checkTrustLine(address, presale.tokenIssuer, presale.tokenCurrency)
-        
+
         if (!exists) {
           const confirmTL = confirm(`To receive ${presale.tokenSymbol} tokens, you need to set a TrustLine first. Would you like to create it now?`)
           if (confirmTL) {
             const tlResult = await xrplPresaleService.ensureTrustLine(address, presale.tokenIssuer, presale.tokenCurrency)
             if (tlResult) {
-               alert('TrustLine request sent to Xaman. After signing, wait a few seconds and then click "Commit to Presale" again.')
-               // We don't continue to contribution automatically because TL takes time to settle on-ledger
-               setHasTrustLine(false) // Trigger refreshing logic
-               setLoading(false)
-               return
+              alert('TrustLine request sent to Xaman. After signing, wait a few seconds and then click "Commit to Presale" again.')
+              // We don't continue to contribution automatically because TL takes time to settle on-ledger
+              setHasTrustLine(false) // Trigger refreshing logic
+              setLoading(false)
+              return
             }
           } else {
             setLoading(false)
@@ -134,35 +134,35 @@ export function PresaleCommitment({ presale }: PresaleCommitmentProps) {
       } else {
         // EVM implementation logic
         const pName = String(presale.name || presale.project_name || '').toLowerCase()
-        const isLocalTest = pName.includes('noble test')
+        const isLocalTest = pName.includes('belgrave test')
         const chainId = isLocalTest ? 31337 :
-                      presale.chain_id || 
-                      (String(presale.chain).toUpperCase() === 'LOCALHOST' ? 31337 : 
-                       String(presale.chain).toUpperCase() === 'ETH' ? 1 : 56)
-        
+          presale.chain_id ||
+          (String(presale.chain).toUpperCase() === 'LOCALHOST' ? 31337 :
+            String(presale.chain).toUpperCase() === 'ETH' ? 1 : 56)
+
         const result = await presaleService.contributeToPresale(
-            presale.contractAddress.trim(),
-            commitAmount,
-            chainId
+          presale.contractAddress.trim(),
+          commitAmount,
+          chainId
         )
-        
+
         if (!result.success) {
-            throw new Error(result.error || 'Blockchain transaction failed')
+          throw new Error(result.error || 'Blockchain transaction failed')
         }
 
         // Record in DB
         const tokenAllocation = (parseFloat(commitAmount) * (presale.exchangeRate || 1000)).toString()
         await presaleService.recordContributionInDatabase(
-            presale.id,
-            address,
-            commitAmount,
-            result.transactionHash!,
-            tokenAllocation
+          presale.id,
+          address,
+          commitAmount,
+          result.transactionHash!,
+          tokenAllocation
         )
 
         alert(`🎉 Contribution successful!\nTransaction: ${result.transactionHash}`)
       }
-      
+
       setCommitAmount('')
     } catch (error: any) {
       console.error('Commitment failed:', error)
@@ -192,14 +192,14 @@ export function PresaleCommitment({ presale }: PresaleCommitmentProps) {
   return (
     <div className="noble-card">
       <h3 className="text-xl font-semibold text-noble-gold mb-6">Join Presale</h3>
-      
+
       {/* Real Tier Info */}
       {isConnected && (
         <div className="mb-6 p-4 bg-noble-gray/50 rounded-lg">
           {isTierLoading ? (
             <div className="flex items-center space-x-2 text-noble-gold/50">
-                <Loader className="animate-spin" size={16} />
-                <span className="text-sm">Loading Tier Status...</span>
+              <Loader className="animate-spin" size={16} />
+              <span className="text-sm">Loading Tier Status...</span>
             </div>
           ) : (
             <>
@@ -209,7 +209,7 @@ export function PresaleCommitment({ presale }: PresaleCommitmentProps) {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-noble-gold/70">Total Staked</span>
-                <span className="text-noble-gold">{totalStaked.toLocaleString()} {chainType === 'xrpl' ? 'BLGRV' : 'NPAD'}</span>
+                <span className="text-noble-gold">{totalStaked.toLocaleString()} {chainType === 'xrpl' ? 'BLGRV' : 'BELGRAVE'}</span>
               </div>
             </>
           )}
@@ -223,11 +223,11 @@ export function PresaleCommitment({ presale }: PresaleCommitmentProps) {
             <AlertCircle size={16} className="mt-0.5 flex-shrink-0" />
             <span>TrustLine required to receive <b>{presale.tokenSymbol}</b> after presale ends.</span>
           </div>
-          <Button 
-            onClick={handleCreateTrustLine} 
+          <Button
+            onClick={handleCreateTrustLine}
             disabled={loading}
-            variant="outline" 
-            size="sm" 
+            variant="outline"
+            size="sm"
             className="w-full"
           >
             {loading ? 'Creating...' : 'Set TrustLine'}
@@ -281,10 +281,10 @@ export function PresaleCommitment({ presale }: PresaleCommitmentProps) {
           disabled={!isConnected || !commitAmount || loading || presale.status !== 'live'}
           className="w-full"
         >
-          {loading ? 'Processing...' : 
-           !isConnected ? 'Connect Wallet' :
-           presale.status !== 'live' ? 'Presale Not Live' :
-           'Commit to Presale'}
+          {loading ? 'Processing...' :
+            !isConnected ? 'Connect Wallet' :
+              presale.status !== 'live' ? 'Presale Not Live' :
+                'Commit to Presale'}
         </Button>
       </div>
 
@@ -314,7 +314,7 @@ export function PresaleCommitment({ presale }: PresaleCommitmentProps) {
             </div>
             <span className="text-noble-gold">{presale.tokenPrice}</span>
           </div>
-          
+
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center space-x-2">
               <Shield size={16} className="text-noble-gold/60" />
@@ -322,7 +322,7 @@ export function PresaleCommitment({ presale }: PresaleCommitmentProps) {
             </div>
             <span className="text-noble-gold">{presale.liquidityLock}</span>
           </div>
-          
+
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center space-x-2">
               <Coins size={16} className="text-noble-gold/60" />

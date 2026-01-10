@@ -19,7 +19,7 @@ export function FeaturesSection() {
     {
       icon: Users,
       title: "Tier-Based Allocations",
-      description: "Stake $NPAD tokens to unlock Bronze, Silver, Gold tiers with guaranteed allocation limits.",
+      description: "Stake $BELGRAVE tokens to unlock Bronze, Silver, Gold tiers with guaranteed allocation limits.",
       color: "text-noble-gold"
     },
     {
@@ -50,7 +50,7 @@ export function FeaturesSection() {
             Built for Maximum Trust
           </h2>
           <p className="text-xl text-noble-gold/70 max-w-3xl mx-auto">
-            NoblePad implements industry-leading security measures and anti-rug protection 
+            The Belgrave System implements industry-leading security measures and anti-rug protection
             to create the safest launchpad experience for both projects and investors.
           </p>
         </div>
@@ -59,8 +59,8 @@ export function FeaturesSection() {
           {features.map((feature, index) => {
             const IconComponent = feature.icon
             return (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="noble-card hover:shadow-xl hover:shadow-noble-gold/10 transition-all duration-300 group"
               >
                 <div className="flex items-start space-x-4">

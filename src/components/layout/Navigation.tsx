@@ -33,12 +33,12 @@ export function Navigation() {
           <Link href="/" className="flex items-center space-x-3 mr-4 shrink-0">
             <Image
               src="/logo.jpg"
-              alt="NoblePad Logo"
+              alt="Belgrave System Logo"
               width={40}
               height={40}
               className="w-10 h-10 object-contain"
             />
-            <span className="hidden lg:inline text-xl font-bold noble-text-gradient">NoblePad</span>
+            <span className="hidden lg:inline text-xl font-bold noble-text-gradient">Belgrave System</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -74,13 +74,12 @@ export function Navigation() {
         </div>
 
         {/* Mobile Navigation */}
-        <div 
+        <div
           id="mobile-navigation"
-          className={`md:hidden fixed left-0 right-0 top-16 z-40 transition-all duration-300 ease-in-out ${
-            isMenuOpen 
-              ? 'opacity-100 translate-y-0 pointer-events-auto' 
+          className={`md:hidden fixed left-0 right-0 top-16 z-40 transition-all duration-300 ease-in-out ${isMenuOpen
+              ? 'opacity-100 translate-y-0 pointer-events-auto'
               : 'opacity-0 -translate-y-2 pointer-events-none'
-          }`}
+            }`}
         >
           <div className="mx-4 mt-2 bg-noble-gray/95 border border-noble-gold/20 rounded-xl shadow-2xl overflow-hidden"
             style={{ backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>

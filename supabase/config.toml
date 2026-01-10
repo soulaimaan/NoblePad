@@ -14,8 +14,6 @@ site_url = "http://localhost:3000"
 additional_redirect_urls = ["https://noblepad.app"]
 jwt_expiry = 3600
 enable_signup = true
-enable_email_confirmations = false
-enable_sms_confirmations = false
 
 [auth.email]
 enable_signup = true
@@ -38,45 +36,33 @@ port = 54322
 enabled = true
 port = 54323
 
+# Edge Functions Configuration (Global defaults)
 [functions]
-verify_jwt = true
 
-[edge_functions]
-verify_jwt = true
-
-# Edge Functions for Three-Tier Architecture
-[[functions]]
-name = "get-presales"
+[functions.get-presales]
 verify_jwt = false
 
-[[functions]]
-name = "get-presale-details" 
-verify_jwt = false
-
-[[functions]]
-name = "create-presale"
+[functions.get-presale-details]
 verify_jwt = true
 
-[[functions]]
-name = "commit-to-presale"
+[functions.create-presale]
 verify_jwt = true
 
-[[functions]]
-name = "user-tier"
+[functions.commit-to-presale]
 verify_jwt = true
 
-[[functions]]
-name = "admin-actions"
+[functions.user-tier]
+verify_jwt = true
+
+[functions.admin-actions]
 verify_jwt = true
 
 [storage]
 enabled = true
 file_size_limit = "50MB"
-image_transformation_enabled = true
 
 # Storage bucket for KYC documents
-[[storage.buckets]]
-name = "kyc-documents"
+[storage.buckets.kyc-documents]
 public = false
 file_size_limit = "10MB"
 allowed_mime_types = ["application/pdf", "image/jpeg", "image/png"]
