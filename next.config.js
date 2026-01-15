@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    unoptimized: true,
     domains: ['lordbelgrave.eu'],
     formats: ['image/webp', 'image/avif'],
     minimumCacheTTL: 31536000,
@@ -37,6 +38,8 @@ const nextConfig = {
     };
     return config;
   },
+
+  // output: 'export', // Commented out to restore SSR/API support
 
   // Security headers
   async headers() {
