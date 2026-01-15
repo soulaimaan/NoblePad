@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
- * @title NoblePadVesting
+ * @title BelgraveVesting
  * @notice Secure linear vesting contract with cliff and duration.
  */
 contract Vesting is Ownable, ReentrancyGuard {

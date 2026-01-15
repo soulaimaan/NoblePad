@@ -21,7 +21,8 @@ export default function StakingPage() {
 
         setIsLocking(true)
         try {
-            const txjson = belgraveService.constructLockPayload(address, Number(amount), 7776000)
+            // Updated to 6 months (15,555,200 seconds) as per Roadmap
+            const txjson = belgraveService.constructLockPayload(address, Number(amount), 15552000)
             const result = await requestSignature(txjson)
             console.log("Xaman Sign Result:", result)
 
@@ -131,55 +132,37 @@ export default function StakingPage() {
 
                     <div className="space-y-4">
                         <div>
-                            {chainType === 'xrpl' ? (
-                                <div className="p-6 bg-noble-dark-gray/50 rounded-xl border border-noble-gold/20 text-center">
-                                    <h3 className="text-xl font-bold text-noble-gold mb-2">XRPL Staking is currently "Hold-to-Earn"</h3>
-                                    <p className="text-gray-300 mb-4">
-                                        Due to pending Mainnet amendments, native token locking is temporarily unavailable.
-                                        Simply holding <strong>BELGRAVE</strong> in your wallet automatically qualifies you for Tiers.
-                                    </p>
-                                    <div className="flex justify-center mb-6">
-                                        <div className="px-4 py-2 bg-noble-gold/10 rounded-lg border border-noble-gold/30">
-                                            <span className="text-sm text-gray-400">Your Qualifying Balance:</span>
-                                            <div className="text-2xl font-bold text-white mt-1">{totalStaked.toLocaleString()} BELGRAVE</div>
-                                        </div>
-                                    </div>
-                                    <Button
-                                        className="w-full h-12 text-lg bg-noble-gold text-black hover:bg-noble-gold/90 font-bold"
-                                        onClick={() => refresh()}
-                                    >
-                                        Verify Tier Status
-                                    </Button>
+                            <label className="block text-sm text-noble-gold/60 mb-2">
+                                Amount to {chainType === 'xrpl' ? 'Lock' : 'Stake'} (BELGRAVE)
+                            </label>
+                            <input
+                                type="number"
+                                value={amount}
+                                onChange={(e) => setAmount(e.target.value)}
+                                className="w-full bg-black/50 border border-noble-gold/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-noble-gold/50"
+                                placeholder="0.00"
+                            />
 
-                                    <p className="text-xs text-gray-500 mt-4">
-                                        *Native Escrow Locking will be enabled once the XRPL 'TokenEscrow' amendment is live.
-                                    </p>
-                                </div>
-                            ) : (
-                                <>
-                                    <label className="block text-sm text-noble-gold/60 mb-2">
-                                        Amount to Stake (BELGRAVE)
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={amount}
-                                        onChange={(e) => setAmount(e.target.value)}
-                                        className="w-full bg-black/50 border border-noble-gold/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-noble-gold/50"
-                                        placeholder="0.00"
-                                    />
+                            <div className="bg-blue-500/10 p-4 rounded-lg text-sm text-blue-300 mt-4 mb-4">
+                                {chainType === 'xrpl' ? (
+                                    <>ℹ️ Tokens will be locked in a <strong>6-month Escrow</strong> to qualify for tiers.</>
+                                ) : (
+                                    <>ℹ️ Tokens will be staked in the smart contract to qualify for tiers.</>
+                                )}
+                            </div>
 
-                                    <div className="bg-blue-500/10 p-4 rounded-lg text-sm text-blue-300 mt-4 mb-4">
-                                        ℹ️ Tokens will be staked in the smart contract to qualify for tiers.
-                                    </div>
+                            <Button
+                                className="w-full h-12 text-lg bg-noble-gold text-black hover:bg-noble-gold/90 font-bold"
+                                onClick={chainType === 'xrpl' ? handleLock : handleStakeEVM}
+                                disabled={isLocking}
+                            >
+                                {isLocking ? 'Processing...' : chainType === 'xrpl' ? 'Lock BELGRAVE' : 'Stake BELGRAVE'}
+                            </Button>
 
-                                    <Button
-                                        className="w-full h-12 text-lg bg-noble-gold text-black hover:bg-noble-gold/90 font-bold"
-                                        onClick={handleStakeEVM}
-                                        disabled={isLocking}
-                                    >
-                                        {isLocking ? 'Processing...' : 'Stake BELGRAVE'}
-                                    </Button>
-                                </>
+                            {chainType === 'xrpl' && (
+                                <p className="text-xs text-gray-500 mt-4 text-center">
+                                    *Escrow locking cryptographically secures your tokens for 180 days (6 months).
+                                </p>
                             )}
                         </div>
                     </div>

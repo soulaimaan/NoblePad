@@ -74,8 +74,8 @@ async function main() {
   const tokenLockAddr = await tokenLock.getAddress();
   console.log(`   ✅ TokenLock: ${tokenLockAddr}`);
 
-  // 2. NoblePadToken (SKIPPED)
-  console.log('\n2️⃣ NoblePadToken: SKIPPED (XRPL Integration)');
+  // 2. BelgraveToken (SKIPPED)
+  console.log('\n2️⃣ BelgraveToken: SKIPPED (XRPL Integration)');
 
   // 3. Deploy PresaleFactory
   console.log('\n3️⃣ Deploying PresaleFactory...');
@@ -86,8 +86,8 @@ async function main() {
   const presaleFactoryAddr = await presaleFactory.getAddress();
   console.log(`   ✅ PresaleFactory: ${presaleFactoryAddr}`);
 
-  // 4. NPADStaking (SKIPPED)
-  console.log('\n4️⃣ NPADStaking: SKIPPED (XRPL Staking)');
+  // 4. BelgraveStaking (SKIPPED)
+  console.log('\n4️⃣ BelgraveStaking: SKIPPED (XRPL Staking)');
 
   // Save Deployment Data
   const deploymentPath = path.join(__dirname, `../deployment-${networkName}.json`);

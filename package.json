@@ -22,7 +22,7 @@
     "analyze": "cross-env ANALYZE=true next build",
     "deploy:contracts": "hardhat run scripts/deploy-greeter.js --network sepolia",
     "deploy:ethers": "node scripts/deploy-with-ethers.js",
-    "marketing": "node agents/marketing-agent-enhanced.cjs"
+    "marketing": "node start-marketing.cjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.0.5",

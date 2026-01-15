@@ -12,8 +12,6 @@
     "deploy:polygon": "node scripts/deploy-mainnet.js --network polygon",
     "deploy:arbitrum": "node scripts/deploy-mainnet.js --network arbitrum",
     "deploy:base": "node scripts/deploy-mainnet.js --network base",
-    "deploy:npad-staking": "node scripts/deploy-npad-staking.js",
-    "send-npad": "node scripts/transfer-test-tokens.js",
     "deploy:local": "hardhat run scripts/deploy.js --network localhost"
   },
   "keywords": [],
@@ -31,7 +29,7 @@
     "merkletreejs": "^0.6.0"
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-verify": "^3.0.8",
+    "@nomicfoundation/hardhat-verify": "^2.0.0",
     "hardhat": "^2.22.17",
     "mocha": "^11.7.5",
     "ts-node": "^10.9.2",

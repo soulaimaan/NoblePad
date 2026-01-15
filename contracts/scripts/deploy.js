@@ -3,13 +3,13 @@ import * as fs from 'fs';
 
 async function main() {
   console.log('Deploying NoblePad contracts...');
-  
+
   // Connect to local Hardhat network
   const provider = new ethers.JsonRpcProvider('http://127.0.0.1:8545');
   const signer = new ethers.Wallet('0xac0974bec39a17e36ba4a6b4d238ff944bacb476cbc1c22a0d13a1e7aeda585b', provider);
-  
+
   console.log(`Deploying contracts with account: ${signer.address}`);
-  
+
   // Deploy TokenLock
   console.log('\n1. Deploying TokenLock...');
   const TokenLockABI = JSON.parse(fs.readFileSync('artifacts/contracts/TokenLock.sol/TokenLock.json', 'utf8')).abi;
@@ -19,7 +19,17 @@ async function main() {
   await tokenLock.waitForDeployment?.();
   const tokenLockAddr = await tokenLock.getAddress?.() || tokenLock.address;
   console.log(`✓ TokenLock deployed at: ${tokenLockAddr}`);
-  
+
+  // Deploy BelgraveToken
+  console.log('\n1.5. Deploying BelgraveToken...');
+  const BelgraveTokenABI = JSON.parse(fs.readFileSync('artifacts/contracts/BelgraveToken.sol/BelgraveToken.json', 'utf8')).abi;
+  const BelgraveTokenBytecode = JSON.parse(fs.readFileSync('artifacts/contracts/BelgraveToken.sol/BelgraveToken.json', 'utf8')).bytecode;
+  const BelgraveTokenFactory = new ethers.ContractFactory(BelgraveTokenABI, BelgraveTokenBytecode, signer);
+  const belgraveToken = await BelgraveTokenFactory.deploy(signer.address);
+  await belgraveToken.waitForDeployment?.();
+  const belgraveTokenAddr = await belgraveToken.getAddress?.() || belgraveToken.address;
+  console.log(`✓ BelgraveToken deployed at: ${belgraveTokenAddr}`);
+
   // Deploy PresaleFactory
   console.log('\n2. Deploying PresaleFactory...');
   const PresaleFactoryABI = JSON.parse(fs.readFileSync('artifacts/contracts/PresaleFactory.sol/PresaleFactory.json', 'utf8')).abi;
@@ -29,7 +39,7 @@ async function main() {
   await presaleFactory.waitForDeployment?.();
   const presaleFactoryAddr = await presaleFactory.getAddress?.() || presaleFactory.address;
   console.log(`✓ PresaleFactory deployed at: ${presaleFactoryAddr}`);
-  
+
   // Deploy Vesting
   console.log('\n3. Deploying Vesting...');
   const VestingABI = JSON.parse(fs.readFileSync('artifacts/contracts/Vesting.sol/Vesting.json', 'utf8')).abi;
@@ -39,7 +49,7 @@ async function main() {
   await vesting.waitForDeployment?.();
   const vestingAddr = await vesting.getAddress?.() || vesting.address;
   console.log(`✓ Vesting deployed at: ${vestingAddr}`);
-  
+
   // Deploy TreasuryTimelock
   console.log('\n4. Deploying TreasuryTimelock...');
   const TreasuryTimelockABI = JSON.parse(fs.readFileSync('artifacts/contracts/TreasuryTimelock.sol/TreasuryTimelock.json', 'utf8')).abi;
@@ -49,7 +59,7 @@ async function main() {
   await treasuryTimelock.waitForDeployment?.();
   const treasuryTimelockAddr = await treasuryTimelock.getAddress?.() || treasuryTimelock.address;
   console.log(`✓ TreasuryTimelock deployed at: ${treasuryTimelockAddr}`);
-  
+
   // Verify all contracts deployed
   console.log('\n✅ All contracts deployed successfully!');
   console.log('\nDeployment Summary:');
@@ -57,7 +67,7 @@ async function main() {
   console.log(`  PresaleFactory:   ${presaleFactoryAddr}`);
   console.log(`  Vesting:          ${vestingAddr}`);
   console.log(`  TreasuryTimelock: ${treasuryTimelockAddr}`);
-  
+
   // Save deployment info
   const deploymentInfo = {
     network: 'hardhat',
@@ -65,12 +75,13 @@ async function main() {
     deployer: signer.address,
     contracts: {
       TokenLock: tokenLockAddr,
+      BelgraveToken: belgraveTokenAddr,
       PresaleFactory: presaleFactoryAddr,
       Vesting: vestingAddr,
       TreasuryTimelock: treasuryTimelockAddr
     }
   };
-  
+
   console.log('\nDeployment Info (save for later):');
   console.log(JSON.stringify(deploymentInfo, null, 2));
 }

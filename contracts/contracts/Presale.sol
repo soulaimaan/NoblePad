@@ -21,7 +21,7 @@ interface IUniswapV2Router02 {
 }
 
 /**
- * @title NoblePadPresale
+ * @title BelgravePresale
  * @notice Features:
  *  - Tier-Based Allocations (Merkle Proof)
  *  - Deterministic Scaling & Roll-Down (Gold->Silver->Bronze)

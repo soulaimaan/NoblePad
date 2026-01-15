@@ -1,4 +1,4 @@
-# NoblePad: The Investor & Developer "Golden Pocket" Manual
+﻿# NoblePad: The Investor & Developer "Golden Pocket" Manual
 
 ## Welcome to NoblePad
 Welcome to **NoblePad**, the premier decentralized launchpad designed for the **future of investing**. Whether you are an **Investor** looking for the next 100x gem or a **Developer** seeking a secure, rug-proof way to launch your token, this platform is built for you.
@@ -14,9 +14,9 @@ NoblePad stands out by offering **Multi-Chain Support** (Ethereum, BSC, Polygon,
 *   **What you can do:** Stake your **BELGRAVE** tokens to earn "Tier Status".
 *   **Why?** Higher tiers mean you can buy *more* tokens in a hot presale before they sell out.
 *   **Tiers:**
-    *   🥇 **Gold (100k BELGRAVE):** Guaranteed allocation, lowest fees, early access.
-    *   🥈 **Silver (50k BELGRAVE):** High allocation, community voting rights.
-    *   🥉 **Bronze (10k BELGRAVE):** Lottery-based allocation.
+    *   🥇 **Gold (175M BELGRAVE):** Guaranteed allocation, lowest fees, early access.
+    *   🥈 **Silver (87,5M BELGRAVE):** High allocation, community voting rights.
+    *   🥉 **Bronze (17,5M BELGRAVE):** Lottery-based allocation.
 *   **Example:** You have 60,000 BELGRAVE. You stake 50,000 to become a **Silver Member**. Now, when the "Next Big AI Coin" launches, you have a reserved spot to buy $500 worth of tokens, while non-stakers have to fight for scraps.
 
 ### 2. Finding Presales (`/presales`)

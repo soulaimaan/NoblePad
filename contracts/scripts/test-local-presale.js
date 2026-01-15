@@ -9,17 +9,17 @@ async function main() {
 
   const [deployer] = await hre.ethers.getSigners();
   const localhost = JSON.parse(fs.readFileSync(path.join(__dirname, '../contracts/deployment-localhost.json')));
-  
+
   const factoryAddr = localhost.contracts.PresaleFactory;
-  const tokenAddr = localhost.contracts.NoblePadToken;
+  const tokenAddr = localhost.contracts.BelgraveToken;
 
   const Factory = await hre.ethers.getContractAt("PresaleFactory", factoryAddr);
-  
+
   // Settings for the test presale
   const now = Math.floor(Date.now() / 1000);
   const startTime = now + 60; // Starts in 1 min
   const endTime = now + 86400; // Lasts 1 day
-  
+
   console.log("📝 Creating Presale via Factory...");
   const tx = await Factory.createPresale(
     tokenAddr,
@@ -34,12 +34,12 @@ async function main() {
   );
 
   const receipt = await tx.wait();
-  
+
   // Find the PresaleCreated event to get the address
   const event = receipt.logs.find(log => {
-      try {
-          return Factory.interface.parseLog(log).name === 'PresaleCreated';
-      } catch (e) { return false; }
+    try {
+      return Factory.interface.parseLog(log).name === 'PresaleCreated';
+    } catch (e) { return false; }
   });
 
   const presaleAddress = Factory.interface.parseLog(event).args.presaleAddress;
@@ -54,12 +54,12 @@ async function main() {
   console.log("💾 Updating Supabase 'Noble Test' with new local address...");
   const { error } = await supabase
     .from('presales')
-    .update({ 
-        contract_address: presaleAddress,
-        chain: 'ETH', // MetaMask Localhost usually identifies as Ethereum/31337
-        status: 'live',
-        start_date: new Date(startTime * 1000).toISOString(),
-        end_date: new Date(endTime * 1000).toISOString()
+    .update({
+      contract_address: presaleAddress,
+      chain: 'ETH', // MetaMask Localhost usually identifies as Ethereum/31337
+      status: 'live',
+      start_date: new Date(startTime * 1000).toISOString(),
+      end_date: new Date(endTime * 1000).toISOString()
     })
     .eq('project_name', 'Noble Test');
 

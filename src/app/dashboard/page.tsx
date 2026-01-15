@@ -1,7 +1,7 @@
 'use client'
 
 import { CreatorDashboard } from '@/components/dashboard/CreatorDashboard'
-import { TIER_THRESHOLDS, useTier } from '@/components/providers/TierProvider'
+import { useTier } from '@/components/providers/TierProvider'
 import { AIScoreBadge } from '@/components/ui/AIScoreBadge'
 import { Button } from '@/components/ui/Button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
@@ -230,18 +230,18 @@ export default function DashboardPage() {
                                                 <div className="mt-6">
                                                     <div className="flex justify-between text-sm text-noble-gold/70 mb-2">
                                                         <span>Progress to Next Tier</span>
-                                                        <span>{Math.min(100, (totalStaked / TIER_THRESHOLDS.GOLD) * 100).toFixed(1)}%</span>
+                                                        <span>{Math.min(100, (totalStaked / TIER_CONFIG.GOLD.threshold) * 100).toFixed(1)}%</span>
                                                     </div>
                                                     <div className="w-full bg-noble-gray rounded-full h-2">
                                                         <div
                                                             className="bg-noble-gold-gradient h-2 rounded-full transition-all duration-500"
                                                             // eslint-disable-next-line react-dom/no-unsafe-inline-style
-                                                            style={{ width: `${Math.min(100, (totalStaked / TIER_THRESHOLDS.GOLD) * 100)}%` }}
+                                                            style={{ width: `${Math.min(100, (totalStaked / TIER_CONFIG.GOLD.threshold) * 100)}%` }}
                                                         />
                                                     </div>
                                                     <div className="flex justify-between text-xs text-noble-gold/60 mt-1">
                                                         <span>0</span>
-                                                        <span>{TIER_THRESHOLDS.GOLD.toLocaleString()}</span>
+                                                        <span>{TIER_CONFIG.GOLD.threshold.toLocaleString()}</span>
                                                     </div>
                                                 </div>
 

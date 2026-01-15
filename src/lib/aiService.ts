@@ -1,5 +1,5 @@
 /**
- * Belgrave AI Scoring Service
+ * Gemini 3 Flash Auditor
  * Provides automated risk assessment and project scoring for presales.
  * In production, this would integrate with Gemini 1.5 Flash for deep analysis.
  */

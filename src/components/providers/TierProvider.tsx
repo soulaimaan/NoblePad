@@ -10,12 +10,7 @@ import { TIER_CONFIG, TierLevel, STAKE_LOCK_PERIOD } from '@/lib/tierConfig'
 export { TIER_CONFIG, type TierLevel, STAKE_LOCK_PERIOD }
 
 
-// Legacy threshold constants for backward compatibility
-export const TIER_THRESHOLDS = {
-    GOLD: TIER_CONFIG.GOLD.threshold,
-    SILVER: TIER_CONFIG.SILVER.threshold,
-    BRONZE: TIER_CONFIG.BRONZE.threshold
-}
+// TIER_THRESHOLDS removed in favor of direct TIER_CONFIG usage
 
 // Lock period imported from config
 
@@ -35,9 +30,9 @@ export function TierProvider({ children }: { children: ReactNode }) {
     const [isLoading, setIsLoading] = useState(false)
 
     const calculateTier = useCallback((amount: number): TierLevel => {
-        if (amount >= TIER_THRESHOLDS.GOLD) return 'GOLD'
-        if (amount >= TIER_THRESHOLDS.SILVER) return 'SILVER'
-        if (amount >= TIER_THRESHOLDS.BRONZE) return 'BRONZE'
+        if (amount >= TIER_CONFIG.GOLD.threshold) return 'GOLD'
+        if (amount >= TIER_CONFIG.SILVER.threshold) return 'SILVER'
+        if (amount >= TIER_CONFIG.BRONZE.threshold) return 'BRONZE'
         return 'NONE'
     }, [])
 
