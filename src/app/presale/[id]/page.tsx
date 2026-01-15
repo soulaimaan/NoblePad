@@ -19,14 +19,6 @@ import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 
-// Static generation for export
-export async function generateStaticParams() {
-  return [
-    { id: '1' },
-    { id: '2' },
-    { id: 'xrpl-test' },
-  ]
-}
 
 export default function PresaleDetailPage() {
   const params = useParams()
