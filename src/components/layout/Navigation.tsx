@@ -6,23 +6,12 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 
-const WalletButton = dynamic(
-  () => import('@/components/ui/WalletConnection').then((mod) => mod.WalletButton),
-  { ssr: false }
-)
 
 export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const navigationItems = [
     { name: 'Home', href: '/' },
-    { name: 'Dashboard', href: '/dashboard' },
-    { name: 'Presales', href: '/presales' },
-    { name: 'Liquidity Locks', href: '/locks' },
-    { name: 'Token Locks', href: '/token-locks' },
-    { name: 'Staking Hub', href: '/staking' },
-    { name: 'Token Factory', href: '/create-token' },
-    { name: 'Create Presale', href: '/create' },
   ]
 
   return (
@@ -54,7 +43,7 @@ export function Navigation() {
             ))}
           </div>
 
-          {/* Right side - Menu button first (mobile only), then wallet */}
+          {/* Right side - Menu button first (mobile only) */}
           <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Mobile menu button - comes BEFORE wallet so it's always visible */}
             <button
@@ -67,9 +56,6 @@ export function Navigation() {
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
-
-            {/* Wallet Connection */}
-            <WalletButton />
           </div>
         </div>
 
@@ -77,8 +63,8 @@ export function Navigation() {
         <div
           id="mobile-navigation"
           className={`md:hidden fixed left-0 right-0 top-16 z-40 transition-all duration-300 ease-in-out ${isMenuOpen
-              ? 'opacity-100 translate-y-0 pointer-events-auto'
-              : 'opacity-0 -translate-y-2 pointer-events-none'
+            ? 'opacity-100 translate-y-0 pointer-events-auto'
+            : 'opacity-0 -translate-y-2 pointer-events-none'
             }`}
         >
           <div className="mx-4 mt-2 bg-noble-gray/95 border border-noble-gold/20 rounded-xl shadow-2xl overflow-hidden"
