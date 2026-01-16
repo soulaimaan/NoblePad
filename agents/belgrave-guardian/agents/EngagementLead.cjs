@@ -30,7 +30,7 @@ class EngagementLead {
         const greetings = [
             "Good morning, Noble Architects! ☕ The sun is up, and Gemini-3 is already scanning for the next generation of safe deployments. Explore more at lordbelgrave.eu",
             "Gm to the future of institutional DeFi! 🚀 Another day to refine the standard. Check out the whitepaper: noblepad-security-whitepaper.netlify.app",
-            "Wake up, Belgrave Stakers! 💎 The markets are moving, but our Logic-Locks are holding firm. Join the discussion on X: x.com/NoblePad"
+            "Wake up, Belgrave Stakers! 💎 The markets are moving, but our Logic-Locks are holding firm. Join the discussion on X: x.com/BelgraveLord"
         ];
         return greetings[Math.floor(Math.random() * greetings.length)];
     }

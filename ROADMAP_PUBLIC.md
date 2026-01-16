@@ -165,7 +165,7 @@ Building the world's most secure, user-friendly, and feature-rich launchpad plat
 **Stay Updated:**
 
 - 📺 **Telegram**: [Join our community](https://t.me/belgravelord)
-- 🐦 **Twitter/X**: [@NoblePad](https://x.com/noblepad)
+- 🐦 **Twitter/X**: [@BelgraveLord](https://x.com/BelgraveLord)
 - 🌐 **Website**: [lordbelgrave.eu](https://lordbelgrave.eu)
 - 🚀 **Launchpad**: [noblepad.netlify.app](https://noblepad.netlify.app)
 

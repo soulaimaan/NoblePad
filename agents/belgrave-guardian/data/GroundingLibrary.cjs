@@ -37,6 +37,6 @@ module.exports = {
         whitepaper: "https://noblepad-security-whitepaper.netlify.app",
         telegram: "https://t.me/belgravelord",
         website: "https://lordbelgrave.eu",
-        twitter: "https://x.com/NoblePad"
+        twitter: "https://x.com/BelgraveLord"
     }
 };

@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "deploy:prod": "npm run build && netlify deploy --prod --dir=.next",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -29,6 +30,7 @@
     "growth:community-test": "node start-community-manager.cjs --test"
   },
   "dependencies": {
+    "@netlify/plugin-nextjs": "^5.15.5",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-progress": "^1.0.3",
     "@radix-ui/react-select": "^2.0.0",
@@ -100,6 +102,7 @@
     "hardhat-deploy": "^1.0.4",
     "hardhat-gas-reporter": "^2.3.0",
     "jest": "^30.2.0",
+    "netlify-cli": "^23.13.3",
     "postcss": "^8.4.33",
     "prettier": "^3.2.4",
     "prettier-plugin-tailwindcss": "^0.5.10",
