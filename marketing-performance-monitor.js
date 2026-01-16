@@ -11,7 +11,7 @@ class MarketingPerformanceMonitor {
       weekly: new Map(),
       monthly: new Map()
     };
-    
+
     this.kpis = {
       engagement: { target: 150, current: 0 },
       reach: { target: 5000, current: 0 },
@@ -20,7 +20,7 @@ class MarketingPerformanceMonitor {
       mentions: { target: 50, current: 0 },
       sentiment: { target: 85, current: 94 } // percentage positive
     };
-    
+
     this.competitorBenchmarks = {
       "pump.fun": { followers: 125000, engagement: 2.3 },
       "pinksale": { followers: 89000, engagement: 1.8 },
@@ -35,7 +35,7 @@ class MarketingPerformanceMonitor {
 
   generatePerformanceDashboard() {
     const today = new Date().toISOString().split('T')[0];
-    
+
     // Simulate realistic engagement metrics
     const todayMetrics = {
       date: today,
@@ -48,11 +48,11 @@ class MarketingPerformanceMonitor {
         likes: Math.floor(Math.random() * 150 + 200),
         replies: Math.floor(Math.random() * 15 + 25)
       },
-      
+
       audience: {
         newFollowers: Math.floor(Math.random() * 20 + 10),
         unfollows: Math.floor(Math.random() * 5 + 2),
-        netGrowth: function() { return this.newFollowers - this.unfollows; },
+        netGrowth: function () { return this.newFollowers - this.unfollows; },
         topCountries: ["United States", "Singapore", "United Kingdom", "Canada", "Germany"],
         demographics: {
           crypto_traders: 45,
@@ -61,7 +61,7 @@ class MarketingPerformanceMonitor {
           enthusiasts: 5
         }
       },
-      
+
       content_performance: {
         best_performing: {
           type: "progress_update",
@@ -69,19 +69,19 @@ class MarketingPerformanceMonitor {
           content: "AI agents development progress"
         },
         worst_performing: {
-          type: "general_insight", 
+          type: "general_insight",
           engagement_rate: 2.1,
           content: "Market analysis post"
         }
       },
-      
+
       trending_topics: [
         { topic: "#DeFi", mentions: 1240, sentiment: "positive" },
         { topic: "#AILaunchpad", mentions: 89, sentiment: "very_positive" },
         { topic: "#NoblePad", mentions: 156, sentiment: "positive" },
         { topic: "#MultiChain", mentions: 445, sentiment: "neutral" }
       ],
-      
+
       competitor_activity: {
         "pump.fun": {
           posts_today: 5,
@@ -103,23 +103,23 @@ class MarketingPerformanceMonitor {
         }
       }
     };
-    
+
     // Add calculated metrics
     todayMetrics.audience.netGrowth = todayMetrics.audience.newFollowers - todayMetrics.audience.unfollows;
     todayMetrics.kpi_status = this.calculateKPIStatus(todayMetrics);
-    
+
     return todayMetrics;
   }
 
   calculateKPIStatus(metrics) {
     const status = {};
-    
+
     // Update current KPI values
     this.kpis.engagement.current = metrics.content.avgEngagement;
     this.kpis.reach.current = metrics.content.totalReach;
     this.kpis.followers.current += metrics.audience.netGrowth;
     this.kpis.clicks.current = metrics.content.clicks;
-    
+
     // Calculate status for each KPI
     Object.entries(this.kpis).forEach(([kpi, data]) => {
       const percentage = (data.current / data.target * 100).toFixed(1);
@@ -127,12 +127,12 @@ class MarketingPerformanceMonitor {
         current: data.current,
         target: data.target,
         percentage: percentage,
-        status: percentage >= 100 ? "✅ Achieved" : 
-                percentage >= 75 ? "🟡 On Track" : 
-                percentage >= 50 ? "🟠 Behind" : "🔴 Critical"
+        status: percentage >= 100 ? "✅ Achieved" :
+          percentage >= 75 ? "🟡 On Track" :
+            percentage >= 50 ? "🟠 Behind" : "🔴 Critical"
       };
     });
-    
+
     return status;
   }
 
@@ -145,7 +145,7 @@ class MarketingPerformanceMonitor {
           content: "🧵 Weekly NoblePad Update Thread - Building the Future of DeFi 🚀\n\nThis week our AI agents hit major milestones while competitors struggled with basic issues. Here's what happened... #NoblePad #DeFi"
         },
         {
-          position: "2/8", 
+          position: "2/8",
           content: "🤖 AI Development Progress:\n\n🎨 Frontend: 67% (+16% this week)\n⚙️ Backend: 34% (+8% this week)\n📜 Contracts: 45% (+25% this week)\n🛡️ Security: 52% (+13% this week)\n🚀 Deploy: 39% (+7% this week)\n\nAutonomous progress never stops! ⚡"
         },
         {
@@ -170,10 +170,10 @@ class MarketingPerformanceMonitor {
         },
         {
           position: "8/8",
-          content: "🚀 The Future is Autonomous:\n\nWhile others promise, we build. While others talk, our AI codes. While others struggle with manual processes, we scale automatically.\n\nJoin the revolution: https://noblepad.com\n\n#DeFi #AILaunchpad #BuildingTheFuture 🌟"
+          content: "🚀 The Future is Autonomous:\n\nWhile others promise, we build. While others talk, our AI codes. While others struggle with manual processes, we scale automatically.\n\nJoin the revolution: https://lordbelgrave.eu\n\n#DeFi #AILaunchpad #BuildingTheFuture 🌟"
         }
       ],
-      
+
       metrics: {
         estimated_reach: "15,000 - 25,000 views",
         expected_engagement: "400 - 600 interactions",
@@ -182,7 +182,7 @@ class MarketingPerformanceMonitor {
         mention_strategy: "No competitor tags (indirect reference only)"
       }
     };
-    
+
     return thread;
   }
 
@@ -192,16 +192,16 @@ class MarketingPerformanceMonitor {
     console.log("=".repeat(70));
     console.log(`📅 Date: ${new Date().toLocaleDateString()}`);
     console.log(`⏰ Last Updated: ${new Date().toLocaleTimeString()}`);
-    
+
     const metrics = this.generatePerformanceDashboard();
-    
+
     // KPI Status
     console.log("\n🎯 KEY PERFORMANCE INDICATORS:");
     console.log("-".repeat(50));
     Object.entries(metrics.kpi_status).forEach(([kpi, data]) => {
       console.log(`${data.status} ${kpi.toUpperCase()}: ${data.current}/${data.target} (${data.percentage}%)`);
     });
-    
+
     // Today's Performance
     console.log("\n📈 TODAY'S PERFORMANCE:");
     console.log("-".repeat(50));
@@ -212,7 +212,7 @@ class MarketingPerformanceMonitor {
     console.log(`🔄 Retweets: ${metrics.content.retweets}`);
     console.log(`❤️ Likes: ${metrics.content.likes}`);
     console.log(`💬 Replies: ${metrics.content.replies}`);
-    
+
     // Audience Growth
     console.log("\n👥 AUDIENCE GROWTH:");
     console.log("-".repeat(50));
@@ -220,20 +220,20 @@ class MarketingPerformanceMonitor {
     console.log(`➖ Unfollows: -${metrics.audience.unfollows}`);
     console.log(`📊 Net Growth: ${metrics.audience.netGrowth >= 0 ? '+' : ''}${metrics.audience.netGrowth}`);
     console.log(`🏆 Total Followers: ${this.kpis.followers.current}`);
-    
+
     // Content Performance
     console.log("\n🎯 CONTENT PERFORMANCE:");
     console.log("-".repeat(50));
     console.log(`🚀 Best: ${metrics.content_performance.best_performing.type} (${metrics.content_performance.best_performing.engagement_rate}%)`);
     console.log(`📉 Needs Work: ${metrics.content_performance.worst_performing.type} (${metrics.content_performance.worst_performing.engagement_rate}%)`);
-    
+
     // Trending Topics
     console.log("\n📊 TRENDING TOPICS:");
     console.log("-".repeat(50));
     metrics.trending_topics.forEach(topic => {
       console.log(`${topic.sentiment === 'very_positive' ? '🟢' : topic.sentiment === 'positive' ? '🔵' : '🟡'} ${topic.topic}: ${topic.mentions} mentions`);
     });
-    
+
     // Competitor Intel
     console.log("\n🎯 COMPETITOR INTELLIGENCE:");
     console.log("-".repeat(50));
@@ -241,22 +241,22 @@ class MarketingPerformanceMonitor {
       console.log(`📊 ${competitor}: ${data.posts_today} posts, ${data.engagement} engagement`);
       console.log(`   ⚠️ Weakness: ${data.weakness_exposed}`);
     });
-    
+
     console.log("=".repeat(70));
   }
 
   async monitorContinuously() {
     this.log("🚀 Starting continuous performance monitoring...");
-    
+
     // Display initial metrics
     this.displayRealTimeMetrics();
-    
+
     // Update every 30 minutes
     setInterval(() => {
       console.clear();
       this.displayRealTimeMetrics();
     }, 30 * 60 * 1000);
-    
+
     // Generate and save daily reports
     setInterval(() => {
       const metrics = this.generatePerformanceDashboard();
@@ -268,17 +268,17 @@ class MarketingPerformanceMonitor {
 
   showWeeklyThread() {
     const thread = this.generateWeeklyThreadPreview();
-    
+
     console.log("\n" + "=".repeat(70));
     console.log("🧵 WEEKLY TWITTER THREAD PREVIEW");
     console.log("=".repeat(70));
-    
+
     thread.tweets.forEach(tweet => {
       console.log(`\n📱 TWEET ${tweet.position}:`);
       console.log("-".repeat(40));
       console.log(tweet.content);
     });
-    
+
     console.log("\n📊 THREAD PERFORMANCE ESTIMATES:");
     console.log("-".repeat(40));
     console.log(`👀 Expected Reach: ${thread.metrics.estimated_reach}`);

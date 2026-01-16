@@ -42,8 +42,8 @@ createAppKit({
   metadata: {
     name: 'Belgrave System',
     description: 'Anti-Rug Launchpad',
-    url: typeof window !== 'undefined' ? window.location.origin : 'https://belgrave.system',
-    icons: ['https://belgrave.system/logo.jpg']
+    url: typeof window !== 'undefined' ? window.location.origin : 'https://lordbelgrave.eu',
+    icons: ['https://lordbelgrave.eu/logo.jpg']
   },
   features: {
     analytics: false, // Disabled for performance

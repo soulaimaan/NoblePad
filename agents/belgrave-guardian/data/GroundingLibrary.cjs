@@ -30,5 +30,13 @@ module.exports = {
         style: "Sophisticated, Macro-economic, Solution-oriented",
         forbidden: ["moon", "gem", "pump", "lambo", "x100", "financial advice", "rug", "rugs", "0x"],
         benchmark: "Grayscale / BlackRock research report tone"
+    },
+    officialLinks: {
+        launchpad: "https://noblepad.netlify.app",
+        trustline: "https://xmagnetic.org/dex/BELGRAVE%2BrMU2jwW88fdwSvRQmPr6CWJtg3xW31SuEG_XRP%2BXRP?network=mainnet&currency=BELGRAVE&issuer=rMU2jwW88fdwSvRQmPr6CWJtg3xW31SuEG",
+        whitepaper: "https://noblepad-security-whitepaper.netlify.app",
+        telegram: "https://t.me/belgravelord",
+        website: "https://lordbelgrave.eu",
+        twitter: "https://x.com/NoblePad"
     }
 };

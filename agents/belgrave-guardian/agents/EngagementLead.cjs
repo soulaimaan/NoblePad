@@ -1,9 +1,8 @@
-/**
- * Agent 7: The Engagement Lead (Community Manager)
- * Task: Keeps the Telegram community active with creative, educational, and interactive content.
- */
+const grounding = require('../data/GroundingLibrary.cjs');
+
 class EngagementLead {
     constructor() {
+        this.links = grounding.officialLinks;
         this.quotes = [
             "NoblePad isn't just a launchpad; it's the security layer the Base/XRPL ecosystem has been waiting for.",
             "In DeFi, transparency is a feature. In NoblePad, it's the foundation.",
@@ -29,29 +28,30 @@ class EngagementLead {
 
     generateMorningGreeting() {
         const greetings = [
-            "Good morning, Noble Architects! ☕ The sun is up, and Gemini-3 is already scanning for the next generation of safe deployments. Let's build something secure today.",
-            "Gm to the future of institutional DeFi! 🚀 Another day to refine the standard. Are we ready to redefine what a launchpad can be?",
-            "Wake up, Belgrave Stakers! 💎 The markets are moving, but our Logic-Locks are holding firm. Let's keep the momentum going."
+            "Good morning, Noble Architects! ☕ The sun is up, and Gemini-3 is already scanning for the next generation of safe deployments. Explore more at lordbelgrave.eu",
+            "Gm to the future of institutional DeFi! 🚀 Another day to refine the standard. Check out the whitepaper: noblepad-security-whitepaper.netlify.app",
+            "Wake up, Belgrave Stakers! 💎 The markets are moving, but our Logic-Locks are holding firm. Join the discussion on X: x.com/NoblePad"
         ];
         return greetings[Math.floor(Math.random() * greetings.length)];
     }
 
     generateContentChunk(type) {
         let content = "";
-        const twitterCTA = "\n\n🚀 *Help us reach our 1,000 member milestone on X!* Follow for real-time alpha: [twitter.com/NoblePad]";
+        const twitterCTA = `\n\n🚀 *Help us reach our 1,000 member milestone on X!* Follow for real-time alpha: [${this.links.twitter}]`;
+        const websiteCTA = `\n\n🌐 *Official Hub:* ${this.links.website}`;
 
         switch (type) {
             case 'quote':
                 content = `📜 *Wisdom of the Day*\n\n"${this.quotes[Math.floor(Math.random() * this.quotes.length)]}"\n\n#NoblePad #Belgrave #DeFi` + twitterCTA;
                 break;
             case 'comparison':
-                content = `⚖️ *The NoblePad Advantage*\n\n${this.comparisons[Math.floor(Math.random() * this.comparisons.length)]}\n\nWe don't just launch; we protect.` + twitterCTA;
+                content = `⚖️ *The NoblePad Advantage*\n\n${this.comparisons[Math.floor(Math.random() * this.comparisons.length)]}\n\nWe don't just launch; we protect.` + websiteCTA + twitterCTA;
                 break;
             case 'question':
                 content = `💬 *Alpha Community Focus*\n\n${this.questions[Math.floor(Math.random() * this.questions.length)]}` + twitterCTA;
                 break;
             case 'growth':
-                content = `🔥 *THE ROAD TO 1,000 ARCHITECTS*\n\nWe are currently at 180 members on X.com. To attract the smart money we need the strength of our community. Join the technical discussion now:\n\n👉 [twitter.com/NoblePad]`;
+                content = `🔥 *THE ROAD TO 1,000 ARCHITECTS*\n\nWe are currently at 180 members on X.com. To attract the smart money we need the strength of our community. Join the technical discussion now:\n\n👉 [${this.links.twitter}]`;
                 break;
             default:
                 content = "Stay tuned for more updates on NoblePad's evolution!";
