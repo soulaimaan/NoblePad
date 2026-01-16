@@ -11,6 +11,8 @@ const Humanizer = require('./agents/Humanizer.cjs');
 const Networker = require('./agents/Networker.cjs');
 const ComplianceGuard = require('./agents/ComplianceGuard.cjs');
 
+const sentimentVault = require('./data/SentimentVault.cjs');
+
 class BelgraveGuardian {
     constructor() {
         this.scout = new Researcher();
@@ -27,7 +29,8 @@ class BelgraveGuardian {
         // Ratio Tracking (3:1 Reply-to-Post)
         this.stats = {
             originalPosts: 0,
-            replies: 0
+            replies: 0,
+            growth: sentimentVault.growthMetrics
         };
     }
 
@@ -38,6 +41,7 @@ class BelgraveGuardian {
         console.log(`    - Mode: ${isManual ? "MANUAL EXECUTION" : "GROWTH ARCHITECT AUTOMATION"}`);
         console.log("    - Internal Logic: Gemini 3 Flash Auditor [SECURED]");
         console.log("    - Ratio Protocol: Enforcing 3:1 Reply-to-Post Ratio");
+        console.log(`    - Twitter Growth Target: ${this.stats.growth.currentFollowers} -> 1,000 members`);
 
         await this.runCycle();
 
@@ -65,6 +69,7 @@ class BelgraveGuardian {
 
     async runCycle() {
         console.log("\n🔄 STARTING GROWTH EXECUTION LOOP");
+        console.log(`🧠 [LEARNING] Current Market Sentiment: ${sentimentVault.currentMood}`);
 
         // Determine if this cycle should be a 'Reply' or an 'Original Thread'
         // Strategy: We want a 3:1 ratio. 
@@ -79,6 +84,7 @@ class BelgraveGuardian {
         signal.isReply = isReply; // Pass intent to other agents
         console.log(`    Target: ${signal.target.name} (${signal.target.handle})`);
         console.log(`    Pain Point: ${signal.painPoint}`);
+        console.log(`    Alpha Signature: ${signal.alphaTip}`);
 
         // 2. Narrative Draft (The Visionary)
         console.log("📝 [2/6] The Visionary drafting technical storytelling...");
@@ -118,6 +124,8 @@ class BelgraveGuardian {
             if (signal.isReply) this.stats.replies++;
             else this.stats.originalPosts++;
 
+            this.stats.growth = sentimentVault.growthMetrics; // Sync growth
+
             await this.publish(interactionPackage);
         } else {
             console.log(`🛑 BLOCKED by Algorithm Guard: ${complianceResult.reason}`);
@@ -129,9 +137,8 @@ class BelgraveGuardian {
         console.log("---------------------------------------------------");
         console.log(`TARGET/REPLY: ${pkg.replyTo || "Original Thread"}`);
         console.log(`NETWORK HOOK: ${pkg.hook || "N/A"}`);
-        console.log(`CONTENT: ${pkg.fullThreadContinuation}`);
-        console.log(`CONFIDENCE SCORE: ${pkg.confidenceScore}%`);
         console.log(`RATIO STATUS: ${this.stats.replies} Replies / ${this.stats.originalPosts} Posts`);
+        console.log(`GROWTH STATUS: ${this.stats.growth.currentFollowers} / 1000 Followers`);
         console.log("---------------------------------------------------");
 
         // Simulation Mode Logging

@@ -38,15 +38,20 @@ class EngagementLead {
 
     generateContentChunk(type) {
         let content = "";
+        const twitterCTA = "\n\n🚀 *Help us reach our 1,000 member milestone on X!* Follow for real-time alpha: [twitter.com/NoblePad]";
+
         switch (type) {
             case 'quote':
-                content = `📜 *Wisdom of the Day*\n\n"${this.quotes[Math.floor(Math.random() * this.quotes.length)]}"\n\n#NoblePad #Belgrave #DeFi`;
+                content = `📜 *Wisdom of the Day*\n\n"${this.quotes[Math.floor(Math.random() * this.quotes.length)]}"\n\n#NoblePad #Belgrave #DeFi` + twitterCTA;
                 break;
             case 'comparison':
-                content = `⚖️ *The NoblePad Advantage*\n\n${this.comparisons[Math.floor(Math.random() * this.comparisons.length)]}\n\nWe don't just launch; we protect.`;
+                content = `⚖️ *The NoblePad Advantage*\n\n${this.comparisons[Math.floor(Math.random() * this.comparisons.length)]}\n\nWe don't just launch; we protect.` + twitterCTA;
                 break;
             case 'question':
-                content = `💬 *Community Focus*\n\n${this.questions[Math.floor(Math.random() * this.questions.length)]}`;
+                content = `💬 *Alpha Community Focus*\n\n${this.questions[Math.floor(Math.random() * this.questions.length)]}` + twitterCTA;
+                break;
+            case 'growth':
+                content = `🔥 *THE ROAD TO 1,000 ARCHITECTS*\n\nWe are currently at 180 members on X.com. To attract the smart money we need the strength of our community. Join the technical discussion now:\n\n👉 [twitter.com/NoblePad]`;
                 break;
             default:
                 content = "Stay tuned for more updates on NoblePad's evolution!";

@@ -40,6 +40,13 @@ schedule.scheduleJob('0 20 * * *', async () => {
     await bot.telegram.sendMessage(chatId, msg, { parse_mode: 'Markdown' });
 });
 
+// 5. Growth Push (22:00)
+schedule.scheduleJob('0 22 * * *', async () => {
+    console.log("📅 Triggering: Twitter Growth Push (22:00)");
+    const msg = agent.generateContentChunk('growth');
+    await bot.telegram.sendMessage(chatId, msg, { parse_mode: 'Markdown' });
+});
+
 // --- INTERACTIVE MODE (REPLY TO MEMBERS) ---
 
 bot.on('message', async (ctx) => {

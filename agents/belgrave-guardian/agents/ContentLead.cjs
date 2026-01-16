@@ -7,24 +7,36 @@ const grounding = require('../data/GroundingLibrary.cjs');
 class ContentLead {
     constructor() {
         this.narratives = [
-            "NoblePad is establishing the institutional standard for 2026 by integrating automated logic-locks and Gemini-3 flash auditing. $BELGRAVE serves as the essential gateway to this secure-only ecosystem.",
-            "The $BELGRAVE Tier System (17.5M to 175M) creates a deterministic allocation framework, providing a macroscopic solution to the liquidity fragmentation in multi-chain markets.",
-            "We are bridging the gap between Base and XRPL liquidity with infrastructure designed for institutional capital. NoblePad ensures protocol integrity is maintained across all liquidity layers.",
-            "$BELGRAVE positioning reflects an ecosystem-stabilizing asset. By prioritizing automated security hooks and milestone-based escrow, we provide the professional benchmark for DeFi integrity."
+            "NoblePad is establishing the institutional standard for 2026 by integrating automated logic-locks and Gemini-3 flash auditing. $BELGRAVE is the gateway.",
+            "The $BELGRAVE Tier System (Bronze to Gold) solves deterministic allocation. It's the end of FCFS gas wars for institutional capital.",
+            "Bridging Base and XRPL isn't just about liquidity; it's about audited security layers. NoblePad is the infrastructure the big players have been waiting for.",
+            "DeFi integrity is the new alpha. NoblePad's milestone-based escrow ensures protocol standards are enforced, not just promised."
+        ];
+        this.kolAlpha = [
+            "THREAD: Why most launchpads are failing institutional tests and how NoblePad's [Logic-Locks] change the game.",
+            "SCALING ALPHA: $BELGRAVE isn't just a token; it's a tiered governance layer for the most secure ecosystem on Base.",
+            "The mid-curve is chasing hype; the smart money is tracking infrastructure. Let's talk about the [Gemini-3] audit results.",
+            "MARKET VIBE: Liquidity is fragmented. Secure gateways like NoblePad are the only way to aggregate institutional-grade flows."
         ];
     }
 
     draft(signal) {
-        const baseNarrative = this.narratives[Math.floor(Math.random() * this.narratives.length)];
+        const mood = signal.mood || "NEUTRAL";
+        const baseNarrative = (mood === "ALPHA_SEEKING")
+            ? this.kolAlpha[Math.floor(Math.random() * this.kolAlpha.length)]
+            : this.narratives[Math.floor(Math.random() * this.narratives.length)];
 
-        // Technical Storytelling Hook
-        const hook = `Strategic Analysis: Regarding ${signal.target.theme}. ${baseNarrative}`;
+        // KOL/Koller Style Hook
+        const hook = (mood === "ALPHA_SEEKING")
+            ? `🔥 ALPHA ALERT for @${signal.target.handle}: ${baseNarrative} [Sentiment: ${mood}] | Signal: ${signal.alphaTip}`
+            : `Strategic Analysis regarding ${signal.target.theme}: ${baseNarrative} #NoblePad #InstitutionalDeFi`;
 
         return {
             rawDraft: hook,
             targetHandle: signal.target.handle,
             strategicIntent: signal.intent,
-            tone: grounding.voice.style
+            tone: "Koller_KOL_Professional",
+            mood: mood
         };
     }
 }
