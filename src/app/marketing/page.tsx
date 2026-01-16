@@ -30,12 +30,14 @@ interface AgentStatus {
 export default function MarketingMonitorPage() {
     const [actions, setActions] = useState<MarketingAction[]>([])
     const [agents, setAgents] = useState<AgentStatus[]>([
-        { id: 'scout', name: 'Strategic Scout', status: 'active', task: 'Monitoring X.com institutional keywords', type: 'Research', lastActive: 'Just now' },
-        { id: 'visionary', name: 'Visionary', status: 'active', task: 'Synthesizing technical moats', type: 'Content', lastActive: '2 min ago' },
-        { id: 'auditor', name: 'Inst. Auditor', status: 'active', task: 'Filtering degen language', type: 'Compliance', lastActive: '5 min ago' },
-        { id: 'networker', name: 'Networker', status: 'active', task: 'Drafting consultative replies', type: 'Outreach', lastActive: '5 min ago' },
-        { id: 'manager', name: 'Engagement Lead', status: 'active', task: 'Managing Telegram community', type: 'Community', lastActive: 'Just now' },
-        { id: 'guard', name: 'Algorithm Guard', status: 'active', task: 'Enforcing 3:1 ratio', type: 'Safety', lastActive: '1 min ago' },
+        { id: 'scout', name: 'Strategic Scout', status: 'active', task: 'Synthesizing market pain points', type: 'Research', lastActive: 'Just now' },
+        { id: 'visionary', name: 'Visionary', status: 'active', task: 'Drafting Technical Alpha', type: 'Content', lastActive: '2 min ago' },
+        { id: 'auditor', name: 'Inst. Auditor', status: 'active', task: 'Compliance Gate Enforcement', type: 'Compliance', lastActive: '5 min ago' },
+        { id: 'stylist', name: 'The Stylist', status: 'active', task: 'Optimizing View Velocity', type: 'Humanization', lastActive: '1 min ago' },
+        { id: 'networker', name: 'Networker', status: 'active', task: 'Engagement Hook Strategy', type: 'Outreach', lastActive: '5 min ago' },
+        { id: 'manager', name: 'Engagement Lead', status: 'active', task: 'Telegram Community Control', type: 'Community', lastActive: 'Just now' },
+        { id: 'guard', name: 'Algorithm Guard', status: 'active', task: 'Anti-Shadowban Protocol', type: 'Safety', lastActive: '1 min ago' },
+        { id: 'vault', name: 'Learning Engine', status: 'active', task: 'Sentiment Analysis (Koller v3)', type: 'Intelligence', lastActive: 'Just now' },
     ]);
     const [nextScanTime, setNextScanTime] = useState<string>('00:00:00')
 
