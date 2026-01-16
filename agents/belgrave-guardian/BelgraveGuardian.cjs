@@ -167,12 +167,21 @@ class BelgraveGuardian {
                     accessSecret: process.env.TWITTER_ACCESS_SECRET,
                 });
 
-                // Format: Hook + Content (keeping it under 280 for now or using thread if possible)
-                // For simplicity, we post the hook/reply first.
-                const tweetText = `${pkg.hook}\n\n${pkg.fullThreadContinuation}`.substring(0, 280);
+                const hookText = pkg.hook || "";
+                const threadText = pkg.fullThreadContinuation || "";
+                const combined = `${hookText}\n\n${threadText}`;
 
-                await twitterClient.v2.tweet(tweetText);
-                console.log("    => Broadcasted to X.com (Twitter) ✅");
+                if (combined.length <= 280) {
+                    await twitterClient.v2.tweet(combined);
+                    console.log("    => Broadcasted to X.com (Single Tweet) ✅");
+                } else {
+                    // Create a 2-tweet thread for institutional depth
+                    await twitterClient.v2.tweetThread([
+                        hookText,
+                        `Strategic Analysis: ${threadText}`
+                    ]);
+                    console.log("    => Broadcasted to X.com (2-Tweet Thread) ✅");
+                }
                 broadcasted = true;
             } catch (err) {
                 console.error("    => X.com Broadcast Failed:", err.message);
