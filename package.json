@@ -22,7 +22,11 @@
     "analyze": "cross-env ANALYZE=true next build",
     "deploy:contracts": "hardhat run scripts/deploy-greeter.js --network sepolia",
     "deploy:ethers": "node scripts/deploy-with-ethers.js",
-    "marketing": "node start-marketing.cjs"
+    "marketing": "node start-marketing.cjs",
+    "growth:manual": "node start-belgrave-guardian.cjs --manual",
+    "growth:auto": "node start-belgrave-guardian.cjs",
+    "growth:community": "node start-community-manager.cjs",
+    "growth:community-test": "node start-community-manager.cjs --test"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.0.5",

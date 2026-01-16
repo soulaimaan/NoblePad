@@ -1,33 +1,31 @@
 /**
- * The Content Lead (The Draftsman)
- * Converts research data into neutral risk analysis drafts.
+ * Agent 2: The Visionary (Content Lead)
+ * Tasks: Drafts Technical Storytelling threads using a sophisticated voice.
  */
+const grounding = require('../data/GroundingLibrary.cjs');
+
 class ContentLead {
     constructor() {
-        this.templates = [
-            "We detected {RISK}. This pattern is often associated with {PATTERN}. Exercise caution.",
-            "Technical Audit: Contract at {ADDRESS} flagged for {RISK}. Verification is key.",
-            "Analysis: {RISK} detected. Liquidity locking status: {LOCK_STATUS}. Always verify manually."
+        this.narratives = [
+            "NoblePad is establishing the institutional standard for 2026 by integrating automated logic-locks and Gemini-3 flash auditing. $BELGRAVE serves as the essential gateway to this secure-only ecosystem.",
+            "The $BELGRAVE Tier System (17.5M to 175M) creates a deterministic allocation framework, providing a macroscopic solution to the liquidity fragmentation in multi-chain markets.",
+            "We are bridging the gap between Base and XRPL liquidity with infrastructure designed for institutional capital. NoblePad ensures protocol integrity is maintained across all liquidity layers.",
+            "$BELGRAVE positioning reflects an ecosystem-stabilizing asset. By prioritizing automated security hooks and milestone-based escrow, we provide the professional benchmark for DeFi integrity."
         ];
     }
 
-    draft(researchData, auditResult) {
-        let risk = "Unknown Risk";
-        if (!auditResult.passed) {
-            risk = auditResult.reason;
-        } else {
-            return null; // No risk, no post? Or post "Clean Audit"?
-            // Strategy: Only post about RISKS or high-signal warnings.
-        }
+    draft(signal) {
+        const baseNarrative = this.narratives[Math.floor(Math.random() * this.narratives.length)];
 
-        const template = this.templates[Math.floor(Math.random() * this.templates.length)];
-        const lockStatus = researchData.liquidityLocked ? "Locked" : "UNLOCKED";
+        // Technical Storytelling Hook
+        const hook = `Strategic Analysis: Regarding ${signal.target.theme}. ${baseNarrative}`;
 
-        return template
-            .replace("{RISK}", risk)
-            .replace("{ADDRESS}", researchData.contractAddress)
-            .replace("{LOCK_STATUS}", lockStatus)
-            .replace("{PATTERN}", "high-risk behavior");
+        return {
+            rawDraft: hook,
+            targetHandle: signal.target.handle,
+            strategicIntent: signal.intent,
+            tone: grounding.voice.style
+        };
     }
 }
 

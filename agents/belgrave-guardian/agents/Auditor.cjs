@@ -1,25 +1,36 @@
 /**
- * The Auditor (The Expert)
- * Validates drafts against the Technical Checklist.
+ * Agent 3: The Institutional Auditor (Fact-Checker)
+ * Task: Strips 'Degen' language and enforces research-report style.
  */
-const Checklist = require('../data/TechnicalChecklist.cjs');
+const grounding = require('../data/GroundingLibrary.cjs');
 
 class Auditor {
-    constructor() { }
+    constructor() {
+        this.forbidden = grounding.voice.forbidden;
+    }
 
-    validate(data) {
-        // Iterate through all rules in the checklist
-        for (const rule of Checklist.rules) {
-            const result = rule.check(data);
-            if (!result.passed) {
-                return {
-                    passed: false,
-                    reason: `${rule.name}: ${result.reason}`,
-                    ruleId: rule.id
-                };
+    validate(draftPackage) {
+        let content = draftPackage.rawDraft;
+        let violations = [];
+
+        // 1. Check for degen language
+        this.forbidden.forEach(word => {
+            if (content.toLowerCase().includes(word.toLowerCase())) {
+                violations.push(word);
             }
+        });
+
+        // 2. Enforce sophistication (ensure it sounds like a report)
+        if (!content.includes("Infrastructure") && !content.includes("Strategic")) {
+            content = "Report Addition: " + content;
         }
-        return { passed: true };
+
+        return {
+            content,
+            passed: violations.length === 0,
+            violations,
+            qualityScore: 100 - (violations.length * 10)
+        };
     }
 }
 

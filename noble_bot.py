@@ -24,7 +24,8 @@ openai.api_key = OPENAI_KEY
 
 # --- LIJST MET DOELWITTEN ---
 # Keywords waar mensen klagen over geldverlies
-SEARCH_KEYWORDS = ["scammed crypto", "rug pull alert", "honeypot crypto", "wallet drained", "liquidity removed"]
+# Keywords where institutional investors or builders are discussing infrastructure
+SEARCH_KEYWORDS = ["Institutional DeFi", "Launchpad security", "Web3 infrastructure", "Liquidity locks", "Token launch problems"]
 
 # Influencers die over veiligheid praten (IDs moet je opzoeken, dit zijn voorbeelden)
 INFLUENCERS = ["ZachXBT", "CertiK", "PeckShieldAlert", "Coffeezilla"]

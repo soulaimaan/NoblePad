@@ -1,44 +1,44 @@
 /**
- * The Researcher (The Scout)
- * Scans for suspicious patterns.
- * In a real scenario, this would connect to on-chain data APIs.
- * For this implementation, it uses mock data to demonstrate the pipeline.
+ * Agent 1: The Scout (Strategic Researcher)
+ * Identifies Market Pain Points and Scans High-Value Targets.
  */
+const targets = require('../data/TargetList.cjs');
+
 class Researcher {
     constructor() {
-        this.mockData = [
-            {
-                contractAddress: "0xMockSuspicious",
-                liquidityLocked: false,
-                liquidityDuration: 0,
-                canMint: true,
-                buyTax: 5,
-                sellTax: 5,
-                isHoneypot: false,
-                topHoldersConcentration: 15,
-                isUpgradeable: true,
-                hasTimelock: false
-            },
-            {
-                contractAddress: "0xMockSafe",
-                liquidityLocked: true,
-                liquidityDuration: 180,
-                canMint: false,
-                buyTax: 5,
-                sellTax: 5,
-                isHoneypot: false,
-                topHoldersConcentration: 10,
-                isUpgradeable: false,
-                hasTimelock: false
-            }
+        this.painPoints = [
+            "Lack of institutional-grade security in decentralized launches",
+            "Regulatory uncertainty and the need for compliant DeFi infrastructure",
+            "Fragmentation of trust in multi-chain ecosystems",
+            "The absence of sophisticated, BlackRock-ready capital gateways"
+        ];
+        this.targetKeywords = [
+            "Institutional DeFi",
+            "Launchpad security",
+            "Web3 infrastructure",
+            "Liquidity locks",
+            "Token launch problems"
         ];
     }
 
     async scan() {
-        // Forcing suspicious findings to demonstrate tweet generation
-        // const index = Math.floor(Math.random() * this.mockData.length);
-        const index = 0; // Always find the suspicious contract
-        return this.mockData[index];
+        // In a real scenario, this would use X.com API to scan handles.
+        // For simulation, we pick a random target and a random pain point.
+        const allTargets = [
+            ...targets.institutional,
+            ...targets.developers,
+            ...targets.narrative
+        ];
+
+        const target = allTargets[Math.floor(Math.random() * allTargets.length)];
+        const painPoint = this.painPoints[Math.floor(Math.random() * this.painPoints.length)];
+
+        return {
+            target,
+            painPoint,
+            intent: "Institutional Growth & Adoption",
+            signalTimestamp: new Date().toISOString()
+        };
     }
 }
 

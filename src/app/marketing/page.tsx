@@ -19,20 +19,24 @@ interface MarketingAction {
 }
 
 interface AgentStatus {
+    id: string
     name: string
-    status: 'idle' | 'scanning' | 'processing' | 'cooldown'
+    status: 'idle' | 'scanning' | 'processing' | 'cooldown' | 'active'
+    task: string
+    type: string
     lastActive: string
 }
 
 export default function MarketingMonitorPage() {
     const [actions, setActions] = useState<MarketingAction[]>([])
     const [agents, setAgents] = useState<AgentStatus[]>([
-        { name: 'Researcher', status: 'scanning', lastActive: 'Just now' },
-        { name: 'Auditor', status: 'idle', lastActive: '2 min ago' },
-        { name: 'Content Lead', status: 'idle', lastActive: '5 min ago' },
-        { name: 'Compliance Guard', status: 'idle', lastActive: '5 min ago' },
-        { name: 'Crisis Monitor', status: 'idle', lastActive: '1 min ago' },
-    ])
+        { id: 'scout', name: 'Strategic Scout', status: 'active', task: 'Monitoring X.com institutional keywords', type: 'Research', lastActive: 'Just now' },
+        { id: 'visionary', name: 'Visionary', status: 'active', task: 'Synthesizing technical moats', type: 'Content', lastActive: '2 min ago' },
+        { id: 'auditor', name: 'Inst. Auditor', status: 'active', task: 'Filtering degen language', type: 'Compliance', lastActive: '5 min ago' },
+        { id: 'networker', name: 'Networker', status: 'active', task: 'Drafting consultative replies', type: 'Outreach', lastActive: '5 min ago' },
+        { id: 'manager', name: 'Engagement Lead', status: 'active', task: 'Managing Telegram community', type: 'Community', lastActive: 'Just now' },
+        { id: 'guard', name: 'Algorithm Guard', status: 'active', task: 'Enforcing 3:1 ratio', type: 'Safety', lastActive: '1 min ago' },
+    ]);
     const [nextScanTime, setNextScanTime] = useState<string>('00:00:00')
 
     // Mock data simulation - In reality this would fetch from Supabase
@@ -44,25 +48,23 @@ export default function MarketingMonitorPage() {
                 timestamp: new Date(Date.now() - 1000 * 60 * 5).toLocaleTimeString(),
                 type: 'publish',
                 status: 'success',
-                details: 'Published security alert for contract 0xMock...Suspicious',
+                details: 'Published Macro-Analysis: Institutional gateways for 2026. $BELGRAVE positioning.',
                 platform: 'twitter',
-                riskLevel: 'high'
+                riskLevel: 'low'
             },
             {
                 id: '2',
-                timestamp: new Date(Date.now() - 1000 * 60 * 6).toLocaleTimeString(),
-                type: 'compliance',
+                timestamp: new Date(Date.now() - 1000 * 60 * 15).toLocaleTimeString(),
+                type: 'research',
                 status: 'success',
-                details: 'Draft approved. No blacklist words found.',
+                details: 'Target @balajis: Strategic insight on Network State infrastructure generated.',
             },
             {
                 id: '3',
-                timestamp: new Date(Date.now() - 1000 * 60 * 7).toLocaleTimeString(),
-                type: 'audit',
-                status: 'failed',
-                details: 'Liquidity Check: UNLOCKED',
-                contractAddress: '0xMock...Suspicious',
-                riskLevel: 'high'
+                timestamp: new Date(Date.now() - 1000 * 60 * 30).toLocaleTimeString(),
+                type: 'compliance',
+                status: 'success',
+                details: 'Algorithm Guard: 3:1 Reply ratio maintained. Organic jitter applied.',
             }
         ])
 
@@ -98,8 +100,8 @@ export default function MarketingMonitorPage() {
                         <Card key={agent.name} className="bg-noble-card border-noble-border">
                             <CardContent className="p-4 flex flex-col items-center text-center">
                                 <div className={`mb-2 p-2 rounded-full ${agent.status === 'scanning' ? 'bg-blue-500/20 text-blue-400 animate-pulse' :
-                                        agent.status === 'processing' ? 'bg-yellow-500/20 text-yellow-400' :
-                                            'bg-green-500/10 text-green-400'
+                                    agent.status === 'processing' ? 'bg-yellow-500/20 text-yellow-400' :
+                                        'bg-green-500/10 text-green-400'
                                     }`}>
                                     <Activity size={20} />
                                 </div>

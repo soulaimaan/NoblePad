@@ -1,84 +1,68 @@
-# 🛡️ NoblePad Autonomous Marketing System
+# 🚀 NOBLEPAD: INSTITUTIONAL GROWTH & ADOPTION
 
-> **"Patterns matter more than promises."**
+## The Growth Architect Ecosystem (Autonomous Marketing v2.0)
 
-This system implements the **NoblePad Security Voice** persona through a multi-agent architectural approach, designed to protect the brand while creating educational content.
-
-## 🤖 System Architecture
-
-The system is composed of 5 specialist agents working in concert:
-
-### 1. Content Agent 📝
-
-- **Role**: Drafts educational threads and tweets.
-- **Focus**: Rug mechanics, wallet patterns, risk analysis.
-- **Voice**: Analytical, neutral, skeptical.
-- **Templates**: Included in `agents/noblepad-marketing-system.cjs`.
-
-### 2. Humanizer Agent 🧠
-
-- **Role**: Refines raw drafts to avoid AI detection.
-- **Technique**: Adds variations, sentence structure changes, and nuance.
-- **Goal**: "Imperfection is human."
-
-### 3. Compliance Guard 👮
-
-- **Role**: The final gatekeeper.
-- **Authority**: Can BLOCK any action.
-- **Checks**:
-  - **Rate Limits**: Min 90 minutes between actions.
-  - **Vocabulary**: Blocks hype words ("moon", "safe", "100x").
-  - **Frequency**: Max 1 thread/day, 2 tweets/day.
-
-### 4. Crisis Monitor 🚨
-
-- **Role**: System override switch.
-- **Trigger**: Market crash, exploit event.
-- **Effect**: Halts all automated posting immediately.
-
-### 5. Reply Agent 💬
-
-- **Role**: Contextual replies (Stubbed in current version).
-- **Rule**: Never redirects traffic, never sells.
+NoblePad has transitioned from basic security monitoring to a **Growth Architect** model. This 6-agent autonomous ecosystem is designed to attract high-tier Influencers (KOLs), Institutional Capital ($BELGRAVE), and elite Developers.
 
 ---
 
-## 🚀 How to Run
-
-The system is integrated into the NoblePad repo.
-
-```bash
-npm run marketing
-```
-
-**Output:**
-
-- If API Keys are present in `.env`: The system **executes** (posts to Twitter/Telegram).
-- If API Keys are missing: The system runs in **SIMULATION MODE**, logging proposed drafts to the console for manual review.
-
-## ⚙️ Configuration
-
-Located in `agents/noblepad-marketing-system.cjs`:
-
-```javascript
-const IDENTITY = {
-  blacklist: ['launch now', 'moon', '100x'...],
-  dialects: ["Hard to prove intent...", "Patterns matter..."]
-};
-
-const HARD_LIMITS = {
-  minIntervalMinutes: 90,
-  maxDailyThreads: 1,
-  ...
-};
-```
-
-## ⚠️ Fail-Safe Principle
-
-> **"If uncertain -> generate draft for manual review."**
-
-By default, the system is configured to **propose** actions (via Telegram Admin message or Console Log) rather than auto-posting, unless you explicitly uncomment the `postToTwitter` call in `executeAction()`.
+## 🏛️ Core Philosophy
+>
+> "Security is the baseline; NoblePad is the infrastructure for the Institution-Ready Web3."
 
 ---
 
-**Status**: ✅ Active & Compliant
+## 🧩 1. The Re-Engineered Agent Roles
+
+| Agent | Role | Focus |
+| :--- | :--- | :--- |
+| **Agent 1** | **The Scout** | Identifies market pain points and scans institutional/dev titans for entry points. |
+| **Agent 2** | **The Visionary** | Drafts sophisticated, technical storytelling threads. Focuses on $BELGRAVE utility. |
+| **Agent 3** | **The Institutional Auditor** | Fact-checks content. Strips 'Degen' language. Enforces BlackRock/Grayscale tone. |
+| **Agent 4** | **The Stylist** | Optimizes for X.com 2026 "View Velocity." Enforces consultative reply ratios. |
+| **Agent 5** | **The Networker** | Executes contextual engagement. Contributes technical value to influencer threads. |
+| **Agent 6** | **The Algorithm Guard** | Enforces "Organic Jitter" (90m+) and shadow-ban protection logic. |
+
+---
+
+## 🎯 2. High-Value Target Segments
+
+### Group A: Institutional Market Makers
+
+* **Targets**: @saylor, @CathieDWood, @BlackRock, @Grayscale, @novogratz
+* **Goal**: Position $BELGRAVE as an institutional-grade treasury asset and security infrastructure.
+
+### Group B: Developer & Infrastructure Titans
+
+* **Targets**: @VitalikButerin, @sandeepnailwal, @aeyakovenko, @chainlink, @StaniKulechov
+* **Goal**: Attract elite builders to the NoblePad Launchpad via security moats.
+
+### Group C: Narrative Influencers (KOLs)
+
+* **Targets**: @balajis, @APompliano, @cdixon, @cobie, @TheCryptoLark
+* **Goal**: Drive massive retail and whale visibility through technical respect.
+
+---
+
+## ⚙️ 3. Operational Logic (The Execution Loop)
+
+The system follows a strict linear verification chain for every action:
+
+1. **Strategic Signal**: The Scout finds a technical trigger in a target's narrative.
+2. **Narrative Draft**: The Visionary creates a macro-economic storytelling thread.
+3. **Quality Audit**: The Institutional Auditor ensures a Grayscale-grade tone (Score > 95%).
+4. **Humanize**: The Stylist optimizes for algorithm reach and consultative value.
+5. **Networking Hook**: The Networker drafts the custom reply to the target entity.
+6. **Algorithm Check**: The Guard ensures no spam triggers or reach penalties.
+
+---
+
+## 🔧 4. Deployment Status: GROWTH MODE ACTIVE
+
+* **Interval**: 90-135 minutes (Randomized Jitter)
+* **Tone**: Institutional / Research-Grade
+* **Link Policy**: No links in original threads; links provided only in requested replies.
+* **Max Output**: 1 Original Thread / 5 High-Value Replies per day.
+
+---
+**NoblePad: Infrastructure for the Institution-Ready Web3**

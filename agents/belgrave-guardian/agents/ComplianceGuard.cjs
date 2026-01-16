@@ -1,23 +1,37 @@
 /**
- * The Compliance Guard (The Gatekeeper)
- * Enforces Jitter blocks and vocabulary blacklists.
+ * Agent 6: The Algorithm Guard (Compliance)
+ * Task: Enforces 'Organic Jitter' and shadow-ban protection.
  */
 class ComplianceGuard {
     constructor() {
-        this.blacklist = [
-            'moon', '100x', 'safe', 'gem', 'lambo',
-            'financial advice', 'guaranteed', 'launch now', 'urgent', 'pump'
-        ];
+        this.maxDailyOriginal = 1;
+        this.maxDailyReplies = 5;
     }
 
-    check(content) {
-        const lowerContent = content.toLowerCase();
-        const forbidden = this.blacklist.find(word => lowerContent.includes(word));
+    check(interactionPackage) {
+        const content = interactionPackage.hook || interactionPackage.fullThreadContinuation;
 
-        if (forbidden) {
-            return { approved: false, reason: `Blacklisted word: ${forbidden}` };
+        // 1. Anti-Spam: Check for repetitive phrases
+        if (content.length < 20) {
+            return { approved: false, reason: "Content too short, likely low-value." };
         }
-        return { approved: true };
+
+        // 2. Ticker/Link Policy: No links in original posts (to avoid reach penalty)
+        if (content.includes("http") && !interactionPackage.replyTo) {
+            return { approved: false, reason: "X.com Reach Penalty: Links not allowed in original posts." };
+        }
+
+        // 3. Shadow-ban trigger: Excessive ticker usage
+        const tickers = content.match(/\$[A-Z]+/g) || [];
+        if (tickers.length > 2) {
+            return { approved: false, reason: "Potential Shadow-ban: Excessive ticker usage detected." };
+        }
+
+        return {
+            approved: true,
+            jitterRequirement: "90m + random(1-45m)",
+            protection: "Active"
+        };
     }
 }
 
